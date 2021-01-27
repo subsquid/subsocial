@@ -1,6 +1,17 @@
 " All transfers "
+
+enum PostKind {
+  Comment
+  SharedPost
+  RegularPost
+}
+
 type Post @entity {
   content: String!
   author: Bytes!
+  kind: String!
+  shared_post_id: String
+  root_post_id: String
+  parent_id: String
 } 
 
