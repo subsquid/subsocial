@@ -1,5 +1,4 @@
 " All transfers "
-
 enum PostKind {
   Comment
   SharedPost
@@ -7,11 +6,56 @@ enum PostKind {
 }
 
 type Post @entity {
+  postId: String!
+  createdByAccount: String!
+  updatedAtTime: String
   content: String!
-  author: Bytes!
-  kind: String!
-  shared_post_id: String
-  root_post_id: String
-  parent_id: String
-} 
+  kind: PostKind!
+  parentId: String
+  rootPostId: String
+  sharedPostId: String
+  title: String @fulltext(query: "search")
+  slug: String
+  summary: String @fulltext(query: "search")
+  image: String
+  tagsOriginal: String
+  repliesCount: Int
+  publicRepliesCount: Int
+  hiddenRepliesCount: Int
+  sharesCount: Int
+  upvotesCount: Int
+  downvotesCount: Int
+  score: Int
+}
 
+type Space @entity {
+  spaceId: String!
+  createdByAccount: String
+  updatedAtTime: String
+  ownerId: String
+  content: String!
+  name: String @fulltext(query: "search")
+  image: String
+  summary: String
+  tags: String
+  postsCount: Int
+  publicPostsCount: Int
+  hiddenPostsCount: Int
+  followersCount: Int
+  score: Int
+}
+
+type Tags @entity {
+  id: String!
+  tag: String @fulltext(query: "search")
+}
+
+type PostTags @entity {
+  postId: String!
+  tagId: String!
+}
+
+type SpaceTags @entity {
+  spaceId: String!
+  tagId: String!
+}

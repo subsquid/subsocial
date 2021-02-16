@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "importHelpers": true,
+    "module": "commonjs",
+    "outDir": "lib",
+    "rootDir": "./",
+    "strict": true,
+    "target": "es2017",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "inlineSources": false,
+    "baseUrl": ".",
+    "esModuleInterop": true
+  },
+  "include": ["mappings/**/*"],
+  "exclude": ["node_modules"]
+}
