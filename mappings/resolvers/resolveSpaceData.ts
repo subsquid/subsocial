@@ -1,7 +1,7 @@
 import { SpaceId } from "@subsocial/types/substrate/interfaces";
 import { resolveSubsocialApi } from '../../connection/subsocial';
-import { summarize } from '@subsocial/utils/summarize';
-import { formatTegs } from '../tag';
+import { summarizeMd } from '@subsocial/utils/summarize';
+import { formatTegs, formatDate } from '../utils';
 
 export type SpaceStruct = {
   updatedAtTime: string,
@@ -28,7 +28,7 @@ export const resolveSpaceStruct = async (id: SpaceId): Promise<SpaceStruct | und
 
   const { owner, content, posts_count, hidden_posts_count, followers_count, score, updated } = space.struct
 
-  const updatedAtTime = updated.isSome ? updated.unwrap().time.toString() : ''
+  const updatedAtTime = updated.isSome ? formatDate(updated.unwrap().time.toString()) : ''
 
   return {
     updatedAtTime,
@@ -53,7 +53,7 @@ export const resolveIpfsSpaceData = async (cid: string): Promise<SpaceContent | 
   if (content) {
     return {
       name,
-      about: summarize(content.about),
+      about: summarizeMd(content.about).summary,
       image: content.image,
       tags
     }

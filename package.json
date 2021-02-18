@@ -1,7 +1,7 @@
 {
   "name": "hello-hydra",
   "version": "1.0.0",
-  "description": "GraphQL server and Substrate indexer. Generated with \u2665 by Hydra-CLI",
+  "description": "GraphQL server and Substrate indexer. Generated with ♥ by Hydra-CLI",
   "scripts": {
     "build": "yarn clean && yarn codegen:all",
     "lint": "echo \"Skippinng\"",
@@ -30,12 +30,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "tslib": "^2.0.0",
-    "@types/bn.js": "^4.11.6",
-    "bn.js": "^5.1.2",
     "@subsocial/api": "0.4.30",
     "@subsocial/types": "0.4.30",
-    "@subsocial/utils": "^0.4.30"
+    "@subsocial/utils": "0.4.38",
+    "@types/bn.js": "^4.11.6",
+    "bn.js": "^5.1.2",
+    "dayjs": "^1.10.4",
+    "tslib": "^2.0.0"
   },
   "devDependencies": {
     "@dzlzv/hydra-cli": "0.1.4",

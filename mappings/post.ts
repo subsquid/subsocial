@@ -1,8 +1,11 @@
 import { SubstrateEvent, DB } from '../generated/hydra-processor'
 import { Post, PostKind } from '../generated/graphql-server/src/modules/post/post.model'
-import { PostId } from '@subsocial/types/substrate/interfaces';
+import { PostId, SpaceId } from '@subsocial/types/substrate/interfaces';
 import { resolvePostStruct, resolveIpfsPostData } from './resolvers/resolvePostData';
 import { insertTagInPostTags } from './tag';
+import { stringDateToTimestamp } from './utils';
+import { Space } from '../generated/graphql-server/src/modules/space/space.model';
+import { resolveSpaceStruct } from './resolvers/resolveSpaceData';
 
 type Comment = {
   root_post_id: string,
@@ -34,8 +37,14 @@ export async function posts_PostCreated(db: DB, event: SubstrateEvent) {
   post.kind = kind
 
   post.updatedAtTime = postStruct.updatedAtTime
+  post.spaceId = postStruct.spaceId
+  if (postStruct.spaceId != '') {
+    await updateCountersInSpace(db, postStruct.spaceId as unknown as SpaceId)
+  }
+
   post.repliesCount = postStruct.repliesCount
   post.hiddenRepliesCount = postStruct.hiddenRepliesCount
+  post.publicRepliesCount = post.repliesCount - post.hiddenRepliesCount
   post.sharesCount = postStruct.sharesCount
   post.upvotesCount = postStruct.upvotesCount
   post.downvotesCount = postStruct.downvotesCount
@@ -53,8 +62,17 @@ export async function posts_PostCreated(db: DB, event: SubstrateEvent) {
   switch (kind) {
     case 'Comment': {
       const comment = value as Comment
-      post.rootPostId = comment.root_post_id
-      post.parentId = comment.parent_id
+      const rootPostId = comment.root_post_id
+      const parentId = comment.parent_id
+
+      post.rootPostId = rootPostId
+      post.parentId = parentId
+
+      if (rootPostId != '' && rootPostId != null)
+        await updateReplyCount(db, rootPostId as unknown as PostId)
+      if (parentId != '' && parentId != null)
+        await updateReplyCount(db, parentId as unknown as PostId)
+
       break
     }
     case 'SharedPost': {
@@ -68,6 +86,7 @@ export async function posts_PostCreated(db: DB, event: SubstrateEvent) {
 
 export async function posts_PostUpdated(db: DB, event: SubstrateEvent) {
   const [address, id] = event.params
+  console.log('I update post')
 
   if (event.extrinsic === undefined) {
     throw new Error(`No extrinsic has been provided`)
@@ -79,7 +98,7 @@ export async function posts_PostUpdated(db: DB, event: SubstrateEvent) {
   const postStruct = await resolvePostStruct(id.value as unknown as PostId)
   if (!postStruct) return
 
-  if (Number(post.updatedAtTime) >= Number(postStruct.updatedAtTime)) return
+  if (stringDateToTimestamp(post.updatedAtTime) === stringDateToTimestamp(postStruct.updatedAtTime)) return
 
   post.createdByAccount = address.value.toString()
 
@@ -87,13 +106,9 @@ export async function posts_PostUpdated(db: DB, event: SubstrateEvent) {
   post.content = content
 
   post.updatedAtTime = postStruct.updatedAtTime
-  post.repliesCount = postStruct.repliesCount
-  post.hiddenRepliesCount = postStruct.hiddenRepliesCount
-  post.sharesCount = postStruct.sharesCount
-  post.upvotesCount = postStruct.upvotesCount
-  post.downvotesCount = postStruct.downvotesCount
-  post.score = postStruct.score
-
+  if (postStruct.spaceId != '') {
+    await updateCountersInSpace(db, postStruct.spaceId as unknown as SpaceId)
+  }
   const postContent = await resolveIpfsPostData(content, post.postId)
 
   if (postContent) {
@@ -107,4 +122,51 @@ export async function posts_PostUpdated(db: DB, event: SubstrateEvent) {
   }
 
   await db.save<Post>(post)
+}
+
+export async function posts_PostShared(db: DB, event: SubstrateEvent) {
+  const [address, id] = event.params
+  console.log('I update post')
+
+  if (event.extrinsic === undefined) {
+    throw new Error(`No extrinsic has been provided`)
+  }
+
+  const post = await db.get(Post, { where: `post_id = '${id.value.toString()}'` })
+  if (!post) return
+
+  const postStruct = await resolvePostStruct(id.value as unknown as PostId)
+  if (!postStruct) return
+
+  post.sharesCount = postStruct.sharesCount
+
+  await db.save<Post>(post)
+}
+
+const updateReplyCount = async (db: DB, postId: PostId) => {
+  const post = await db.get(Post, { where: `post_id = '${postId.toString()}'` })
+  if (!post) return
+
+  const postStruct = await resolvePostStruct(postId)
+  if (!postStruct) return
+
+  post.repliesCount = postStruct.repliesCount
+  post.hiddenRepliesCount = postStruct.hiddenRepliesCount
+  post.publicRepliesCount = post.repliesCount - post.hiddenRepliesCount
+
+  await db.save<Post>(post)
+}
+
+const updateCountersInSpace = async (db: DB, spaceId: SpaceId) => {
+  const space = await db.get(Space, { where: `space_id = '${spaceId.toString()}'` })
+  if (!space) return
+
+  const spaceStruct = await resolveSpaceStruct(spaceId)
+  if (!spaceStruct) return
+
+  space.postsCount = spaceStruct.postsCount
+  space.hiddenPostsCount = spaceStruct.hiddenPostsCount
+  space.publicPostsCount = space.postsCount - space.hiddenPostsCount
+
+  await db.save<Space>(space)
 }

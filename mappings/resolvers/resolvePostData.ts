@@ -1,11 +1,12 @@
 import { PostId } from "@subsocial/types/substrate/interfaces";
 import { resolveSubsocialApi } from '../../connection/subsocial';
-import { summarize } from '@subsocial/utils/summarize';
+import { summarizeMd } from '@subsocial/utils/summarize';
 import { createPostSlug } from '@subsocial/utils/slugify';
-import { formatTegs } from '../tag';
+import { formatTegs, formatDate } from '../utils';
 
 export type PostCounters = {
-  updatedAtTime: string
+  updatedAtTime: string,
+  spaceId: string,
   content: string,
   repliesCount: number,
   hiddenRepliesCount: number,
@@ -29,12 +30,14 @@ export const resolvePostStruct = async (id: PostId): Promise<PostCounters | unde
   const post = await subsocial.findPost({ id })
   if (!post) return
 
-  const { replies_count, hidden_replies_count, shares_count, upvotes_count, downvotes_count, score, content, updated } = post.struct
+  const { space_id, replies_count, hidden_replies_count, shares_count, upvotes_count, downvotes_count, score, content, updated } = post.struct
 
-  const updatedAtTime = updated.isSome ? updated.unwrap().time.toString() : ''
+  const updatedAtTime = updated.isSome ? formatDate(updated.unwrap().time.toString()) : ''
+  const spaceId = space_id.isSome ? space_id.unwrap().toString() : ''
 
   return {
     updatedAtTime,
+    spaceId,
     content: !content.isNone ? content.asIpfs.toString() : '',
     repliesCount: replies_count.toNumber(),
     hiddenRepliesCount: hidden_replies_count.toNumber(),
@@ -59,7 +62,7 @@ export const resolveIpfsPostData = async (cid: string, postId: string): Promise<
     return {
       title,
       image: content.image,
-      summarize: content.body ? summarize(content.body) : '',
+      summarize: content.body ? summarizeMd(content.body).summary : '',
       slug,
       tags
     }

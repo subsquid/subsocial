@@ -3,6 +3,7 @@ import { Space } from '../generated/graphql-server/src/modules/space/space.model
 import { SpaceId } from '@subsocial/types/substrate/interfaces';
 import { resolveIpfsSpaceData, resolveSpaceStruct } from './resolvers/resolveSpaceData';
 import { insertTagInSpaceTags } from './tag';
+import { stringDateToTimestamp } from './utils';
 
 export async function spaces_SpaceCreated(db: DB, event: SubstrateEvent) {
   const [address, id] = event.params
@@ -27,6 +28,7 @@ export async function spaces_SpaceCreated(db: DB, event: SubstrateEvent) {
 
   space.postsCount = spaceStruct.postsCount
   space.hiddenPostsCount = spaceStruct.hiddenPostsCount
+  space.publicPostsCount = space.postsCount - space.hiddenPostsCount
   space.followersCount = spaceStruct.followersCount
   space.score = spaceStruct.score
   if (spaceContent) {
@@ -54,7 +56,7 @@ export async function spaces_SpaceUpdated(db: DB, event: SubstrateEvent) {
   const spaceStruct = await resolveSpaceStruct(id.value as unknown as SpaceId)
   if (!spaceStruct) return
 
-  if (Number(space.updatedAtTime) == Number(spaceStruct.updatedAtTime)) return
+  if (stringDateToTimestamp(space.updatedAtTime) === stringDateToTimestamp(spaceStruct.updatedAtTime)) return
 
   space.createdByAccount = address.value.toString()
   space.ownerId = spaceStruct.owner
