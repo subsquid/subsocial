@@ -19,6 +19,7 @@ type Post @entity {
   summary: String @fulltext(query: "search")
   image: String
   tagsOriginal: String
+  tags: [Tag!]!
   repliesCount: Int
   publicRepliesCount: Int
   hiddenRepliesCount: Int
@@ -37,7 +38,8 @@ type Space @entity {
   name: String @fulltext(query: "search")
   image: String
   summary: String
-  tags: String
+  tagsOriginal: String
+  tags: [Tag!]!
   postsCount: Int
   publicPostsCount: Int
   hiddenPostsCount: Int
@@ -45,17 +47,9 @@ type Space @entity {
   score: Int
 }
 
-type Tags @entity {
+type Tag @entity {
   id: String!
+  posts: [Post!]! @derivedFrom(field: "tags")
+  spaces: [Space!]! @derivedFrom(field: "tags")
   tag: String @fulltext(query: "search")
-}
-
-type PostTags @entity {
-  postId: String!
-  tagId: String!
-}
-
-type SpaceTags @entity {
-  spaceId: String!
-  tagId: String!
 }

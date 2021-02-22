@@ -4,6 +4,7 @@ import { SpaceId } from '@subsocial/types/substrate/interfaces';
 import { resolveIpfsSpaceData, resolveSpaceStruct } from './resolvers/resolveSpaceData';
 import { insertTagInSpaceTags } from './tag';
 import { stringDateToTimestamp } from './utils';
+import { isEmptyArray } from '@subsocial/utils';
 
 export async function spaces_SpaceCreated(db: DB, event: SubstrateEvent) {
   const [address, id] = event.params
@@ -35,9 +36,11 @@ export async function spaces_SpaceCreated(db: DB, event: SubstrateEvent) {
     space.name = spaceContent.name
     space.summary = spaceContent.about
     space.image = spaceContent.image
-    space.tags = spaceContent.tags.join(',')
+    space.tagsOriginal = spaceContent.tags.join(',')
 
-    await insertTagInSpaceTags(db, spaceContent.tags, space.spaceId)
+    const tags = await insertTagInSpaceTags(db, spaceContent.tags, space.spaceId, space)
+    if (!isEmptyArray(tags))
+      space.tags = tags
   }
 
   await db.save<Space>(space)
@@ -74,9 +77,11 @@ export async function spaces_SpaceUpdated(db: DB, event: SubstrateEvent) {
     space.name = spaceContent.name
     space.summary = spaceContent.about
     space.image = spaceContent.image
-    space.tags = spaceContent.tags.join(',')
+    space.tagsOriginal = spaceContent.tags.join(',')
 
-    await insertTagInSpaceTags(db, spaceContent.tags, space.spaceId)
+    const tags = await insertTagInSpaceTags(db, spaceContent.tags, space.spaceId, space)
+    if (!isEmptyArray(tags))
+      space.tags = tags
   }
 
   console.log("updated")

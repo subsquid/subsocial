@@ -6,6 +6,7 @@ import { insertTagInPostTags } from './tag';
 import { stringDateToTimestamp } from './utils';
 import { Space } from '../generated/graphql-server/src/modules/space/space.model';
 import { resolveSpaceStruct } from './resolvers/resolveSpaceData';
+import { isEmptyArray } from '@subsocial/utils';
 
 type Comment = {
   root_post_id: string,
@@ -42,23 +43,6 @@ export async function posts_PostCreated(db: DB, event: SubstrateEvent) {
     await updateCountersInSpace(db, postStruct.spaceId as unknown as SpaceId)
   }
 
-  post.repliesCount = postStruct.repliesCount
-  post.hiddenRepliesCount = postStruct.hiddenRepliesCount
-  post.publicRepliesCount = post.repliesCount - post.hiddenRepliesCount
-  post.sharesCount = postStruct.sharesCount
-  post.upvotesCount = postStruct.upvotesCount
-  post.downvotesCount = postStruct.downvotesCount
-  post.score = postStruct.score
-  if (postContent) {
-    post.title = postContent.title
-    post.image = postContent.image
-    post.summary = postContent.summarize
-    post.slug = postContent.slug
-    post.tagsOriginal = postContent.tags.join(',')
-
-    await insertTagInPostTags(db, postContent.tags, post.postId)
-  }
-
   switch (kind) {
     case 'Comment': {
       const comment = value as Comment
@@ -81,12 +65,30 @@ export async function posts_PostCreated(db: DB, event: SubstrateEvent) {
     }
   }
 
+  post.repliesCount = postStruct.repliesCount
+  post.hiddenRepliesCount = postStruct.hiddenRepliesCount
+  post.publicRepliesCount = post.repliesCount - post.hiddenRepliesCount
+  post.sharesCount = postStruct.sharesCount
+  post.upvotesCount = postStruct.upvotesCount
+  post.downvotesCount = postStruct.downvotesCount
+  post.score = postStruct.score
+  if (postContent) {
+    post.title = postContent.title
+    post.image = postContent.image
+    post.summary = postContent.summarize
+    post.slug = postContent.slug
+    post.tagsOriginal = postContent.tags.join(',')
+
+    const tags = await insertTagInPostTags(db, postContent.tags, post.postId, post)
+    if (!isEmptyArray(tags))
+      post.tags = tags
+  }
+
   await db.save<Post>(post)
 }
 
 export async function posts_PostUpdated(db: DB, event: SubstrateEvent) {
   const [address, id] = event.params
-  console.log('I update post')
 
   if (event.extrinsic === undefined) {
     throw new Error(`No extrinsic has been provided`)
@@ -118,7 +120,9 @@ export async function posts_PostUpdated(db: DB, event: SubstrateEvent) {
     post.slug = postContent.slug
     post.tagsOriginal = postContent.tags.join(',')
 
-    await insertTagInPostTags(db, postContent.tags, post.postId)
+    const tags = await insertTagInPostTags(db, postContent.tags, post.postId, post)
+    if (!isEmptyArray(tags))
+      post.tags = tags
   }
 
   await db.save<Post>(post)
