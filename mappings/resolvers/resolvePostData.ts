@@ -5,7 +5,10 @@ import { createPostSlug } from '@subsocial/utils/slugify';
 import { formatTegs, formatDate } from '../utils';
 
 export type PostCounters = {
-  updatedAtTime: string,
+  createdByAccount: string,
+  createdAtBlock: string,
+  createdAtTime: Date | undefined,
+  updatedAtTime: Date | undefined,
   spaceId: string,
   content: string,
   repliesCount: number,
@@ -30,12 +33,17 @@ export const resolvePostStruct = async (id: PostId): Promise<PostCounters | unde
   const post = await subsocial.findPost({ id })
   if (!post) return
 
-  const { space_id, replies_count, hidden_replies_count, shares_count, upvotes_count, downvotes_count, score, content, updated } = post.struct
+  const { created, space_id, replies_count, hidden_replies_count, shares_count, upvotes_count, downvotes_count, score, content, updated } = post.struct
 
-  const updatedAtTime = updated.isSome ? formatDate(updated.unwrap().time.toString()) : ''
+  const { account, block, time } = created
+  const createdAtTime = !time.isEmpty ? new Date(time.toNumber()) : undefined
+  const updatedAtTime = updated.isSome ? new Date(updated.unwrap().time.toNumber()) : undefined
   const spaceId = space_id.isSome ? space_id.unwrap().toString() : ''
 
   return {
+    createdByAccount: account.toString(),
+    createdAtBlock: block.toString(),
+    createdAtTime,
     updatedAtTime,
     spaceId,
     content: !content.isNone ? content.asIpfs.toString() : '',

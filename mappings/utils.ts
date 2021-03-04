@@ -35,7 +35,7 @@ export const getOrCreatePostTag = async (db: DB, tags: string[], post: Post) => 
       } else {
         const tagsEntity = new Tag
         if (tagsEntity.posts)
-          tagsEntity.spaces.push(post)
+          tagsEntity.posts.push(post)
         else tagsEntity.posts = [post]
         tagsEntity.tag = tag
         await db.save<Tag>(tagsEntity)

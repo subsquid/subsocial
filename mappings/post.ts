@@ -3,8 +3,7 @@ import { Post, PostKind } from '../generated/graphql-server/src/modules/post/pos
 import { PostId, SpaceId } from '@subsocial/types/substrate/interfaces';
 import { resolvePostStruct, resolveIpfsPostData } from './resolvers/resolvePostData';
 import { insertTagInPostTags } from './tag';
-import { stringDateToTimestamp } from './utils';
-import { Space } from '../generated/graphql-server/src/modules/space/space.model';
+  import { Space } from '../generated/graphql-server/src/modules/space/space.model';
 import { resolveSpaceStruct } from './resolvers/resolveSpaceData';
 import { isEmptyArray } from '@subsocial/utils';
 
@@ -26,7 +25,9 @@ export async function posts_PostCreated(db: DB, event: SubstrateEvent) {
   const post = new Post()
 
   const [kind, value] = (Object.entries(event.extrinsic.args[1].value)[0] || []) as [PostKind, string | object]
-
+  post.createdByAccount = address.value.toString()
+  post.createdAtBlock = postStruct.createdAtBlock
+  post.createdAtTime = postStruct.createdAtTime
   post.postId = id.value as string
   const content = postStruct.content
 
@@ -34,7 +35,6 @@ export async function posts_PostCreated(db: DB, event: SubstrateEvent) {
 
   const postContent = await resolveIpfsPostData(content, post.postId)
 
-  post.createdByAccount = address.value.toString()
   post.kind = kind
 
   post.updatedAtTime = postStruct.updatedAtTime
@@ -100,7 +100,8 @@ export async function posts_PostUpdated(db: DB, event: SubstrateEvent) {
   const postStruct = await resolvePostStruct(id.value as unknown as PostId)
   if (!postStruct) return
 
-  if (stringDateToTimestamp(post.updatedAtTime) === stringDateToTimestamp(postStruct.updatedAtTime)) return
+  if (post.updatedAtTime === postStruct.updatedAtTime) return
+  console.log('I update post')
 
   post.createdByAccount = address.value.toString()
 
@@ -130,7 +131,6 @@ export async function posts_PostUpdated(db: DB, event: SubstrateEvent) {
 
 export async function posts_PostShared(db: DB, event: SubstrateEvent) {
   const [address, id] = event.params
-  console.log('I update post')
 
   if (event.extrinsic === undefined) {
     throw new Error(`No extrinsic has been provided`)

@@ -1,25 +1,45 @@
+scalar Date
+
 enum PostKind {
   Comment
   SharedPost
   RegularPost
 }
 
-type Post @entity {
-  postId: String!
-  createdByAccount: String!
-  updatedAtTime: String
+type Space @entity {
+  createdByAccount: String
+  createdAtBlock: String
+  createdAtTime: Date
   spaceId: String!
-  content: String!
-  kind: PostKind!
+  updatedAtTime: Date
+  ownerId: String
+  postsCount: Int
+  publicPostsCount: Int
+  hiddenPostsCount: Int
+  followersCount: Int
+  score: Int
+
+  content: String
+  name: String @fulltext(query: "search")
+  image: String
+  summary: String
+  tagsOriginal: String
+
+  tags: [Tag]!
+}
+
+type Post @entity {
+  createdByAccount: String
+  createdAtBlock: String
+  createdAtTime: Date
+  postId: String!
+  updatedAtTime: Date
+  spaceId: String!
+  content: String
+  kind: PostKind
   parentId: String
   rootPostId: String
   sharedPostId: String
-  title: String @fulltext(query: "search")
-  slug: String
-  summary: String @fulltext(query: "search")
-  image: String
-  tagsOriginal: String
-  tags: [Tag!]!
   repliesCount: Int
   publicRepliesCount: Int
   hiddenRepliesCount: Int
@@ -27,29 +47,21 @@ type Post @entity {
   upvotesCount: Int
   downvotesCount: Int
   score: Int
-}
 
-type Space @entity {
-  spaceId: String!
-  createdByAccount: String
-  updatedAtTime: String
-  ownerId: String
-  content: String!
-  name: String @fulltext(query: "search")
+  title: String @fulltext(query: "search")
+  slug: String
+  summary: String @fulltext(query: "search")
   image: String
-  summary: String
+  canonical: String
   tagsOriginal: String
+
   tags: [Tag!]!
-  postsCount: Int
-  publicPostsCount: Int
-  hiddenPostsCount: Int
-  followersCount: Int
-  score: Int
 }
 
 type Tag @entity {
   id: String!
+  tag: String @fulltext(query: "search")
+
   posts: [Post!]! @derivedFrom(field: "tags")
   spaces: [Space!]! @derivedFrom(field: "tags")
-  tag: String @fulltext(query: "search")
 }

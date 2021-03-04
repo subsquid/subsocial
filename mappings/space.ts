@@ -3,7 +3,6 @@ import { Space } from '../generated/graphql-server/src/modules/space/space.model
 import { SpaceId } from '@subsocial/types/substrate/interfaces';
 import { resolveIpfsSpaceData, resolveSpaceStruct } from './resolvers/resolveSpaceData';
 import { insertTagInSpaceTags } from './tag';
-import { stringDateToTimestamp } from './utils';
 import { isEmptyArray } from '@subsocial/utils';
 
 export async function spaces_SpaceCreated(db: DB, event: SubstrateEvent) {
@@ -19,6 +18,8 @@ export async function spaces_SpaceCreated(db: DB, event: SubstrateEvent) {
   if (!spaceStruct) return
   space.spaceId = id.value as string
   space.createdByAccount = address.value.toString()
+  space.createdAtBlock = spaceStruct.createdAtBlock
+  space.createdAtTime = spaceStruct.createdAtTime
 
   space.ownerId = spaceStruct.owner
 
@@ -59,7 +60,7 @@ export async function spaces_SpaceUpdated(db: DB, event: SubstrateEvent) {
   const spaceStruct = await resolveSpaceStruct(id.value as unknown as SpaceId)
   if (!spaceStruct) return
 
-  if (stringDateToTimestamp(space.updatedAtTime) === stringDateToTimestamp(spaceStruct.updatedAtTime)) return
+  if (space.updatedAtTime === spaceStruct.updatedAtTime) return
 
   space.createdByAccount = address.value.toString()
   space.ownerId = spaceStruct.owner
@@ -83,8 +84,6 @@ export async function spaces_SpaceUpdated(db: DB, event: SubstrateEvent) {
     if (!isEmptyArray(tags))
       space.tags = tags
   }
-
-  console.log("updated")
 
   await db.save<Space>(space)
 }

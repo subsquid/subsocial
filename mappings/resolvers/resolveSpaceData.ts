@@ -4,7 +4,10 @@ import { summarizeMd } from '@subsocial/utils/summarize';
 import { formatTegs, formatDate } from '../utils';
 
 export type SpaceStruct = {
-  updatedAtTime: string,
+  createdByAccount: string,
+  createdAtBlock: string,
+  createdAtTime: Date | undefined,
+  updatedAtTime: Date | undefined,
   owner: string,
   content: string,
   postsCount: number,
@@ -26,11 +29,15 @@ export const resolveSpaceStruct = async (id: SpaceId): Promise<SpaceStruct | und
   const space = await subsocial.findSpace({ id })
   if (!space) return
 
-  const { owner, content, posts_count, hidden_posts_count, followers_count, score, updated } = space.struct
-
-  const updatedAtTime = updated.isSome ? formatDate(updated.unwrap().time.toString()) : ''
+  const { created, owner, content, posts_count, hidden_posts_count, followers_count, score, updated } = space.struct
+  const { account, block, time } = created
+  const createdAtTime = !time.isEmpty ? new Date(time.toNumber()) : undefined
+  const updatedAtTime = updated.isSome ? new Date(updated.unwrap().time.toNumber()) : undefined
 
   return {
+    createdByAccount: account.toString(),
+    createdAtBlock: block.toString(),
+    createdAtTime,
     updatedAtTime,
     owner: owner.toString(),
     content: !content.isNone ? content.asIpfs.toString() : '',
