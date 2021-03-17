@@ -1,20 +1,23 @@
 {
   "compilerOptions": {
-    "declaration": true,
-    "importHelpers": true,
+    "target": "es6",
     "module": "commonjs",
-    "outDir": "lib",
-    "rootDir": "./",
-    "strict": true,
-    "target": "es2017",
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "skipLibCheck": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "allowJs": true,
+    "importHelpers": true,
+    "jsx": "react",
+    "alwaysStrict": true,
     "sourceMap": true,
-    "inlineSources": false,
-    "baseUrl": ".",
-    "esModuleInterop": true
-  },
-  "include": ["mappings/**/*"],
-  "exclude": ["node_modules"]
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitAny": false,
+    "noImplicitThis": false,
+    "strictNullChecks": false,
+    "esModuleInterop": true,
+  }
 }

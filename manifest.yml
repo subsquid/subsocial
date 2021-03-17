@@ -1,0 +1,62 @@
+version: '0.1'
+description: Subsocial manifest
+repository: https://github.com/
+hydraVersion: '2'
+dataSource:
+  kind: substrate
+  chain: subsocial
+entities:
+  - mappings/lib/generated/**/*.model.js
+typegen:
+  metadata:
+    source: ws://arch.subsocial.network:9944
+  events:
+    - posts.PostCreated
+    - posts.PostUpdated
+    - posts.PostShared
+    - spaces.SpaceCreated
+    - spaces.SpaceUpdated
+    - reactions.PostReactionCreated
+    - reactions.PostReactionUpdated
+    - reactions.PostReactionDeleted
+    - spaceFollows.SpaceFollowed
+    - spaceFollows.SpaceUnfollowed
+  calls:
+    - posts.CreatePost
+    - posts.UpdatePost
+    - spaces.CreateSpace
+    - spaces.UpdateSpace
+    - reactions.CreatePostReaction
+    - reactions.UpdatePostReaction
+    - reactions.DeletePostReaction
+    - spaceFollows.FollowSpace
+    - spaceFollows.UnfollowSpace
+  customTypes:
+    lib: '@subsocial/types/substrate/interfaces'
+    typedefsLoc: typedefs.json
+  outDir: ./mappings/generated/types
+mappings:
+  mappingsModule: mappings/lib/mappings
+  imports:
+    - mappings/lib/mappings/generated/types
+  eventHandlers:
+    - event: posts.PostCreated
+      handler: postCreated(DatabaseManager, Posts.PostCreatedEvent)
+    - event: posts.PostUpdated
+      handler: postUpdated(DatabaseManager, Posts.PostUpdatedEvent)
+    - event: posts.PostShared
+      handler: postShared(DatabaseManager, Posts.PostSharedEvent)
+    - event: spaces.SpaceCreated
+      handler: spaceCreated(DatabaseManager, Spaces.SpaceCreatedEvent)
+    - event: spaces.SpaceUpdated
+      handler: spaceUpdated(DatabaseManager, Spaces.SpaceUpdatedEvent)
+    - event: reactions.PostReactionCreated
+      handler: postReactionCreated(DatabaseManager, Reactions.PostReactionCreatedEvent)
+    - event: reactions.PostReactionUpdated
+      handler: postReactionUpdated(DatabaseManager, Reactions.PostReactionUpdatedEvent)
+    - event: reactions.PostReactionDeleted
+      handler: postReactionDeleted(DatabaseManager, Reactions.PostReactionDeletedEvent)
+    - event: spaceFollows.SpaceFollowed
+      handler: spaceFollowed(DatabaseManager, SpaceFollows.SpaceFollowedEvent)
+    - event: spaceFollows.SpaceUnfollowed
+      handler: spaceUnfollowed(DatabaseManager, SpaceFollows.SpaceUnfollowedEvent)

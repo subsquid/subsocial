@@ -1,5 +1,3 @@
-scalar Date
-
 enum PostKind {
   Comment
   SharedPost
@@ -9,9 +7,9 @@ enum PostKind {
 type Space @entity {
   createdByAccount: String
   createdAtBlock: String
-  createdAtTime: Date
+  createdAtTime: DateTime
   spaceId: String!
-  updatedAtTime: Date
+  updatedAtTime: DateTime
   ownerId: String
   postsCount: Int
   publicPostsCount: Int
@@ -31,9 +29,9 @@ type Space @entity {
 type Post @entity {
   createdByAccount: String
   createdAtBlock: String
-  createdAtTime: Date
+  createdAtTime: DateTime
   postId: String!
-  updatedAtTime: Date
+  updatedAtTime: DateTime
   spaceId: String!
   content: String
   kind: PostKind

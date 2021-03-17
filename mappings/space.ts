@@ -1,33 +1,33 @@
-import { SubstrateEvent, DB } from '../generated/hydra-processor'
+import { DatabaseManager } from '@dzlzv/hydra-db-utils'
 import { Space } from '../generated/graphql-server/src/modules/space/space.model'
-import { SpaceId } from '@subsocial/types/substrate/interfaces';
 import { resolveIpfsSpaceData, resolveSpaceStruct } from './resolvers/resolveSpaceData';
 import { insertTagInSpaceTags } from './tag';
 import { isEmptyArray } from '@subsocial/utils';
+import { Spaces } from './generated/types';
 
-export async function spaces_SpaceCreated(db: DB, event: SubstrateEvent) {
+export async function spaceCreated(db: DatabaseManager, event: Spaces.SpaceCreatedEvent) {
   await createSpace(db, event)
 }
 
-export async function spaces_SpaceUpdated(db: DB, event: SubstrateEvent) {
-  const [address, id] = event.params
+export async function spaceUpdated(db: DatabaseManager, event: Spaces.SpaceUpdatedEvent) {
+  const { spaceId: id } = event.data
 
-  if (event.extrinsic === undefined) {
+  if (event.ctx.extrinsic === undefined) {
     throw new Error(`No extrinsic has been provided`)
   }
 
-  let space = await db.get(Space, { where: `space_id = '${id.value.toString()}'` })
+  let space = await db.get(Space, { where: `space_id = '${id.toString()}'` })
   if (!space) {
     await createSpace(db, event)
     return
   }
 
-  const spaceStruct = await resolveSpaceStruct(id.value as unknown as SpaceId)
+  const spaceStruct = await resolveSpaceStruct(id)
   if (!spaceStruct) return
 
   if (space.updatedAtTime === spaceStruct.updatedAtTime) return
 
-  space.createdByAccount = address.value.toString()
+  space.createdByAccount = spaceStruct.createdByAccount
   space.ownerId = spaceStruct.owner
 
   const content = spaceStruct.content
@@ -53,19 +53,19 @@ export async function spaces_SpaceUpdated(db: DB, event: SubstrateEvent) {
   await db.save<Space>(space)
 }
 
-const createSpace = async (db: DB, event: SubstrateEvent) => {
-  const [address, id] = event.params
+const createSpace = async (db: DatabaseManager, event: Spaces.SpaceCreatedEvent | Spaces.SpaceUpdatedEvent) => {
+  const { spaceId: id } = event.data
 
-  if (event.extrinsic === undefined) {
+  if (event.ctx.extrinsic === undefined) {
     throw new Error(`No extrinsic has been provided`)
   }
 
   const space = new Space()
 
-  const spaceStruct = await resolveSpaceStruct(id.value as unknown as SpaceId)
+  const spaceStruct = await resolveSpaceStruct(id)
   if (!spaceStruct) return
-  space.spaceId = id.value as string
-  space.createdByAccount = address.value.toString()
+  space.spaceId = id.toString()
+  space.createdByAccount = spaceStruct.createdByAccount
   space.createdAtBlock = spaceStruct.createdAtBlock
   space.createdAtTime = spaceStruct.createdAtTime
 

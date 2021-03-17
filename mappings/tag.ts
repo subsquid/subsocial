@@ -1,11 +1,11 @@
 import { Tag } from '../generated/graphql-server/src/modules/tag/tag.model';
 import { isEmptyArray } from "@subsocial/utils";
-import { DB } from '../generated/hydra-processor';
+import { DatabaseManager } from '@dzlzv/hydra-db-utils'
 import { getOrCreatePostTag, upsertTags, getOrCreateSpaceTag } from './utils';
 import { Post } from '../generated/graphql-server/src/modules/post/post.model';
 import { Space } from '../generated/graphql-server/src/modules/space/space.model';
 
-export const insertTagInPostTags = async (db: DB, tags: string[], postId: string, post: Post) => {
+export const insertTagInPostTags = async (db: DatabaseManager, tags: string[], postId: string, post: Post) => {
   const postWithRelations = await db.get(Post, { where: { postId }, relations: [`tags`] })
   let postTags: Tag[] = []
 
@@ -40,7 +40,7 @@ export const insertTagInPostTags = async (db: DB, tags: string[], postId: string
   return postTags
 }
 
-export const insertTagInSpaceTags = async (db: DB, tags: string[], spaceId: string, space: Space) => {
+export const insertTagInSpaceTags = async (db: DatabaseManager, tags: string[], spaceId: string, space: Space) => {
   const spaceWithRelations = await db.get(Space, { where: { spaceId }, relations: [`tags`] })
   let postTags: Tag[] = []
 

@@ -1,34 +1,35 @@
-import { SubstrateEvent, DB } from '../generated/hydra-processor'
+import { DatabaseManager } from '@dzlzv/hydra-db-utils'
 import { Post, PostKind } from '../generated/graphql-server/src/modules/post/post.model'
 import { PostId, SpaceId } from '@subsocial/types/substrate/interfaces';
 import { resolvePostStruct, resolveIpfsPostData } from './resolvers/resolvePostData';
 import { insertTagInPostTags } from './tag';
-  import { Space } from '../generated/graphql-server/src/modules/space/space.model';
+import { Space } from '../generated/graphql-server/src/modules/space/space.model';
 import { resolveSpaceStruct } from './resolvers/resolveSpaceData';
 import { isEmptyArray } from '@subsocial/utils';
+import { Posts } from './generated/types'
 
 type Comment = {
   root_post_id: string,
   parent_id?: string
 }
 
-export async function posts_PostCreated(db: DB, event: SubstrateEvent) {
-  const [address, id] = event.params
+export async function postCreated(db: DatabaseManager, event: Posts.PostCreatedEvent) {
+  const { postId: id } = event.data
 
-  if (event.extrinsic === undefined) {
+  if (event.ctx.extrinsic === undefined) {
     throw new Error(`No extrinsic has been provided`)
   }
 
-  const postStruct = await resolvePostStruct(id.value as unknown as PostId)
+  const postStruct = await resolvePostStruct(id)
   if (!postStruct) return
 
   const post = new Post()
 
-  const [kind, value] = (Object.entries(event.extrinsic.args[1].value)[0] || []) as [PostKind, string | object]
-  post.createdByAccount = address.value.toString()
+  const [kind, value] = (Object.entries(event.ctx.extrinsic.args[1].value)[0] || []) as [PostKind, string | object]
+  post.createdByAccount = postStruct.createdByAccount
   post.createdAtBlock = postStruct.createdAtBlock
   post.createdAtTime = postStruct.createdAtTime
-  post.postId = id.value as string
+  post.postId = id.toString()
   const content = postStruct.content
 
   post.content = content
@@ -87,23 +88,22 @@ export async function posts_PostCreated(db: DB, event: SubstrateEvent) {
   await db.save<Post>(post)
 }
 
-export async function posts_PostUpdated(db: DB, event: SubstrateEvent) {
-  const [address, id] = event.params
+export async function postUpdated(db: DatabaseManager, event: Posts.PostUpdatedEvent) {
+  const { postId: id } = event.data
 
-  if (event.extrinsic === undefined) {
+  if (event.ctx.extrinsic === undefined) {
     throw new Error(`No extrinsic has been provided`)
   }
 
-  const post = await db.get(Post, { where: `post_id = '${id.value.toString()}'` })
+  const post = await db.get(Post, { where: `post_id = '${id.toString()}'` })
   if (!post) return
 
-  const postStruct = await resolvePostStruct(id.value as unknown as PostId)
+  const postStruct = await resolvePostStruct(id as unknown as PostId)
   if (!postStruct) return
 
   if (post.updatedAtTime === postStruct.updatedAtTime) return
-  console.log('I update post')
 
-  post.createdByAccount = address.value.toString()
+  post.createdByAccount = postStruct.createdByAccount
 
   const content = postStruct.content
   post.content = content
@@ -129,17 +129,17 @@ export async function posts_PostUpdated(db: DB, event: SubstrateEvent) {
   await db.save<Post>(post)
 }
 
-export async function posts_PostShared(db: DB, event: SubstrateEvent) {
-  const [address, id] = event.params
+export async function postShared(db: DatabaseManager, event: Posts.PostSharedEvent) {
+  const { postId: id } = event.data
 
-  if (event.extrinsic === undefined) {
+  if (event.ctx.extrinsic === undefined) {
     throw new Error(`No extrinsic has been provided`)
   }
 
-  const post = await db.get(Post, { where: `post_id = '${id.value.toString()}'` })
+  const post = await db.get(Post, { where: `post_id = '${id.toString()}'` })
   if (!post) return
 
-  const postStruct = await resolvePostStruct(id.value as unknown as PostId)
+  const postStruct = await resolvePostStruct(id as unknown as PostId)
   if (!postStruct) return
 
   post.sharesCount = postStruct.sharesCount
@@ -147,7 +147,7 @@ export async function posts_PostShared(db: DB, event: SubstrateEvent) {
   await db.save<Post>(post)
 }
 
-const updateReplyCount = async (db: DB, postId: PostId) => {
+const updateReplyCount = async (db: DatabaseManager, postId: PostId) => {
   const post = await db.get(Post, { where: `post_id = '${postId.toString()}'` })
   if (!post) return
 
@@ -161,7 +161,7 @@ const updateReplyCount = async (db: DB, postId: PostId) => {
   await db.save<Post>(post)
 }
 
-const updateCountersInSpace = async (db: DB, spaceId: SpaceId) => {
+const updateCountersInSpace = async (db: DatabaseManager, spaceId: SpaceId) => {
   const space = await db.get(Space, { where: `space_id = '${spaceId.toString()}'` })
   if (!space) return
 

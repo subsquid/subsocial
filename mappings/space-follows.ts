@@ -1,29 +1,30 @@
-import { SubstrateEvent, DB } from '../generated/hydra-processor'
+import { DatabaseManager } from '@dzlzv/hydra-db-utils'
 import { Space } from '../generated/graphql-server/src/modules/space/space.model';
 import { resolveSpaceStruct } from './resolvers/resolveSpaceData';
 import { SpaceId } from '@subsocial/types/substrate/interfaces';
+import { SpaceFollows } from './generated/types';
 
-export async function spaceFollows_SpaceFollowed(db: DB, event: SubstrateEvent) {
-  const [address, id] = event.params
+export async function spaceFollowed(db: DatabaseManager, event: SpaceFollows.SpaceFollowedEvent) {
+  const { spaceId: id } = event.data
 
-  if (event.extrinsic === undefined) {
+  if (event.ctx.extrinsic === undefined) {
     throw new Error(`No extrinsic has been provided`)
   }
 
-  await spaceFollowedOrUnfollowed(db, id.value as unknown as SpaceId)
+  await spaceFollowedOrUnfollowed(db, id)
 }
 
-export async function spaceFollows_SpaceUnfollowed(db: DB, event: SubstrateEvent) {
-  const [address, id] = event.params
+export async function spaceUnfollowed(db: DatabaseManager, event: SpaceFollows.SpaceUnfollowedEvent) {
+  const { spaceId: id } = event.data
 
-  if (event.extrinsic === undefined) {
+  if (event.ctx.extrinsic === undefined) {
     throw new Error(`No extrinsic has been provided`)
   }
 
-  await spaceFollowedOrUnfollowed(db, id.value as unknown as SpaceId)
+  await spaceFollowedOrUnfollowed(db, id)
 }
 
-const spaceFollowedOrUnfollowed = async (db: DB, spaceId: SpaceId) => {
+const spaceFollowedOrUnfollowed = async (db: DatabaseManager, spaceId: SpaceId) => {
   const space = await db.get(Space, { where: `space_id = '${spaceId.toString()}'` })
   if (!space) return
 

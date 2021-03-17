@@ -1,5 +1,5 @@
 import { Tag } from '../generated/graphql-server/src/modules/tag/tag.model';
-import { DB } from '../generated/hydra-processor';
+import { DatabaseManager } from '@dzlzv/hydra-db-utils'
 import dayjs from 'dayjs'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 import { Post } from '../generated/graphql-server/src/modules/post/post.model';
@@ -23,7 +23,7 @@ export const upsertTags = (oldT: string[], modT: string[]) => {
   return { tagsAdd, tagsRemove }
 }
 
-export const getOrCreatePostTag = async (db: DB, tags: string[], post: Post) => {
+export const getOrCreatePostTag = async (db: DatabaseManager, tags: string[], post: Post) => {
   const arr: Tag[] = []
   for (const tag of tags) {
     if (tag && tag !== ' ') {
@@ -46,7 +46,7 @@ export const getOrCreatePostTag = async (db: DB, tags: string[], post: Post) => 
   return arr
 }
 
-export const getOrCreateSpaceTag = async (db: DB, tags: string[], space: Space) => {
+export const getOrCreateSpaceTag = async (db: DatabaseManager, tags: string[], space: Space) => {
   const arr: Tag[] = []
   for (const tag of tags) {
     if (tag && tag !== ' ') {
