@@ -18,7 +18,7 @@ type Space @entity {
   score: Int
 
   content: String
-  name: String @fulltext(query: "search")
+  name: String
   image: String
   summary: String
   tagsOriginal: String
@@ -46,9 +46,9 @@ type Post @entity {
   downvotesCount: Int
   score: Int
 
-  title: String @fulltext(query: "search")
+  title: String
   slug: String
-  summary: String @fulltext(query: "search")
+  summary: String
   image: String
   canonical: String
   tagsOriginal: String
@@ -58,7 +58,7 @@ type Post @entity {
 
 type Tag @entity {
   id: String!
-  tag: String @fulltext(query: "search")
+  tag: String
 
   posts: [Post!]! @derivedFrom(field: "tags")
   spaces: [Space!]! @derivedFrom(field: "tags")
