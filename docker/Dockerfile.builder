@@ -1,18 +1,20 @@
-FROM node:12-alpine 
+FROM node:12-alpine
 
 RUN mkdir -p /home/hydra-builder && chown -R node:node /home/hydra-builder
 
 WORKDIR /home/hydra-builder
 
 COPY ./mappings ./mappings
+COPY ./connection ./connection
 COPY ./*.yml ./
 COPY ./*.json ./
 COPY ./*.graphql ./
 COPY ./.env ./
+COPY ./env.ts .
 
-RUN yarn 
-RUN yarn codegen 
-RUN yarn typegen 
+RUN yarn
+RUN yarn codegen
+RUN yarn typegen
 RUN yarn workspace sample-mappings install
 RUN yarn mappings:build
 
