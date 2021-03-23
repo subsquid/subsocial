@@ -1,39 +1,39 @@
 version: "3.4"
-
 services:
-  db:
-    image: postgres:12
-    restart: always
-    ports:
-      - "${DB_PORT}:5432"
+  postgres:
+    image: postgres:12.4
+    restart: on-failure
+    command: -p ${DB_PORT}
     volumes:
       - /var/lib/postgresql/data
+    ports:
+      - "${DB_PORT}"
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASS}
       POSTGRES_DB: ${DB_NAME}
-  
+
   query-node:
-    image: query-node:latest
-    restart: unless-stopped
-    build: 
+    image: subsocial-query-node:latest
+    restart: on-failure
+    build:
       dockerfile: docker/Dockerfile.query-node
       context: ./
     env_file:
       - .env
     environment:
-      DB_HOST: db
+      DB_HOST: postgres
     ports:
       - "8080:${GRAPHQL_SERVER_PORT}"
-    depends_on: 
-      - db
-    
+    depends_on:
+      - postgres
+
 
   processor:
-    image: hydra-processor:latest
-    restart: unless-stopped
-    network_mode: host # to be able to connect to the indexer at localhost
-    build: 
+    image: subsocial-hydra-processor:latest
+    restart: on-failure
+    network_mode: host
+    build:
       dockerfile: docker/Dockerfile.processor
       context: ./
     env_file:
@@ -41,5 +41,7 @@ services:
     environment:
       - POLL_INTERVAL_MS=300
       - DEBUG=hydra-processor:*
-    command: ["yarn", "processor:start"]
+    command: sh -c "yarn codegen && yarn db:bootstrap && yarn processor:start"
+    depends_on:
+      - postgres
 

@@ -1,9 +1,8 @@
 version: "3.4"
-
 services:
   indexer-db:
     image: postgres:12
-    restart: always
+    restart: on-failure
     ports:
       - "${DB_PORT}"
     volumes:
@@ -44,9 +43,9 @@ services:
       - WARTHOG_STARTER_DB_PORT=${DB_PORT}
       - WARTHOG_STARTER_DB_USERNAME=${DB_USER}
       - WARTHOG_STARTER_REDIS_URI=redis://redis:6379/0
-      - PORT=4000
+      - PORT=4002
     ports:
-      - "4002:4000" #
+      - "4002"
     depends_on:
       - redis
       - indexer
