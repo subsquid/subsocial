@@ -6,7 +6,7 @@ enum PostKind {
 
 type Space @entity {
   createdByAccount: String
-  createdAtBlock: String
+  createdAtBlock: BigInt
   createdAtTime: DateTime
   spaceId: String!
   updatedAtTime: DateTime
@@ -28,7 +28,7 @@ type Space @entity {
 
 type Post @entity {
   createdByAccount: String
-  createdAtBlock: String
+  createdAtBlock: BigInt
   createdAtTime: DateTime
   postId: String!
   updatedAtTime: DateTime

@@ -1,11 +1,12 @@
 import { SpaceId } from "@subsocial/types/substrate/interfaces";
 import { resolveSubsocialApi } from '../../connection/subsocial';
 import { summarizeMd } from '@subsocial/utils/summarize';
-import { formatTegs, formatDate } from '../utils';
+import { formatTegs } from '../utils';
+import BN from 'bn.js';
 
 export type SpaceStruct = {
   createdByAccount: string,
-  createdAtBlock: string,
+  createdAtBlock: BN,
   createdAtTime: Date | undefined,
   updatedAtTime: Date | undefined,
   owner: string,
@@ -36,7 +37,7 @@ export const resolveSpaceStruct = async (id: SpaceId): Promise<SpaceStruct | und
 
   return {
     createdByAccount: account.toString(),
-    createdAtBlock: block.toString(),
+    createdAtBlock: new BN(block),
     createdAtTime,
     updatedAtTime,
     owner: owner.toString(),

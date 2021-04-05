@@ -20,6 +20,8 @@ export async function postCreated(db: DatabaseManager, event: Posts.PostCreatedE
     throw new Error(`No extrinsic has been provided`)
   }
 
+  
+
   const postStruct = await resolvePostStruct(id)
   if (!postStruct) return
 
