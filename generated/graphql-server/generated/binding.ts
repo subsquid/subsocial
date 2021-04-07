@@ -65,6 +65,8 @@ export type PostOrderByInput =   'createdAt_ASC' |
   'createdAtBlock_DESC' |
   'createdAtTime_ASC' |
   'createdAtTime_DESC' |
+  'createdOnDate_ASC' |
+  'createdOnDate_DESC' |
   'postId_ASC' |
   'postId_DESC' |
   'updatedAtTime_ASC' |
@@ -120,6 +122,8 @@ export type SpaceOrderByInput =   'createdAt_ASC' |
   'createdAtBlock_DESC' |
   'createdAtTime_ASC' |
   'createdAtTime_DESC' |
+  'createdOnDate_ASC' |
+  'createdOnDate_DESC' |
   'spaceId_ASC' |
   'spaceId_DESC' |
   'updatedAtTime_ASC' |
@@ -184,6 +188,7 @@ export interface PostCreateInput {
   createdByAccount?: String | null
   createdAtBlock?: BigInt | null
   createdAtTime?: DateTime | null
+  createdOnDate?: DateTime | null
   postId: String
   updatedAtTime?: DateTime | null
   spaceId: String
@@ -211,6 +216,7 @@ export interface PostUpdateInput {
   createdByAccount?: String | null
   createdAtBlock?: BigInt | null
   createdAtTime?: DateTime | null
+  createdOnDate?: DateTime | null
   postId?: String | null
   updatedAtTime?: DateTime | null
   spaceId?: String | null
@@ -275,6 +281,11 @@ export interface PostWhereInput {
   createdAtTime_lte?: DateTime | null
   createdAtTime_gt?: DateTime | null
   createdAtTime_gte?: DateTime | null
+  createdOnDate_eq?: DateTime | null
+  createdOnDate_lt?: DateTime | null
+  createdOnDate_lte?: DateTime | null
+  createdOnDate_gt?: DateTime | null
+  createdOnDate_gte?: DateTime | null
   postId_eq?: String | null
   postId_contains?: String | null
   postId_startsWith?: String | null
@@ -394,6 +405,7 @@ export interface SpaceCreateInput {
   createdByAccount?: String | null
   createdAtBlock?: BigInt | null
   createdAtTime?: DateTime | null
+  createdOnDate?: DateTime | null
   spaceId: String
   updatedAtTime?: DateTime | null
   ownerId?: String | null
@@ -413,6 +425,7 @@ export interface SpaceUpdateInput {
   createdByAccount?: String | null
   createdAtBlock?: BigInt | null
   createdAtTime?: DateTime | null
+  createdOnDate?: DateTime | null
   spaceId?: String | null
   updatedAtTime?: DateTime | null
   ownerId?: String | null
@@ -469,6 +482,11 @@ export interface SpaceWhereInput {
   createdAtTime_lte?: DateTime | null
   createdAtTime_gt?: DateTime | null
   createdAtTime_gte?: DateTime | null
+  createdOnDate_eq?: DateTime | null
+  createdOnDate_lt?: DateTime | null
+  createdOnDate_lte?: DateTime | null
+  createdOnDate_gt?: DateTime | null
+  createdOnDate_gte?: DateTime | null
   spaceId_eq?: String | null
   spaceId_contains?: String | null
   spaceId_startsWith?: String | null
@@ -645,6 +663,7 @@ export interface Post extends BaseGraphQLObject {
   createdByAccount?: String | null
   createdAtBlock?: BigInt | null
   createdAtTime?: DateTime | null
+  createdOnDate?: DateTime | null
   postId: String
   updatedAtTime?: DateTime | null
   spaceId: String
@@ -699,6 +718,7 @@ export interface Space extends BaseGraphQLObject {
   createdByAccount?: String | null
   createdAtBlock?: BigInt | null
   createdAtTime?: DateTime | null
+  createdOnDate?: DateTime | null
   spaceId: String
   updatedAtTime?: DateTime | null
   ownerId?: String | null

@@ -22,11 +22,15 @@ const querySubnet = `
   	parent_id varchar(48) NOT null,
   	child_space_id varchar(48) not null,
   	primary key (parent_id, child_space_id)
-  )
+  );
+
+  CREATE INDEX IF NOT EXISTS space_created_on_date_idx ON public.space (created_on_date);
+  CREATE INDEX IF NOT EXISTS post_created_on_date_idx ON public.post (created_on_date)
 `
 
 const query = `
   insert into public.subnet values ($1, $2)
+  ON CONFLICT (parent_id, child_space_id) DO NOTHING;
 `
 
 const setDependency = async () => {

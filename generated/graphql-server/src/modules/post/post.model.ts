@@ -32,6 +32,11 @@ export class Post extends BaseModel {
   })
   createdAtTime?: Date;
 
+  @DateTimeField({
+    nullable: true
+  })
+  createdOnDate?: Date;
+
   @StringField({})
   postId!: string;
 

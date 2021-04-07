@@ -4,6 +4,7 @@ import { resolveIpfsSpaceData, resolveSpaceStruct } from './resolvers/resolveSpa
 import { insertTagInSpaceTags } from './tag';
 import { isEmptyArray } from '@subsocial/utils';
 import { Spaces } from './generated/types';
+import dayjs from 'dayjs';
 
 export async function spaceCreated(db: DatabaseManager, event: Spaces.SpaceCreatedEvent) {
   await createSpace(db, event)
@@ -68,6 +69,7 @@ const createSpace = async (db: DatabaseManager, event: Spaces.SpaceCreatedEvent 
   space.createdByAccount = spaceStruct.createdByAccount
   space.createdAtBlock = spaceStruct.createdAtBlock
   space.createdAtTime = spaceStruct.createdAtTime
+  space.createdOnDate = dayjs(dayjs(spaceStruct.createdAtTime).format("YYYY-MM-DD")).toDate()
 
   space.ownerId = spaceStruct.owner
 
