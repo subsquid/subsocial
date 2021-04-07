@@ -2,8 +2,10 @@ import { ArgsType, Field, Args, Query, Resolver } from 'type-graphql';
 import { Post } from './post.model';
 import { Fields, PaginationArgs } from 'warthog';
 import { getRepository } from 'typeorm';
-import { camelToSnakeCase, parseOrderBy, parseWhere } from '../../utils';
+import { camelToSnakeCase, parseOffset, parseOrderBy, parseWhere, parseLimit } from '../../utils';
 import { PostOrderByEnum, PostWhereInput } from '../../../generated';
+
+const named = require('yesql').pg;
 
 @ArgsType()
 export class CustomSpaceConnectionWhereArgs extends PaginationArgs {
@@ -26,18 +28,22 @@ export class SpaceResolver {
   ): Promise<Post[]> {
     const subnetQueryPart = subnetId
       ? `
-        where (space_id in (select child_space_id from subnet where parent_id = '${subnetId}') or root_post_id in
+        (space_id in (select child_space_id from subnet where parent_id = :subnetId) or root_post_id in
           (select post_id from public.post where space_id in
-            (select child_space_id from subnet where parent_id = '${subnetId}')))`
+            (select child_space_id from subnet where parent_id = :subnetId)))`
       : '';
 
-    const result: Post[] = await getRepository(Post).query(`
+    const params = { subnetId, offset, limit };
+
+    const result: Post[] = await getRepository(Post).query(
+      named(`
       select ${camelToSnakeCase(fields, 'select')} from public.post
-      ${subnetQueryPart} ${parseWhere(where, subnetQueryPart)}
+      ${parseWhere(where, subnetQueryPart)}
       ${parseOrderBy(orderBy)}
-      ${offset ? `offset ${offset}` : ''}
-      ${limit ? `limit ${limit}` : ''}
-    `);
+      ${parseOffset(offset)}
+      ${parseLimit(limit)}
+    `)(params)
+    );
 
     return result;
   }

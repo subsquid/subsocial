@@ -405,9 +405,11 @@ type Query {
   posts(offset: Int, limit: Int = 50, where: PostWhereInput, orderBy: PostOrderByInput): [Post!]!
   post(where: PostWhereUniqueInput!): Post
   postsConnection(first: Int, after: String, last: Int, before: String, where: PostWhereInput, orderBy: PostOrderByInput): PostConnection!
+  postsWithSubnet(offset: Int, limit: Int = 50, where: PostWhereInput, subnetId: String, orderBy: [PostOrderByInput!]): [Post!]!
   spaces(offset: Int, limit: Int = 50, where: SpaceWhereInput, orderBy: SpaceOrderByInput): [Space!]!
   space(where: SpaceWhereUniqueInput!): Space
   spacesConnection(first: Int, after: String, last: Int, before: String, where: SpaceWhereInput, orderBy: SpaceOrderByInput): SpaceConnection!
+  spacesWithSubnet(offset: Int, limit: Int = 50, where: SpaceWhereInput, subnetId: String, orderBy: [SpaceOrderByInput!]): [Space!]!
   tags(offset: Int, limit: Int = 50, where: TagWhereInput, orderBy: TagOrderByInput): [Tag!]!
   tag(where: TagWhereUniqueInput!): Tag
   tagsConnection(first: Int, after: String, last: Int, before: String, where: TagWhereInput, orderBy: TagOrderByInput): TagConnection!

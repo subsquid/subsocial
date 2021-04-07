@@ -8864,6 +8864,11 @@ yarn@^1.21.1:
   resolved "https://registry.yarnpkg.com/yarn/-/yarn-1.22.10.tgz#c99daa06257c80f8fa2c3f1490724e394c26b18c"
   integrity sha512-IanQGI9RRPAN87VGTF7zs2uxkSyQSrSPsju0COgbsKQOOXr5LtcVPeyXWgwVa0ywG3d8dg6kSYKGBuYK021qeA==
 
+yesql@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/yesql/-/yesql-5.0.0.tgz#aa6f206ff0d77618404b37567b66ca82a76bd8c8"
+  integrity sha512-ua4Ok0hv6Q+KPn2oJrGNRfsubYnKPLJAt6kvawG6Aqb6yg4Cm1T2JIBveFNx0aDhCIansNVq/9MFzuvmNdnJnw==
+
 yn@3.1.1:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/yn/-/yn-3.1.1.tgz#1e87401a09d767c1d5eab26a6e4c185182d2eb50"

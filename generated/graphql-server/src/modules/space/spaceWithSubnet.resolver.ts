@@ -3,7 +3,9 @@ import { SpaceOrderByEnum, SpaceWhereInput } from '../../../generated';
 import { Space } from './space.model';
 import { Fields, PaginationArgs } from 'warthog';
 import { getRepository } from 'typeorm';
-import { camelToSnakeCase, parseOrderBy, parseWhere } from '../../utils';
+import { camelToSnakeCase, parseLimit, parseOffset, parseOrderBy, parseWhere } from '../../utils';
+
+const named = require('yesql').pg;
 
 @ArgsType()
 export class CustomSpaceConnectionWhereArgs extends PaginationArgs {
@@ -25,16 +27,19 @@ export class SpaceResolver {
     @Fields() fields: string[]
   ): Promise<Space[]> {
     const subnetQueryPart = subnetId
-      ? `where space_id in (select child_space_id from subnet where parent_id = '${subnetId}')`
+      ? `space_id in (select child_space_id from subnet where parent_id = :subnetId)`
       : '';
 
-    const result: Space[] = await getRepository(Space).query(`
-      select ${camelToSnakeCase(fields, 'select')} from public.space
-      ${subnetQueryPart} ${parseWhere(where, subnetQueryPart)}
-      ${parseOrderBy(orderBy)}
-      ${offset ? `offset ${offset}` : ''}
-      ${limit ? `limit ${limit}` : ''}
-    `);
+    const params = { subnetId, offset, limit };
+
+    const result: Space[] = await getRepository(Space).query(named(`
+        select ${camelToSnakeCase(fields, 'select')} from public.space
+        ${parseWhere(where, subnetQueryPart)}
+        ${parseOrderBy(orderBy)}
+        ${parseOffset(offset)}
+        ${parseLimit(limit)}
+    `)(params)
+    );
 
     return result;
   }
