@@ -12,10 +12,6 @@ const pgConf: any = {
 
 const pg = new Pool(pgConf)
 
-type SpaceIdsRecord = {
-  spaceIds: Record<string, string[]>
-}
-
 const querySubnet = `
   CREATE TABLE IF NOT EXISTS public.subnet
   (
@@ -24,8 +20,8 @@ const querySubnet = `
   	primary key (parent_id, child_space_id)
   );
 
-  CREATE INDEX IF NOT EXISTS space_created_on_date_idx ON public.space (created_on_date);
-  CREATE INDEX IF NOT EXISTS post_created_on_date_idx ON public.post (created_on_date)
+  CREATE INDEX IF NOT EXISTS space_created_on_day_idx ON public.space (created_on_day);
+  CREATE INDEX IF NOT EXISTS post_created_on_day_idx ON public.post (created_on_day)
 `
 
 const query = `

@@ -8,7 +8,7 @@ type Space @entity {
   createdByAccount: String
   createdAtBlock: BigInt
   createdAtTime: DateTime
-  createdOnDate: DateTime
+  createdOnDay: DateTime
   spaceId: String!
   updatedAtTime: DateTime
   ownerId: String
@@ -31,7 +31,7 @@ type Post @entity {
   createdByAccount: String
   createdAtBlock: BigInt
   createdAtTime: DateTime
-  createdOnDate: DateTime
+  createdOnDay: DateTime
   postId: String!
   updatedAtTime: DateTime
   spaceId: String!

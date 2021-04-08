@@ -1,10 +1,10 @@
 import { DatabaseManager } from '@dzlzv/hydra-db-utils'
 import { Space } from '../generated/graphql-server/src/modules/space/space.model'
-import { resolveIpfsSpaceData, resolveSpaceStruct } from './resolvers/resolveSpaceData';
-import { insertTagInSpaceTags } from './tag';
-import { isEmptyArray } from '@subsocial/utils';
-import { Spaces } from './generated/types';
-import dayjs from 'dayjs';
+import { resolveIpfsSpaceData, resolveSpaceStruct } from './resolvers/resolveSpaceData'
+import { insertTagInSpaceTags } from './tag'
+import { isEmptyArray } from '@subsocial/utils'
+import { Spaces } from './generated/types'
+import { getDateWithoutTime } from './utils';
 
 export async function spaceCreated(db: DatabaseManager, event: Spaces.SpaceCreatedEvent) {
   await createSpace(db, event)
@@ -47,8 +47,7 @@ export async function spaceUpdated(db: DatabaseManager, event: Spaces.SpaceUpdat
     space.tagsOriginal = spaceContent.tags.join(',')
 
     const tags = await insertTagInSpaceTags(db, spaceContent.tags, space.spaceId, space)
-    if (!isEmptyArray(tags))
-      space.tags = tags
+    if (!isEmptyArray(tags)) space.tags = tags
   }
 
   await db.save<Space>(space)
@@ -69,7 +68,7 @@ const createSpace = async (db: DatabaseManager, event: Spaces.SpaceCreatedEvent 
   space.createdByAccount = spaceStruct.createdByAccount
   space.createdAtBlock = spaceStruct.createdAtBlock
   space.createdAtTime = spaceStruct.createdAtTime
-  space.createdOnDate = dayjs(dayjs(spaceStruct.createdAtTime).format("YYYY-MM-DD")).toDate()
+  space.createdOnDay = getDateWithoutTime(spaceStruct.createdAtTime)
 
   space.ownerId = spaceStruct.owner
 
@@ -90,8 +89,7 @@ const createSpace = async (db: DatabaseManager, event: Spaces.SpaceCreatedEvent 
     space.tagsOriginal = spaceContent.tags.join(',')
 
     const tags = await insertTagInSpaceTags(db, spaceContent.tags, space.spaceId, space)
-    if (!isEmptyArray(tags))
-      space.tags = tags
+    if (!isEmptyArray(tags)) space.tags = tags
   }
 
   await db.save<Space>(space)

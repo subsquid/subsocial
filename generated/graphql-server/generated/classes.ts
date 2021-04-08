@@ -51,8 +51,8 @@ export enum SpaceOrderByEnum {
   createdAtTime_ASC = "createdAtTime_ASC",
   createdAtTime_DESC = "createdAtTime_DESC",
 
-  createdOnDate_ASC = "createdOnDate_ASC",
-  createdOnDate_DESC = "createdOnDate_DESC",
+  createdOnDay_ASC = "createdOnDay_ASC",
+  createdOnDay_DESC = "createdOnDay_DESC",
 
   spaceId_ASC = "spaceId_ASC",
   spaceId_DESC = "spaceId_DESC",
@@ -221,19 +221,19 @@ export class SpaceWhereInput {
   createdAtTime_gte?: DateTimeString;
 
   @TypeGraphQLField(() => DateTime, { nullable: true })
-  createdOnDate_eq?: DateTimeString;
+  createdOnDay_eq?: DateTimeString;
 
   @TypeGraphQLField(() => DateTime, { nullable: true })
-  createdOnDate_lt?: DateTimeString;
+  createdOnDay_lt?: DateTimeString;
 
   @TypeGraphQLField(() => DateTime, { nullable: true })
-  createdOnDate_lte?: DateTimeString;
+  createdOnDay_lte?: DateTimeString;
 
   @TypeGraphQLField(() => DateTime, { nullable: true })
-  createdOnDate_gt?: DateTimeString;
+  createdOnDay_gt?: DateTimeString;
 
   @TypeGraphQLField(() => DateTime, { nullable: true })
-  createdOnDate_gte?: DateTimeString;
+  createdOnDay_gte?: DateTimeString;
 
   @TypeGraphQLField({ nullable: true })
   spaceId_eq?: string;
@@ -464,7 +464,7 @@ export class SpaceCreateInput {
   createdAtTime?: DateTimeString;
 
   @TypeGraphQLField(() => DateTime, { nullable: true })
-  createdOnDate?: DateTimeString;
+  createdOnDay?: DateTimeString;
 
   @TypeGraphQLField()
   spaceId!: string;
@@ -518,7 +518,7 @@ export class SpaceUpdateInput {
   createdAtTime?: DateTimeString;
 
   @TypeGraphQLField(() => DateTime, { nullable: true })
-  createdOnDate?: DateTimeString;
+  createdOnDay?: DateTimeString;
 
   @TypeGraphQLField({ nullable: true })
   spaceId?: string;
@@ -747,8 +747,8 @@ export enum PostOrderByEnum {
   createdAtTime_ASC = "createdAtTime_ASC",
   createdAtTime_DESC = "createdAtTime_DESC",
 
-  createdOnDate_ASC = "createdOnDate_ASC",
-  createdOnDate_DESC = "createdOnDate_DESC",
+  createdOnDay_ASC = "createdOnDay_ASC",
+  createdOnDay_DESC = "createdOnDay_DESC",
 
   postId_ASC = "postId_ASC",
   postId_DESC = "postId_DESC",
@@ -941,19 +941,19 @@ export class PostWhereInput {
   createdAtTime_gte?: DateTimeString;
 
   @TypeGraphQLField(() => DateTime, { nullable: true })
-  createdOnDate_eq?: DateTimeString;
+  createdOnDay_eq?: DateTimeString;
 
   @TypeGraphQLField(() => DateTime, { nullable: true })
-  createdOnDate_lt?: DateTimeString;
+  createdOnDay_lt?: DateTimeString;
 
   @TypeGraphQLField(() => DateTime, { nullable: true })
-  createdOnDate_lte?: DateTimeString;
+  createdOnDay_lte?: DateTimeString;
 
   @TypeGraphQLField(() => DateTime, { nullable: true })
-  createdOnDate_gt?: DateTimeString;
+  createdOnDay_gt?: DateTimeString;
 
   @TypeGraphQLField(() => DateTime, { nullable: true })
-  createdOnDate_gte?: DateTimeString;
+  createdOnDay_gte?: DateTimeString;
 
   @TypeGraphQLField({ nullable: true })
   postId_eq?: string;
@@ -1301,7 +1301,7 @@ export class PostCreateInput {
   createdAtTime?: DateTimeString;
 
   @TypeGraphQLField(() => DateTime, { nullable: true })
-  createdOnDate?: DateTimeString;
+  createdOnDay?: DateTimeString;
 
   @TypeGraphQLField()
   postId!: string;
@@ -1379,7 +1379,7 @@ export class PostUpdateInput {
   createdAtTime?: DateTimeString;
 
   @TypeGraphQLField(() => DateTime, { nullable: true })
-  createdOnDate?: DateTimeString;
+  createdOnDay?: DateTimeString;
 
   @TypeGraphQLField({ nullable: true })
   postId?: string;

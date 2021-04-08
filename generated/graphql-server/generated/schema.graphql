@@ -86,7 +86,7 @@ type Post implements BaseGraphQLObject {
   createdByAccount: String
   createdAtBlock: BigInt
   createdAtTime: DateTime
-  createdOnDate: DateTime
+  createdOnDay: DateTime
   postId: String!
   updatedAtTime: DateTime
   spaceId: String!
@@ -121,7 +121,7 @@ input PostCreateInput {
   createdByAccount: String
   createdAtBlock: BigInt
   createdAtTime: DateTime
-  createdOnDate: DateTime
+  createdOnDay: DateTime
   postId: String!
   updatedAtTime: DateTime
   spaceId: String!
@@ -169,8 +169,8 @@ enum PostOrderByInput {
   createdAtBlock_DESC
   createdAtTime_ASC
   createdAtTime_DESC
-  createdOnDate_ASC
-  createdOnDate_DESC
+  createdOnDay_ASC
+  createdOnDay_DESC
   postId_ASC
   postId_DESC
   updatedAtTime_ASC
@@ -219,7 +219,7 @@ input PostUpdateInput {
   createdByAccount: String
   createdAtBlock: BigInt
   createdAtTime: DateTime
-  createdOnDate: DateTime
+  createdOnDay: DateTime
   postId: String
   updatedAtTime: DateTime
   spaceId: String
@@ -284,11 +284,11 @@ input PostWhereInput {
   createdAtTime_lte: DateTime
   createdAtTime_gt: DateTime
   createdAtTime_gte: DateTime
-  createdOnDate_eq: DateTime
-  createdOnDate_lt: DateTime
-  createdOnDate_lte: DateTime
-  createdOnDate_gt: DateTime
-  createdOnDate_gte: DateTime
+  createdOnDay_eq: DateTime
+  createdOnDay_lt: DateTime
+  createdOnDay_lte: DateTime
+  createdOnDay_gt: DateTime
+  createdOnDay_gte: DateTime
   postId_eq: String
   postId_contains: String
   postId_startsWith: String
@@ -437,7 +437,7 @@ type Space implements BaseGraphQLObject {
   createdByAccount: String
   createdAtBlock: BigInt
   createdAtTime: DateTime
-  createdOnDate: DateTime
+  createdOnDay: DateTime
   spaceId: String!
   updatedAtTime: DateTime
   ownerId: String
@@ -464,7 +464,7 @@ input SpaceCreateInput {
   createdByAccount: String
   createdAtBlock: BigInt
   createdAtTime: DateTime
-  createdOnDate: DateTime
+  createdOnDay: DateTime
   spaceId: String!
   updatedAtTime: DateTime
   ownerId: String
@@ -498,8 +498,8 @@ enum SpaceOrderByInput {
   createdAtBlock_DESC
   createdAtTime_ASC
   createdAtTime_DESC
-  createdOnDate_ASC
-  createdOnDate_DESC
+  createdOnDay_ASC
+  createdOnDay_DESC
   spaceId_ASC
   spaceId_DESC
   updatedAtTime_ASC
@@ -532,7 +532,7 @@ input SpaceUpdateInput {
   createdByAccount: String
   createdAtBlock: BigInt
   createdAtTime: DateTime
-  createdOnDate: DateTime
+  createdOnDay: DateTime
   spaceId: String
   updatedAtTime: DateTime
   ownerId: String
@@ -589,11 +589,11 @@ input SpaceWhereInput {
   createdAtTime_lte: DateTime
   createdAtTime_gt: DateTime
   createdAtTime_gte: DateTime
-  createdOnDate_eq: DateTime
-  createdOnDate_lt: DateTime
-  createdOnDate_lte: DateTime
-  createdOnDate_gt: DateTime
-  createdOnDate_gte: DateTime
+  createdOnDay_eq: DateTime
+  createdOnDay_lt: DateTime
+  createdOnDay_lte: DateTime
+  createdOnDay_gt: DateTime
+  createdOnDay_gte: DateTime
   spaceId_eq: String
   spaceId_contains: String
   spaceId_startsWith: String

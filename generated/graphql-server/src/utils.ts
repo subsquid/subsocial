@@ -3,6 +3,7 @@ import { FindOperator } from 'typeorm';
 import { SpaceOrderByEnum, SpaceWhereInput } from '../generated';
 import { PostWhereInput } from '../generated/binding';
 import { PostOrderByEnum } from '../generated/classes';
+import dayjs from 'dayjs';
 
 type OrderByType = SpaceOrderByEnum[] | PostOrderByEnum[];
 type WhereInputType = SpaceWhereInput | PostWhereInput | undefined;
@@ -10,9 +11,9 @@ type Action = 'select' | 'where' | 'order';
 type WhereType = string | string[] | number | number[];
 
 export const camelToSnakeCase = (fields: string[], action: Action) =>
-  fields.map((field) => {
+  fields.map(field => {
     const alias = action === 'select' ? ` as "${field}"` : '';
-    return field.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`) + alias;
+    return field.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`) + alias;
   });
 
 const convertToString = (value: string) => {
@@ -23,7 +24,7 @@ const possibleStringVlaue = (value: WhereType) =>
   typeof value !== 'number' ? convertToString(String(value)) : value;
 
 const parseArrayValues = (values: any[]) =>
-  values.map((value) => (Number.isInteger(value) ? value : `'${value}'`));
+  values.map(value => (Number.isInteger(value) ? value : `'${value}'`));
 
 const operations: Record<string, any> = {
   eq: (value: WhereType) => `= ${possibleStringVlaue(value)}`,
@@ -34,7 +35,7 @@ const operations: Record<string, any> = {
   in: (value: WhereType) => `in (${parseArrayValues(value as any[])})`,
   contains: (value: WhereType) => `like '%${value}%'`,
   startsWith: (value: WhereType) => `like '${value}%'`,
-  endsWith: (value: WhereType) => `like '%${value}'`,
+  endsWith: (value: WhereType) => `like '%${value}'`
 };
 
 export const getOperation = <T>(op: string, value: T): FindOperator<T> => operations[op](value);

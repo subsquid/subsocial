@@ -32,7 +32,7 @@ export class Space extends BaseModel {
   @DateTimeField({
     nullable: true
   })
-  createdOnDate?: Date;
+  createdOnDay?: Date;
 
   @StringField({})
   spaceId!: string;

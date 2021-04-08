@@ -101,3 +101,6 @@ export const formatDate = (date: string) => {
 export const stringDateToTimestamp = (date: string | undefined) => {
   if (date && date != '') return new Date(Number(date)).getTime()
 }
+
+export const getDateWithoutTime = (date: Date | undefined): Date | undefined =>
+  date ? dayjs(dayjs(date).format('YYYY-MM-DD')).toDate() : undefined;

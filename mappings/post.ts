@@ -7,7 +7,7 @@ import { Space } from '../generated/graphql-server/src/modules/space/space.model
 import { resolveSpaceStruct } from './resolvers/resolveSpaceData';
 import { isEmptyArray } from '@subsocial/utils';
 import { Posts } from './generated/types'
-import dayjs from 'dayjs';
+import { getDateWithoutTime } from './utils';
 
 type Comment = {
   root_post_id: string,
@@ -30,7 +30,7 @@ export async function postCreated(db: DatabaseManager, event: Posts.PostCreatedE
   post.createdByAccount = postStruct.createdByAccount
   post.createdAtBlock = postStruct.createdAtBlock
   post.createdAtTime = postStruct.createdAtTime
-  post.createdOnDate = dayjs(dayjs(postStruct.createdAtTime).format("YYYY-MM-DD")).toDate()
+  post.createdOnDay = getDateWithoutTime(postStruct.createdAtTime)
   post.postId = id.toString()
   const content = postStruct.content
 
