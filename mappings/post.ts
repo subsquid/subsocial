@@ -2,12 +2,12 @@ import { DatabaseManager } from '@dzlzv/hydra-db-utils'
 import { Post, PostKind } from '../generated/graphql-server/src/modules/post/post.model'
 import { PostId, SpaceId } from '@subsocial/types/substrate/interfaces';
 import { resolvePostStruct, resolveIpfsPostData } from './resolvers/resolvePostData';
-import { insertTagInPostTags } from './tag';
 import { Space } from '../generated/graphql-server/src/modules/space/space.model';
 import { resolveSpaceStruct } from './resolvers/resolveSpaceData';
 import { isEmptyArray } from '@subsocial/utils';
 import { Posts } from './generated/types'
 import { getDateWithoutTime } from './utils';
+import { insertTagInPostTags } from './tag';
 
 type Comment = {
   root_post_id: string,
@@ -75,6 +75,7 @@ export async function postCreated(db: DatabaseManager, event: Posts.PostCreatedE
   post.upvotesCount = postStruct.upvotesCount
   post.downvotesCount = postStruct.downvotesCount
   post.score = postStruct.score
+
   if (postContent) {
     post.title = postContent.title
     post.image = postContent.image
@@ -83,8 +84,10 @@ export async function postCreated(db: DatabaseManager, event: Posts.PostCreatedE
     post.tagsOriginal = postContent.tags.join(',')
 
     const tags = await insertTagInPostTags(db, postContent.tags, post.postId, post)
-    if (!isEmptyArray(tags))
+
+    if (!isEmptyArray(tags)) {
       post.tags = tags
+    }
   }
 
   await db.save<Post>(post)
@@ -111,9 +114,11 @@ export async function postUpdated(db: DatabaseManager, event: Posts.PostUpdatedE
   post.content = content
 
   post.updatedAtTime = postStruct.updatedAtTime
+
   if (postStruct.spaceId != '') {
     await updateCountersInSpace(db, postStruct.spaceId as unknown as SpaceId)
   }
+
   const postContent = await resolveIpfsPostData(content, post.postId)
 
   if (postContent) {
@@ -124,8 +129,10 @@ export async function postUpdated(db: DatabaseManager, event: Posts.PostUpdatedE
     post.tagsOriginal = postContent.tags.join(',')
 
     const tags = await insertTagInPostTags(db, postContent.tags, post.postId, post)
-    if (!isEmptyArray(tags))
+
+    if (!isEmptyArray(tags)) {
       post.tags = tags
+    }
   }
 
   await db.save<Post>(post)

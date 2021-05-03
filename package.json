@@ -42,7 +42,7 @@
     "copy-types": "find ./ -name 'typedefs.json' | cpio -pd ./mappings/lib/mappings/generated/types",
     "copy-data-file": "find ./ -name 'data.json' | cpio -pd ./mappings/lib",
     "mapping-build": "yarn mappings:build && yarn copy-types",
-    "set-dep": "yarn copy-data-file && node mappings/lib/mappings/subnetwork/index.js"
+    "set-subnets": "yarn copy-data-file && node mappings/lib/mappings/subnetwork/index.js"
   },
   "author": "",
   "license": "ISC",

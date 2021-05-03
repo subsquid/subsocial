@@ -1,76 +1,102 @@
 import { Tag } from '../generated/graphql-server/src/modules/tag/tag.model';
 import { isEmptyArray } from "@subsocial/utils";
-import { DatabaseManager } from '@dzlzv/hydra-db-utils'
-import { getOrCreatePostTag, upsertTags, getOrCreateSpaceTag } from './utils';
-import { Post } from '../generated/graphql-server/src/modules/post/post.model';
-import { Space } from '../generated/graphql-server/src/modules/space/space.model';
+import { ObjectType, GetOrCreateTagType, TagInEntityTagType } from './utils';
+import { Space } from '../generated/graphql-server/src/modules/space/space.model'
+import { DatabaseManager } from '@dzlzv/hydra-db-utils';
+import { Post } from '../generated/graphql-server/src/modules/post/post.model'
 
-export const insertTagInPostTags = async (db: DatabaseManager, tags: string[], postId: string, post: Post) => {
-  const postWithRelations = await db.get(Post, { where: { postId }, relations: [`tags`] })
-  let postTags: Tag[] = []
+export const upsertTags = (oldTag: string[], modTag: string[]) => {
+  const modSet = new Set(modTag)
+  const uniqModifiedTags = [...modSet]
 
-  if (!postWithRelations) {
+  let tagsAdd: string[] = []
+  let tagsRemove: string[] = []
+
+  if (oldTag.length === 0 || oldTag.filter((x) => modSet.has(x)).length !== 0 ) {
+    tagsAdd = uniqModifiedTags.filter((x) => !oldTag.includes(x))
+    tagsRemove = oldTag.filter((x) => !uniqModifiedTags.includes(x))
+  } else {
+    console.warn('Nothing to update')
+  }
+
+  return { tagsAdd, tagsRemove }
+}
+
+export const getOrCreateTag = async ({ db, tags, entity: object, relationField }: GetOrCreateTagType) => {
+  const tagPromise = tags.map(async tagValue => {
+    if (tagValue && tagValue !== ' ') {
+      const tagsByTagName = await db.get(Tag, { where: { tag: tagValue }, relations: [relationField] })
+
+      if (tagsByTagName) {
+        (tagsByTagName[relationField] as ObjectType[]).push(object)
+
+        await db.save<Tag>(tagsByTagName)
+        return tagsByTagName
+      } else {
+        const tag = new Tag()
+
+        if (tag[relationField]) {
+          (tag[relationField] as ObjectType[]).push(object)
+        } else {
+          (tag[relationField] as ObjectType[]) = [object]
+        }
+
+        tag.tag = tagValue
+        await db.save<Tag>(tag)
+        return tag
+      }
+    }
+  })
+
+  return Promise.all(tagPromise)
+}
+
+export const insertTagInEntityTags = async ({ db, tags, entity, relationField, entityWithRelations }: TagInEntityTagType) => {
+  let entityTags: Tag[] = []
+
+  if (!entityWithRelations) {
     if (!isEmptyArray(tags)) {
       const { tagsAdd } = upsertTags([], tags)
+
       if (!isEmptyArray(tagsAdd)) {
-        const newTags = await getOrCreatePostTag(db, tagsAdd, post)
-        newTags.map(value => postTags.push(value))
+        const newTags = await getOrCreateTag({ db, tags: tagsAdd, entity, relationField })
+        newTags.map(value => value && entityTags.push(value))
       }
     }
   } else {
     let oldTags: string[] = []
 
-    for (const postTag of postWithRelations.tags) {
-      if (postTag && postTag.tag)
-        oldTags.push(postTag.tag)
+    for (const entityTag of entityWithRelations.tags) {
+      if (entityTag && entityTag.tag) {
+        oldTags.push(entityTag.tag)
+      }
     }
 
     const { tagsAdd, tagsRemove } = upsertTags(oldTags, tags)
 
-    if (!isEmptyArray(tagsAdd)) oldTags = oldTags.concat(tagsAdd)
+    if (!isEmptyArray(tagsAdd)) {
+      oldTags = oldTags.concat(tagsAdd)
+    }
 
     if (!isEmptyArray(tagsRemove)) {
       oldTags = oldTags.filter(x => !tagsRemove.includes(x))
     }
 
-    const newTags = await getOrCreatePostTag(db, oldTags, post)
-    newTags.map(value => postTags.push(value))
+    const newTags = await getOrCreateTag({ db, tags: oldTags, entity, relationField })
+    newTags.map(value => value && entityTags.push(value))
   }
 
-  return postTags
+  return entityTags
+}
+
+export const insertTagInPostTags = async (db: DatabaseManager, tags: string[], postId: string, post: Post) => {
+  const postWithRelations = await db.get(Post, { where: { postId }, relations: [`tags`] })
+
+  return insertTagInEntityTags({ db, tags, entity: post, relationField: 'posts' , entityWithRelations: postWithRelations })
 }
 
 export const insertTagInSpaceTags = async (db: DatabaseManager, tags: string[], spaceId: string, space: Space) => {
   const spaceWithRelations = await db.get(Space, { where: { spaceId }, relations: [`tags`] })
-  let postTags: Tag[] = []
 
-  if (!spaceWithRelations) {
-    if (!isEmptyArray(tags)) {
-      const { tagsAdd } = upsertTags([], tags)
-      if (!isEmptyArray(tagsAdd)) {
-        const newTags = await getOrCreateSpaceTag(db, tagsAdd, space)
-        newTags.map(value => postTags.push(value))
-      }
-    }
-  } else {
-    let oldTags: string[] = []
-
-    for (const spaceTag of spaceWithRelations.tags) {
-      if (spaceTag && spaceTag.tag)
-        oldTags.push(spaceTag.tag)
-    }
-
-    const { tagsAdd, tagsRemove } = upsertTags(oldTags, tags)
-
-    if (!isEmptyArray(tagsAdd)) oldTags = oldTags.concat(tagsAdd)
-
-    if (!isEmptyArray(tagsRemove)) {
-      oldTags = oldTags.filter(x => !tagsRemove.includes(x))
-    }
-
-    const newTags = await getOrCreateSpaceTag(db, oldTags, space)
-    newTags.map(value => postTags.push(value))
-  }
-
-  return postTags
+  return insertTagInEntityTags({db, tags, entity: space, relationField: 'spaces', entityWithRelations: spaceWithRelations})
 }

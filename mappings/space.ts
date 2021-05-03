@@ -1,7 +1,7 @@
 import { DatabaseManager } from '@dzlzv/hydra-db-utils'
 import { Space } from '../generated/graphql-server/src/modules/space/space.model'
 import { resolveIpfsSpaceData, resolveSpaceStruct } from './resolvers/resolveSpaceData'
-import { insertTagInSpaceTags } from './tag'
+import { insertTagInSpaceTags } from './tag';
 import { isEmptyArray } from '@subsocial/utils'
 import { Spaces } from './generated/types'
 import { getDateWithoutTime } from './utils';
@@ -40,6 +40,7 @@ export async function spaceUpdated(db: DatabaseManager, event: Spaces.SpaceUpdat
   space.hiddenPostsCount = spaceStruct.hiddenPostsCount
   space.followersCount = spaceStruct.followersCount
   space.score = spaceStruct.score
+
   if (spaceContent) {
     space.name = spaceContent.name
     space.summary = spaceContent.about
@@ -47,7 +48,10 @@ export async function spaceUpdated(db: DatabaseManager, event: Spaces.SpaceUpdat
     space.tagsOriginal = spaceContent.tags.join(',')
 
     const tags = await insertTagInSpaceTags(db, spaceContent.tags, space.spaceId, space)
-    if (!isEmptyArray(tags)) space.tags = tags
+
+    if (!isEmptyArray(tags)) {
+      space.tags = tags
+    }
   }
 
   await db.save<Space>(space)
@@ -82,6 +86,7 @@ const createSpace = async (db: DatabaseManager, event: Spaces.SpaceCreatedEvent 
   space.publicPostsCount = space.postsCount - space.hiddenPostsCount
   space.followersCount = spaceStruct.followersCount
   space.score = spaceStruct.score
+
   if (spaceContent) {
     space.name = spaceContent.name
     space.summary = spaceContent.about
@@ -89,7 +94,10 @@ const createSpace = async (db: DatabaseManager, event: Spaces.SpaceCreatedEvent 
     space.tagsOriginal = spaceContent.tags.join(',')
 
     const tags = await insertTagInSpaceTags(db, spaceContent.tags, space.spaceId, space)
-    if (!isEmptyArray(tags)) space.tags = tags
+
+    if (!isEmptyArray(tags)) {
+      space.tags = tags
+    }
   }
 
   await db.save<Space>(space)
