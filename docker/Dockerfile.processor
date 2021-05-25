@@ -9,11 +9,13 @@ COPY --from=builder /home/hydra-builder/mappings/node_modules /home/hydra-proces
 COPY --from=builder /home/hydra-builder/mappings/package.json /home/hydra-processor/mappings/package.json
 COPY --from=builder /home/hydra-builder/node_modules /home/hydra-processor/node_modules
 
+COPY --from=builder /home/hydra-builder/generated /home/hydra-processor/generated
+
 COPY --from=builder /home/hydra-builder/package.json .
 COPY --from=builder /home/hydra-builder/yarn.lock .
 COPY --from=builder /home/hydra-builder/manifest.yml .
-COPY schema.graphql .
+COPY --from=builder /home/hydra-builder/env.ts .
 
 RUN yarn --frozen-lockfile
 
-CMD ["yarn", "processor:start"]
+CMD ["sh", "-c", "yarn db:bootstrap && yarn processor:start"]
