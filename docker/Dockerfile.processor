@@ -9,9 +9,6 @@ COPY --from=builder /home/hydra-builder/mappings/node_modules /home/hydra-proces
 COPY --from=builder /home/hydra-builder/mappings/package.json /home/hydra-processor/mappings/package.json
 COPY --from=builder /home/hydra-builder/node_modules /home/hydra-processor/node_modules
 
-## FIXME: resolve typedefs.json from the root folder, this is a workaround
-COPY --from=builder /home/hydra-builder/typedefs.json /home/hydra-processor/mappings/lib/mappings/generated/types
-
 COPY --from=builder /home/hydra-builder/package.json .
 COPY --from=builder /home/hydra-builder/yarn.lock .
 COPY --from=builder /home/hydra-builder/manifest.yml .
@@ -20,5 +17,3 @@ COPY schema.graphql .
 RUN yarn --frozen-lockfile
 
 CMD ["yarn", "processor:start"]
-
-
