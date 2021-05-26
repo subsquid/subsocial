@@ -31,15 +31,16 @@ const query = `
 
 const setDependency = async () => {
   const spaceIds: Record<string, string[]> = JSON.parse(readFileSync(__dirname + '/data.json', 'utf-8'))
-
   try {
     await pg.query(querySubnet)
 
     for (const [key, value] of Object.entries(spaceIds)) {
-      value.map(async (spaceId) => {
+      const promises = value.map(async (spaceId) => {
         const params = [key, spaceId]
-        await pg.query(query, params)
+        return pg.query(query, params)
       })
+
+      await Promise.all(promises)
     }
   } catch (err) {
     console.error(err)

@@ -41,7 +41,7 @@
     "docker:up": "docker-compose up -d",
     "copy-types": "find ./ -name 'typedefs.json' | cpio -pd ./mappings/lib/mappings/generated/types",
     "copy-data-file": "find ./ -name 'data.json' | cpio -pd ./mappings/lib",
-    "mapping-build": "yarn mappings:build && yarn copy-types",
+    "mapping-build": "yarn mappings:build && yarn copy-types && yarn copy-data-file",
     "set-subnets": "yarn copy-data-file && node mappings/lib/mappings/subnetwork/index.js"
   },
   "author": "",
@@ -55,7 +55,7 @@
     "dayjs": "^1.10.4",
     "dotenv": "^8.2.0",
     "fs": "^0.0.1-security",
-    "pg": "^8.5.1",
+    "pg": "8.5.1",
     "tslib": "^2.0.0",
     "yesql": "^5.0.0"
   },
