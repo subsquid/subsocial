@@ -26,7 +26,7 @@ export async function postCreated(db: DatabaseManager, event: Posts.PostCreatedE
 
   const post = new Post()
 
-  const [kind, value] = (Object.entries(event.ctx.extrinsic.args[1].value)[0] || []) as [PostKind, string | object]
+  const [_kind, value] = (Object.entries(event.ctx.extrinsic.args[1].value)[0] || []) as [PostKind, string | object]
   post.createdByAccount = postStruct.createdByAccount
   post.createdAtBlock = postStruct.createdAtBlock
   post.createdAtTime = postStruct.createdAtTime
@@ -38,7 +38,7 @@ export async function postCreated(db: DatabaseManager, event: Posts.PostCreatedE
 
   const postContent = await resolveIpfsPostData(content, post.postId)
 
-  post.kind = kind
+  post.kind = postStruct.kind
 
   post.updatedAtTime = postStruct.updatedAtTime
   post.spaceId = postStruct.spaceId
@@ -46,7 +46,7 @@ export async function postCreated(db: DatabaseManager, event: Posts.PostCreatedE
     await updateCountersInSpace(db, postStruct.spaceId as unknown as SpaceId)
   }
 
-  switch (kind) {
+  switch (postStruct.kind) {
     case 'Comment': {
       const comment = value as Comment
       const rootPostId = comment.root_post_id
