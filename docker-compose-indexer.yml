@@ -1,8 +1,9 @@
 version: "3.4"
+
 services:
   indexer-db:
     image: postgres:12
-    restart: on-failure
+    restart: always
     ports:
       - "${DB_PORT}"
     volumes:
@@ -13,7 +14,7 @@ services:
       POSTGRES_DB: indexer-db
 
   indexer:
-    image: joystream/hydra-indexer:2.0.1-beta.9
+    image: joystream/hydra-indexer:3.0.0
     restart: unless-stopped
     environment:
       - INDEXER_WORKERS=5
@@ -21,11 +22,12 @@ services:
       - DB_HOST=indexer-db
       - DB_USER=${DB_USER}
       - DB_PASS=${DB_PASS}
+      - DB_PORT=${DB_PORT}
       - REDIS_URI=redis://redis:6379/0
       - DEBUG=index*
       - BLOCK_HEIGHT=658170
       - TYPES_JSON=typedefs.json
-      - WS_PROVIDER_ENDPOINT_URI=ws://arch.subsocial.network:9944
+      - WS_PROVIDER_ENDPOINT_URI=wss://arch.subsocial.network
     volumes:
       - ./typedefs.json:/home/hydra/packages/hydra-indexer/typedefs.json
     command: >
@@ -34,7 +36,7 @@ services:
       - indexer-db
 
   indexer-api-gateway:
-    image: joystream/hydra-indexer-gateway:2.0.1-beta.9
+    image: joystream/hydra-indexer-gateway:3.0.0
     restart: unless-stopped
     environment:
       - WARTHOG_STARTER_DB_DATABASE=indexer-db
@@ -43,9 +45,9 @@ services:
       - WARTHOG_STARTER_DB_PORT=${DB_PORT}
       - WARTHOG_STARTER_DB_USERNAME=${DB_USER}
       - WARTHOG_STARTER_REDIS_URI=redis://redis:6379/0
-      - PORT=4002
+      - PORT=4000
     ports:
-      - "4002"
+      - "4002:4000" #
     depends_on:
       - redis
       - indexer
