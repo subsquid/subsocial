@@ -140,8 +140,18 @@ export class Post extends BaseModel {
 
   @ManyToMany(
     () => Tag,
-    (param: Tag) => param.posts
+    (param: Tag) => param.posts,
+    {
+      modelName: 'Post',
+      relModelName: 'Tag',
+      propertyName: 'tags'
+    }
   )
+  @JoinTable({
+    name: 'post_tag',
+    joinColumn: { name: 'post_id' },
+    inverseJoinColumn: { name: 'tag_id' }
+  })
   tags!: Tag[];
 
   constructor(init?: Partial<Post>) {

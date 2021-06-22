@@ -10,12 +10,13 @@ import {
   Field,
   Int,
   ArgsType,
-  Info
+  Info,
+  Ctx
 } from 'type-graphql';
 import graphqlFields from 'graphql-fields';
 import { Inject } from 'typedi';
 import { Min } from 'class-validator';
-import { Fields, StandardDeleteResponse, UserId, PageInfo, RawFields } from 'warthog';
+import { Fields, StandardDeleteResponse, UserId, PageInfo, RawFields, NestedFields, BaseContext } from 'warthog';
 
 import {
   PostCreateInput,
@@ -31,7 +32,9 @@ import { Post } from './post.model';
 import { PostService } from './post.service';
 
 import { Tag } from '../tag/tag.model';
-import { getConnection } from 'typeorm';
+import { TagService } from '../tag/tag.service';
+import { getConnection, getRepository, In, Not } from 'typeorm';
+import _ from 'lodash';
 
 @ObjectType()
 export class PostEdge {
@@ -77,7 +80,7 @@ export class PostConnectionWhereArgs extends ConnectionPageInputOptions {
   where?: PostWhereInput;
 
   @Field(() => PostOrderByEnum, { nullable: true })
-  orderBy?: PostOrderByEnum;
+  orderBy?: [PostOrderByEnum];
 }
 
 @Resolver(Post)
@@ -90,7 +93,7 @@ export class PostResolver {
   }
 
   @Query(() => Post, { nullable: true })
-  async post(@Arg('where') where: PostWhereUniqueInput, @Fields() fields: string[]): Promise<Post | null> {
+  async postByUniqueInput(@Arg('where') where: PostWhereUniqueInput, @Fields() fields: string[]): Promise<Post | null> {
     const result = await this.service.find(where, undefined, 1, 0, fields);
     return result && result.length >= 1 ? result[0] : null;
   }
@@ -124,13 +127,7 @@ export class PostResolver {
   }
 
   @FieldResolver(() => Tag)
-  async tags(@Root() r: Post): Promise<Tag[] | null> {
-    const result = await getConnection()
-      .getRepository(Post)
-      .findOne(r.id, { relations: ['tags'] });
-    if (result && result.tags !== undefined) {
-      return result.tags;
-    }
-    return null;
+  async tags(@Root() r: Post, @Ctx() ctx: BaseContext): Promise<Tag[] | null> {
+    return ctx.dataLoader.loaders.Post.tags.load(r);
   }
 }

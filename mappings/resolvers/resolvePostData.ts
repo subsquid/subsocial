@@ -1,10 +1,10 @@
-import { PostId } from "@subsocial/types/substrate/interfaces";
-import { resolveSubsocialApi } from '../../connection/subsocial';
-import { summarizeMd } from '@subsocial/utils/summarize';
-import { createPostSlug } from '@subsocial/utils/slugify';
-import { formatTegs } from '../utils';
 import BN from 'bn.js';
 import { PostKind } from '../../generated/graphql-server/src/modules/enums/enums';
+import { resolveSubsocialApi } from '../../connection/subsocial';
+import { createPostSlug } from '@subsocial/utils/slugify';
+import { formatTegs } from '../utils';
+import { summarizeMd } from '@subsocial/utils/summarize';
+import { PostId } from '@subsocial/types/substrate/interfaces/types'
 
 export type PostCounters = {
   createdByAccount: string,

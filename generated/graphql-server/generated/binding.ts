@@ -6,17 +6,17 @@ import { IResolvers } from 'graphql-tools/dist/Interfaces'
 import * as schema from  './schema.graphql'
 
 export interface Query {
-    posts: <T = Array<Post>>(args: { offset?: Int | null, limit?: Int | null, where?: PostWhereInput | null, orderBy?: PostOrderByInput | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
-    post: <T = Post | null>(args: { where: PostWhereUniqueInput }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T | null> ,
-    postsConnection: <T = PostConnection>(args: { first?: Int | null, after?: String | null, last?: Int | null, before?: String | null, where?: PostWhereInput | null, orderBy?: PostOrderByInput | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
+    posts: <T = Array<Post>>(args: { offset?: Int | null, limit?: Int | null, where?: PostWhereInput | null, orderBy?: Array<PostOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
+    postByUniqueInput: <T = Post | null>(args: { where: PostWhereUniqueInput }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T | null> ,
+    postsConnection: <T = PostConnection>(args: { first?: Int | null, after?: String | null, last?: Int | null, before?: String | null, where?: PostWhereInput | null, orderBy?: Array<PostOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
     postsWithSubnet: <T = Array<Post>>(args: { offset?: Int | null, limit?: Int | null, where?: PostWhereInput | null, subnetId?: String | null, orderBy?: Array<PostOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
-    spaces: <T = Array<Space>>(args: { offset?: Int | null, limit?: Int | null, where?: SpaceWhereInput | null, orderBy?: SpaceOrderByInput | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
-    space: <T = Space | null>(args: { where: SpaceWhereUniqueInput }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T | null> ,
-    spacesConnection: <T = SpaceConnection>(args: { first?: Int | null, after?: String | null, last?: Int | null, before?: String | null, where?: SpaceWhereInput | null, orderBy?: SpaceOrderByInput | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
+    spaces: <T = Array<Space>>(args: { offset?: Int | null, limit?: Int | null, where?: SpaceWhereInput | null, orderBy?: Array<SpaceOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
+    spaceByUniqueInput: <T = Space | null>(args: { where: SpaceWhereUniqueInput }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T | null> ,
+    spacesConnection: <T = SpaceConnection>(args: { first?: Int | null, after?: String | null, last?: Int | null, before?: String | null, where?: SpaceWhereInput | null, orderBy?: Array<SpaceOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
     spacesWithSubnet: <T = Array<Space>>(args: { offset?: Int | null, limit?: Int | null, where?: SpaceWhereInput | null, subnetId?: String | null, orderBy?: Array<SpaceOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
-    tags: <T = Array<Tag>>(args: { offset?: Int | null, limit?: Int | null, where?: TagWhereInput | null, orderBy?: TagOrderByInput | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
-    tag: <T = Tag | null>(args: { where: TagWhereUniqueInput }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T | null> ,
-    tagsConnection: <T = TagConnection>(args: { first?: Int | null, after?: String | null, last?: Int | null, before?: String | null, where?: TagWhereInput | null, orderBy?: TagOrderByInput | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> 
+    tags: <T = Array<Tag>>(args: { offset?: Int | null, limit?: Int | null, where?: TagWhereInput | null, orderBy?: Array<TagOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
+    tagByUniqueInput: <T = Tag | null>(args: { where: TagWhereUniqueInput }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T | null> ,
+    tagsConnection: <T = TagConnection>(args: { first?: Int | null, after?: String | null, last?: Int | null, before?: String | null, where?: TagWhereInput | null, orderBy?: Array<TagOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> 
   }
 
 export interface Mutation {}
@@ -395,6 +395,11 @@ export interface PostWhereInput {
   tagsOriginal_startsWith?: String | null
   tagsOriginal_endsWith?: String | null
   tagsOriginal_in?: String[] | String | null
+  tags_none?: TagWhereInput | null
+  tags_some?: TagWhereInput | null
+  tags_every?: TagWhereInput | null
+  AND?: PostWhereInput[] | PostWhereInput | null
+  OR?: PostWhereInput[] | PostWhereInput | null
 }
 
 export interface PostWhereUniqueInput {
@@ -557,6 +562,11 @@ export interface SpaceWhereInput {
   tagsOriginal_startsWith?: String | null
   tagsOriginal_endsWith?: String | null
   tagsOriginal_in?: String[] | String | null
+  tags_none?: TagWhereInput | null
+  tags_some?: TagWhereInput | null
+  tags_every?: TagWhereInput | null
+  AND?: SpaceWhereInput[] | SpaceWhereInput | null
+  OR?: SpaceWhereInput[] | SpaceWhereInput | null
 }
 
 export interface SpaceWhereUniqueInput {
@@ -601,6 +611,14 @@ export interface TagWhereInput {
   tag_startsWith?: String | null
   tag_endsWith?: String | null
   tag_in?: String[] | String | null
+  posts_none?: PostWhereInput | null
+  posts_some?: PostWhereInput | null
+  posts_every?: PostWhereInput | null
+  spaces_none?: SpaceWhereInput | null
+  spaces_some?: SpaceWhereInput | null
+  spaces_every?: SpaceWhereInput | null
+  AND?: TagWhereInput[] | TagWhereInput | null
+  OR?: TagWhereInput[] | TagWhereInput | null
 }
 
 export interface TagWhereUniqueInput {

@@ -99,8 +99,18 @@ export class Space extends BaseModel {
 
   @ManyToMany(
     () => Tag,
-    (param: Tag) => param.spaces
+    (param: Tag) => param.spaces,
+    {
+      modelName: 'Space',
+      relModelName: 'Tag',
+      propertyName: 'tags'
+    }
   )
+  @JoinTable({
+    name: 'space_tag',
+    joinColumn: { name: 'space_id' },
+    inverseJoinColumn: { name: 'tag_id' }
+  })
   tags!: Tag[];
 
   constructor(init?: Partial<Space>) {

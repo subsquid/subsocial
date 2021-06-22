@@ -3,7 +3,6 @@ import { FindOperator } from 'typeorm';
 import { SpaceOrderByEnum, SpaceWhereInput } from '../generated';
 import { PostWhereInput } from '../generated/binding';
 import { PostOrderByEnum } from '../generated/classes';
-import dayjs from 'dayjs';
 
 type OrderByType = SpaceOrderByEnum[] | PostOrderByEnum[];
 type WhereInputType = SpaceWhereInput | PostWhereInput | undefined;

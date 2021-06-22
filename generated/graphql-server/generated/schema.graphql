@@ -398,6 +398,11 @@ input PostWhereInput {
   tagsOriginal_startsWith: String
   tagsOriginal_endsWith: String
   tagsOriginal_in: [String!]
+  tags_none: TagWhereInput
+  tags_some: TagWhereInput
+  tags_every: TagWhereInput
+  AND: [PostWhereInput!]
+  OR: [PostWhereInput!]
 }
 
 input PostWhereUniqueInput {
@@ -412,17 +417,17 @@ type ProcessorState {
 }
 
 type Query {
-  posts(offset: Int, limit: Int = 50, where: PostWhereInput, orderBy: PostOrderByInput): [Post!]!
-  post(where: PostWhereUniqueInput!): Post
-  postsConnection(first: Int, after: String, last: Int, before: String, where: PostWhereInput, orderBy: PostOrderByInput): PostConnection!
+  posts(offset: Int, limit: Int = 50, where: PostWhereInput, orderBy: [PostOrderByInput!]): [Post!]!
+  postByUniqueInput(where: PostWhereUniqueInput!): Post
+  postsConnection(first: Int, after: String, last: Int, before: String, where: PostWhereInput, orderBy: [PostOrderByInput!]): PostConnection!
   postsWithSubnet(offset: Int, limit: Int = 50, where: PostWhereInput, subnetId: String, orderBy: [PostOrderByInput!]): [Post!]!
-  spaces(offset: Int, limit: Int = 50, where: SpaceWhereInput, orderBy: SpaceOrderByInput): [Space!]!
-  space(where: SpaceWhereUniqueInput!): Space
-  spacesConnection(first: Int, after: String, last: Int, before: String, where: SpaceWhereInput, orderBy: SpaceOrderByInput): SpaceConnection!
+  spaces(offset: Int, limit: Int = 50, where: SpaceWhereInput, orderBy: [SpaceOrderByInput!]): [Space!]!
+  spaceByUniqueInput(where: SpaceWhereUniqueInput!): Space
+  spacesConnection(first: Int, after: String, last: Int, before: String, where: SpaceWhereInput, orderBy: [SpaceOrderByInput!]): SpaceConnection!
   spacesWithSubnet(offset: Int, limit: Int = 50, where: SpaceWhereInput, subnetId: String, orderBy: [SpaceOrderByInput!]): [Space!]!
-  tags(offset: Int, limit: Int = 50, where: TagWhereInput, orderBy: TagOrderByInput): [Tag!]!
-  tag(where: TagWhereUniqueInput!): Tag
-  tagsConnection(first: Int, after: String, last: Int, before: String, where: TagWhereInput, orderBy: TagOrderByInput): TagConnection!
+  tags(offset: Int, limit: Int = 50, where: TagWhereInput, orderBy: [TagOrderByInput!]): [Tag!]!
+  tagByUniqueInput(where: TagWhereUniqueInput!): Tag
+  tagsConnection(first: Int, after: String, last: Int, before: String, where: TagWhereInput, orderBy: [TagOrderByInput!]): TagConnection!
 }
 
 type Space implements BaseGraphQLObject {
@@ -664,6 +669,11 @@ input SpaceWhereInput {
   tagsOriginal_startsWith: String
   tagsOriginal_endsWith: String
   tagsOriginal_in: [String!]
+  tags_none: TagWhereInput
+  tags_some: TagWhereInput
+  tags_every: TagWhereInput
+  AND: [SpaceWhereInput!]
+  OR: [SpaceWhereInput!]
 }
 
 input SpaceWhereUniqueInput {
@@ -752,6 +762,14 @@ input TagWhereInput {
   tag_startsWith: String
   tag_endsWith: String
   tag_in: [String!]
+  posts_none: PostWhereInput
+  posts_some: PostWhereInput
+  posts_every: PostWhereInput
+  spaces_none: SpaceWhereInput
+  spaces_some: SpaceWhereInput
+  spaces_every: SpaceWhereInput
+  AND: [TagWhereInput!]
+  OR: [TagWhereInput!]
 }
 
 input TagWhereUniqueInput {

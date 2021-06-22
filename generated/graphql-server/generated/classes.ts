@@ -444,6 +444,21 @@ export class SpaceWhereInput {
 
   @TypeGraphQLField(() => [String], { nullable: true })
   tagsOriginal_in?: string[];
+
+  @TypeGraphQLField(() => TagWhereInput, { nullable: true })
+  tags_none?: TagWhereInput;
+
+  @TypeGraphQLField(() => TagWhereInput, { nullable: true })
+  tags_some?: TagWhereInput;
+
+  @TypeGraphQLField(() => TagWhereInput, { nullable: true })
+  tags_every?: TagWhereInput;
+
+  @TypeGraphQLField(() => SpaceWhereInput, { nullable: true })
+  AND?: [SpaceWhereInput];
+
+  @TypeGraphQLField(() => SpaceWhereInput, { nullable: true })
+  OR?: [SpaceWhereInput];
 }
 
 @TypeGraphQLInputType()
@@ -566,7 +581,7 @@ export class SpaceWhereArgs extends PaginationArgs {
   where?: SpaceWhereInput;
 
   @TypeGraphQLField(() => SpaceOrderByEnum, { nullable: true })
-  orderBy?: SpaceOrderByEnum;
+  orderBy?: SpaceOrderByEnum[];
 }
 
 @ArgsType()
@@ -687,6 +702,30 @@ export class TagWhereInput {
 
   @TypeGraphQLField(() => [String], { nullable: true })
   tag_in?: string[];
+
+  @TypeGraphQLField(() => PostWhereInput, { nullable: true })
+  posts_none?: PostWhereInput;
+
+  @TypeGraphQLField(() => PostWhereInput, { nullable: true })
+  posts_some?: PostWhereInput;
+
+  @TypeGraphQLField(() => PostWhereInput, { nullable: true })
+  posts_every?: PostWhereInput;
+
+  @TypeGraphQLField(() => SpaceWhereInput, { nullable: true })
+  spaces_none?: SpaceWhereInput;
+
+  @TypeGraphQLField(() => SpaceWhereInput, { nullable: true })
+  spaces_some?: SpaceWhereInput;
+
+  @TypeGraphQLField(() => SpaceWhereInput, { nullable: true })
+  spaces_every?: SpaceWhereInput;
+
+  @TypeGraphQLField(() => TagWhereInput, { nullable: true })
+  AND?: [TagWhereInput];
+
+  @TypeGraphQLField(() => TagWhereInput, { nullable: true })
+  OR?: [TagWhereInput];
 }
 
 @TypeGraphQLInputType()
@@ -713,7 +752,7 @@ export class TagWhereArgs extends PaginationArgs {
   where?: TagWhereInput;
 
   @TypeGraphQLField(() => TagOrderByEnum, { nullable: true })
-  orderBy?: TagOrderByEnum;
+  orderBy?: TagOrderByEnum[];
 }
 
 @ArgsType()
@@ -1281,6 +1320,21 @@ export class PostWhereInput {
 
   @TypeGraphQLField(() => [String], { nullable: true })
   tagsOriginal_in?: string[];
+
+  @TypeGraphQLField(() => TagWhereInput, { nullable: true })
+  tags_none?: TagWhereInput;
+
+  @TypeGraphQLField(() => TagWhereInput, { nullable: true })
+  tags_some?: TagWhereInput;
+
+  @TypeGraphQLField(() => TagWhereInput, { nullable: true })
+  tags_every?: TagWhereInput;
+
+  @TypeGraphQLField(() => PostWhereInput, { nullable: true })
+  AND?: [PostWhereInput];
+
+  @TypeGraphQLField(() => PostWhereInput, { nullable: true })
+  OR?: [PostWhereInput];
 }
 
 @TypeGraphQLInputType()
@@ -1451,7 +1505,7 @@ export class PostWhereArgs extends PaginationArgs {
   where?: PostWhereInput;
 
   @TypeGraphQLField(() => PostOrderByEnum, { nullable: true })
-  orderBy?: PostOrderByEnum;
+  orderBy?: PostOrderByEnum[];
 }
 
 @ArgsType()

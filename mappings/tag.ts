@@ -1,9 +1,9 @@
-import { Tag } from '../generated/graphql-server/src/modules/tag/tag.model';
-import { isEmptyArray } from "@subsocial/utils";
-import { ObjectType, GetOrCreateTagType, TagInEntityTagType } from './utils';
-import { Space } from '../generated/graphql-server/src/modules/space/space.model'
-import { DatabaseManager } from '@dzlzv/hydra-db-utils';
+import { DatabaseManager } from '@joystream/hydra-common'
+import { isEmptyArray } from '@subsocial/utils'
 import { Post } from '../generated/graphql-server/src/modules/post/post.model'
+import { Space } from '../generated/graphql-server/src/modules/space/space.model'
+import { Tag } from '../generated/graphql-server/src/modules/tag/tag.model'
+import { ObjectType, GetOrCreateTagType, TagInEntityTagType } from './utils';
 
 export const upsertTags = (oldTag: string[], modTag: string[]) => {
   const modSet = new Set(modTag)

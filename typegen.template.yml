@@ -1,0 +1,28 @@
+typegen:
+  metadata:
+    source: wss://arch.subsocial.network
+  events:
+    - posts.PostCreated
+    - posts.PostUpdated
+    - posts.PostShared
+    - spaces.SpaceCreated
+    - spaces.SpaceUpdated
+    - reactions.PostReactionCreated
+    - reactions.PostReactionUpdated
+    - reactions.PostReactionDeleted
+    - spaceFollows.SpaceFollowed
+    - spaceFollows.SpaceUnfollowed
+  calls:
+    - posts.CreatePost
+    - posts.UpdatePost
+    - spaces.CreateSpace
+    - spaces.UpdateSpace
+    - reactions.CreatePostReaction
+    - reactions.UpdatePostReaction
+    - reactions.DeletePostReaction
+    - spaceFollows.FollowSpace
+    - spaceFollows.UnfollowSpace
+  customTypes:
+    lib: '@subsocial/types/substrate/interfaces'
+    typedefsLoc: typedefs.json
+  outDir: ./mappings/generated/types

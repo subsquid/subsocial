@@ -1,8 +1,7 @@
-import { SubsocialApi } from '@subsocial/api/subsocial';
 import { ipfsReadOnlyNodeUrl, port } from '../env';
-import { Api } from '@subsocial/api/substrateConnect';
 import { registry } from '@subsocial/types/substrate/registry';
 import { ApiPromise } from '@polkadot/api';
+import { Api, SubsocialApi } from '@subsocial/api'
 let subsocial: SubsocialApi
 
 type Api = SubsocialApi & {

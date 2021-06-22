@@ -14,24 +14,24 @@ export class Tag extends BaseModel {
 
   @ManyToMany(
     () => Post,
-    (param: Post) => param.tags
+    (param: Post) => param.tags,
+    {
+      modelName: 'Tag',
+      relModelName: 'Post',
+      propertyName: 'posts'
+    }
   )
-  @JoinTable({
-    name: 'tag_post',
-    joinColumn: { name: 'tag_id' },
-    inverseJoinColumn: { name: 'post_id' }
-  })
   posts!: Post[];
 
   @ManyToMany(
     () => Space,
-    (param: Space) => param.tags
+    (param: Space) => param.tags,
+    {
+      modelName: 'Tag',
+      relModelName: 'Space',
+      propertyName: 'spaces'
+    }
   )
-  @JoinTable({
-    name: 'tag_space',
-    joinColumn: { name: 'tag_id' },
-    inverseJoinColumn: { name: 'space_id' }
-  })
   spaces!: Space[];
 
   constructor(init?: Partial<Tag>) {

@@ -1,8 +1,8 @@
-import { DatabaseManager } from '@dzlzv/hydra-db-utils'
-import dayjs from 'dayjs'
-import localizedFormat from 'dayjs/plugin/localizedFormat'
-import { Post } from '../generated/graphql-server/src/modules/post/post.model'
-import { Space } from '../generated/graphql-server/src/modules/space/space.model'
+import { DatabaseManager } from "@joystream/hydra-common"
+import dayjs from "dayjs"
+import { Post } from "../generated/graphql-server/src/modules/post/post.model"
+import { Space } from "../generated/graphql-server/src/modules/space/space.model"
+import localizedFormat from 'dayjs/plugin/localizedFormat';
 
 dayjs.extend(localizedFormat)
 

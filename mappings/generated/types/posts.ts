@@ -1,5 +1,5 @@
 import { createTypeUnsafe } from "@polkadot/types/create";
-import { SubstrateEvent, SubstrateExtrinsic } from "@dzlzv/hydra-common";
+import { SubstrateEvent, SubstrateExtrinsic } from "@joystream/hydra-common";
 import { Codec } from "@polkadot/types/types";
 import { typeRegistry } from ".";
 
@@ -19,8 +19,15 @@ export namespace Posts {
 
     constructor(public readonly ctx: SubstrateEvent) {}
 
-    get data(): PostCreated_Params {
-      return new PostCreated_Params(this.ctx);
+    get params(): [AccountId, PostId] {
+      return [
+        createTypeUnsafe<AccountId & Codec>(typeRegistry, "AccountId", [
+          this.ctx.params[0].value
+        ]),
+        createTypeUnsafe<PostId & Codec>(typeRegistry, "PostId", [
+          this.ctx.params[1].value
+        ])
+      ];
     }
 
     validateParams(): boolean {
@@ -37,28 +44,20 @@ export namespace Posts {
     }
   }
 
-  class PostCreated_Params {
-    constructor(public readonly ctx: SubstrateEvent) {}
-
-    get accountId(): AccountId {
-      return createTypeUnsafe<AccountId & Codec>(typeRegistry, "AccountId", [
-        this.ctx.params[0].value
-      ]);
-    }
-
-    get postId(): PostId {
-      return createTypeUnsafe<PostId & Codec>(typeRegistry, "PostId", [
-        this.ctx.params[1].value
-      ]);
-    }
-  }
   export class PostUpdatedEvent {
     public readonly expectedParamTypes = ["AccountId", "PostId"];
 
     constructor(public readonly ctx: SubstrateEvent) {}
 
-    get data(): PostUpdated_Params {
-      return new PostUpdated_Params(this.ctx);
+    get params(): [AccountId, PostId] {
+      return [
+        createTypeUnsafe<AccountId & Codec>(typeRegistry, "AccountId", [
+          this.ctx.params[0].value
+        ]),
+        createTypeUnsafe<PostId & Codec>(typeRegistry, "PostId", [
+          this.ctx.params[1].value
+        ])
+      ];
     }
 
     validateParams(): boolean {
@@ -75,28 +74,20 @@ export namespace Posts {
     }
   }
 
-  class PostUpdated_Params {
-    constructor(public readonly ctx: SubstrateEvent) {}
-
-    get accountId(): AccountId {
-      return createTypeUnsafe<AccountId & Codec>(typeRegistry, "AccountId", [
-        this.ctx.params[0].value
-      ]);
-    }
-
-    get postId(): PostId {
-      return createTypeUnsafe<PostId & Codec>(typeRegistry, "PostId", [
-        this.ctx.params[1].value
-      ]);
-    }
-  }
   export class PostSharedEvent {
     public readonly expectedParamTypes = ["AccountId", "PostId"];
 
     constructor(public readonly ctx: SubstrateEvent) {}
 
-    get data(): PostShared_Params {
-      return new PostShared_Params(this.ctx);
+    get params(): [AccountId, PostId] {
+      return [
+        createTypeUnsafe<AccountId & Codec>(typeRegistry, "AccountId", [
+          this.ctx.params[0].value
+        ]),
+        createTypeUnsafe<PostId & Codec>(typeRegistry, "PostId", [
+          this.ctx.params[1].value
+        ])
+      ];
     }
 
     validateParams(): boolean {
@@ -110,22 +101,6 @@ export namespace Posts {
         }
       });
       return valid;
-    }
-  }
-
-  class PostShared_Params {
-    constructor(public readonly ctx: SubstrateEvent) {}
-
-    get accountId(): AccountId {
-      return createTypeUnsafe<AccountId & Codec>(typeRegistry, "AccountId", [
-        this.ctx.params[0].value
-      ]);
-    }
-
-    get postId(): PostId {
-      return createTypeUnsafe<PostId & Codec>(typeRegistry, "PostId", [
-        this.ctx.params[1].value
-      ]);
     }
   }
 
