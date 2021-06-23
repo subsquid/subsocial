@@ -26,10 +26,10 @@ services:
       - REDIS_URI=redis://redis:6379/0
       - DEBUG=index*
       - BLOCK_HEIGHT=658170
-      - TYPES_JSON=typedefs.json
+      - BUNDLE_TYPES=bundle.json
       - WS_PROVIDER_ENDPOINT_URI=wss://arch.subsocial.network
     volumes:
-      - ./typedefs.json:/home/hydra/packages/hydra-indexer/typedefs.json
+      - ./bundle.json:/home/hydra/packages/hydra-indexer/bundle.json
     command: >
       sh -c "yarn db:bootstrap && yarn start:prod"
     depends_on:
