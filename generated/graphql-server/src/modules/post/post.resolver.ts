@@ -33,6 +33,8 @@ import { PostService } from './post.service';
 
 import { Tag } from '../tag/tag.model';
 import { TagService } from '../tag/tag.service';
+import { TreasuryProposal } from '../treasury-proposal/treasury-proposal.model';
+import { TreasuryProposalService } from '../treasury-proposal/treasury-proposal.service';
 import { getConnection, getRepository, In, Not } from 'typeorm';
 import _ from 'lodash';
 
@@ -129,5 +131,10 @@ export class PostResolver {
   @FieldResolver(() => Tag)
   async tags(@Root() r: Post, @Ctx() ctx: BaseContext): Promise<Tag[] | null> {
     return ctx.dataLoader.loaders.Post.tags.load(r);
+  }
+
+  @FieldResolver(() => TreasuryProposal)
+  async treasuryProposal(@Root() r: Post, @Ctx() ctx: BaseContext): Promise<TreasuryProposal | null> {
+    return ctx.dataLoader.loaders.Post.treasuryProposal.load(r);
   }
 }

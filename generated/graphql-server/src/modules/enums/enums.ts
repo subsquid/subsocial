@@ -3,3 +3,8 @@ export enum PostKind {
   SharedPost = 'SharedPost',
   RegularPost = 'RegularPost'
 }
+export enum Network {
+  subsocial = 'subsocial',
+  polkadot = 'polkadot',
+  kusama = 'kusama'
+}

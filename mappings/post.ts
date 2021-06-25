@@ -1,7 +1,7 @@
 import { DatabaseManager, EventContext, StoreContext } from "@joystream/hydra-common"
 import { resolvePostStruct, resolveIpfsPostData } from './resolvers/resolvePostData';
 import { Post } from '../generated/graphql-server/src/modules/post/post.model';
-import { getDateWithoutTime } from './utils';
+import { getDateWithoutTime, getOrInsertProposal } from './utils';
 import { PostKind } from '../generated/graphql-server/src/modules/enums/enums';
 import { PostId, SpaceId } from '@subsocial/types/substrate/interfaces';
 import { insertTagInPostTags } from './tag';
@@ -86,8 +86,16 @@ export async function postCreated({ event, store }: EventContext & StoreContext)
 
     const tags = await insertTagInPostTags(store, postContent.tags, post.postId, post)
 
+
     if (!isEmptyArray(tags)) {
       post.tags = tags
+    }
+
+    const meta = postContent.meta
+
+    if(meta && !isEmptyArray(meta)) {
+      const proposal = await getOrInsertProposal(store, meta[0], post)
+      post.treasuryProposal = proposal
     }
   }
 

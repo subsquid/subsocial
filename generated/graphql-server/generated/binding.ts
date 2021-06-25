@@ -16,7 +16,10 @@ export interface Query {
     spacesWithSubnet: <T = Array<Space>>(args: { offset?: Int | null, limit?: Int | null, where?: SpaceWhereInput | null, subnetId?: String | null, orderBy?: Array<SpaceOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
     tags: <T = Array<Tag>>(args: { offset?: Int | null, limit?: Int | null, where?: TagWhereInput | null, orderBy?: Array<TagOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
     tagByUniqueInput: <T = Tag | null>(args: { where: TagWhereUniqueInput }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T | null> ,
-    tagsConnection: <T = TagConnection>(args: { first?: Int | null, after?: String | null, last?: Int | null, before?: String | null, where?: TagWhereInput | null, orderBy?: Array<TagOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> 
+    tagsConnection: <T = TagConnection>(args: { first?: Int | null, after?: String | null, last?: Int | null, before?: String | null, where?: TagWhereInput | null, orderBy?: Array<TagOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
+    treasuryProposals: <T = Array<TreasuryProposal>>(args: { offset?: Int | null, limit?: Int | null, where?: TreasuryProposalWhereInput | null, orderBy?: Array<TreasuryProposalOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
+    treasuryProposalByUniqueInput: <T = TreasuryProposal | null>(args: { where: TreasuryProposalWhereUniqueInput }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T | null> ,
+    treasuryProposalsConnection: <T = TreasuryProposalConnection>(args: { first?: Int | null, after?: String | null, last?: Int | null, before?: String | null, where?: TreasuryProposalWhereInput | null, orderBy?: Array<TreasuryProposalOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> 
   }
 
 export interface Mutation {}
@@ -48,6 +51,10 @@ export const Binding = makeBindingClass<BindingConstructor<Binding>>({ schema: s
 /**
  * Types
 */
+
+export type Network =   'subsocial' |
+  'polkadot' |
+  'kusama'
 
 export type PostKind =   'Comment' |
   'SharedPost' |
@@ -108,7 +115,9 @@ export type PostOrderByInput =   'createdAt_ASC' |
   'canonical_ASC' |
   'canonical_DESC' |
   'tagsOriginal_ASC' |
-  'tagsOriginal_DESC'
+  'tagsOriginal_DESC' |
+  'treasuryProposal_ASC' |
+  'treasuryProposal_DESC'
 
 export type SpaceOrderByInput =   'createdAt_ASC' |
   'createdAt_DESC' |
@@ -160,6 +169,19 @@ export type TagOrderByInput =   'createdAt_ASC' |
   'tag_ASC' |
   'tag_DESC'
 
+export type TreasuryProposalOrderByInput =   'createdAt_ASC' |
+  'createdAt_DESC' |
+  'updatedAt_ASC' |
+  'updatedAt_DESC' |
+  'deletedAt_ASC' |
+  'deletedAt_DESC' |
+  'postId_ASC' |
+  'postId_DESC' |
+  'proposalId_ASC' |
+  'proposalId_DESC' |
+  'network_ASC' |
+  'network_DESC'
+
 export interface BaseWhereInput {
   id_eq?: String | null
   id_in?: String[] | String | null
@@ -210,6 +232,7 @@ export interface PostCreateInput {
   image?: String | null
   canonical?: String | null
   tagsOriginal?: String | null
+  treasuryProposal?: ID_Input | null
 }
 
 export interface PostUpdateInput {
@@ -238,6 +261,7 @@ export interface PostUpdateInput {
   image?: String | null
   canonical?: String | null
   tagsOriginal?: String | null
+  treasuryProposal?: ID_Input | null
 }
 
 export interface PostWhereInput {
@@ -395,9 +419,12 @@ export interface PostWhereInput {
   tagsOriginal_startsWith?: String | null
   tagsOriginal_endsWith?: String | null
   tagsOriginal_in?: String[] | String | null
+  treasuryProposal_eq?: ID_Input | null
+  treasuryProposal_in?: ID_Output[] | ID_Output | null
   tags_none?: TagWhereInput | null
   tags_some?: TagWhereInput | null
   tags_every?: TagWhereInput | null
+  treasuryProposal?: TreasuryProposalWhereInput | null
   AND?: PostWhereInput[] | PostWhereInput | null
   OR?: PostWhereInput[] | PostWhereInput | null
 }
@@ -625,6 +652,67 @@ export interface TagWhereUniqueInput {
   id: ID_Output
 }
 
+export interface TreasuryProposalCreateInput {
+  postId: String
+  proposalId: Float
+  network: Network
+}
+
+export interface TreasuryProposalUpdateInput {
+  postId?: String | null
+  proposalId?: Float | null
+  network?: Network | null
+}
+
+export interface TreasuryProposalWhereInput {
+  id_eq?: ID_Input | null
+  id_in?: ID_Output[] | ID_Output | null
+  createdAt_eq?: DateTime | null
+  createdAt_lt?: DateTime | null
+  createdAt_lte?: DateTime | null
+  createdAt_gt?: DateTime | null
+  createdAt_gte?: DateTime | null
+  createdById_eq?: ID_Input | null
+  createdById_in?: ID_Output[] | ID_Output | null
+  updatedAt_eq?: DateTime | null
+  updatedAt_lt?: DateTime | null
+  updatedAt_lte?: DateTime | null
+  updatedAt_gt?: DateTime | null
+  updatedAt_gte?: DateTime | null
+  updatedById_eq?: ID_Input | null
+  updatedById_in?: ID_Output[] | ID_Output | null
+  deletedAt_all?: Boolean | null
+  deletedAt_eq?: DateTime | null
+  deletedAt_lt?: DateTime | null
+  deletedAt_lte?: DateTime | null
+  deletedAt_gt?: DateTime | null
+  deletedAt_gte?: DateTime | null
+  deletedById_eq?: ID_Input | null
+  deletedById_in?: ID_Output[] | ID_Output | null
+  postId_eq?: String | null
+  postId_contains?: String | null
+  postId_startsWith?: String | null
+  postId_endsWith?: String | null
+  postId_in?: String[] | String | null
+  proposalId_eq?: Int | null
+  proposalId_gt?: Int | null
+  proposalId_gte?: Int | null
+  proposalId_lt?: Int | null
+  proposalId_lte?: Int | null
+  proposalId_in?: Int[] | Int | null
+  network_eq?: Network | null
+  network_in?: Network[] | Network | null
+  posttreasuryProposal_none?: PostWhereInput | null
+  posttreasuryProposal_some?: PostWhereInput | null
+  posttreasuryProposal_every?: PostWhereInput | null
+  AND?: TreasuryProposalWhereInput[] | TreasuryProposalWhereInput | null
+  OR?: TreasuryProposalWhereInput[] | TreasuryProposalWhereInput | null
+}
+
+export interface TreasuryProposalWhereUniqueInput {
+  id: ID_Output
+}
+
 export interface BaseGraphQLObject {
   id: ID_Output
   createdAt: DateTime
@@ -704,6 +792,8 @@ export interface Post extends BaseGraphQLObject {
   canonical?: String | null
   tagsOriginal?: String | null
   tags: Array<Tag>
+  treasuryProposal?: TreasuryProposal | null
+  treasuryProposalId?: String | null
 }
 
 export interface PostConnection {
@@ -790,6 +880,32 @@ export interface TagConnection {
 
 export interface TagEdge {
   node: Tag
+  cursor: String
+}
+
+export interface TreasuryProposal extends BaseGraphQLObject {
+  id: ID_Output
+  createdAt: DateTime
+  createdById: String
+  updatedAt?: DateTime | null
+  updatedById?: String | null
+  deletedAt?: DateTime | null
+  deletedById?: String | null
+  version: Int
+  postId: String
+  proposalId: Int
+  network: Network
+  posttreasuryProposal?: Array<Post> | null
+}
+
+export interface TreasuryProposalConnection {
+  totalCount: Int
+  edges: Array<TreasuryProposalEdge>
+  pageInfo: PageInfo
+}
+
+export interface TreasuryProposalEdge {
+  node: TreasuryProposal
   cursor: String
 }
 

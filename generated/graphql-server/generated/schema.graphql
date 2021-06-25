@@ -67,6 +67,12 @@ interface DeleteResponse {
   id: ID!
 }
 
+enum Network {
+  subsocial
+  polkadot
+  kusama
+}
+
 type PageInfo {
   hasNextPage: Boolean!
   hasPreviousPage: Boolean!
@@ -109,6 +115,8 @@ type Post implements BaseGraphQLObject {
   canonical: String
   tagsOriginal: String
   tags: [Tag!]!
+  treasuryProposal: TreasuryProposal
+  treasuryProposalId: String
 }
 
 type PostConnection {
@@ -143,6 +151,7 @@ input PostCreateInput {
   image: String
   canonical: String
   tagsOriginal: String
+  treasuryProposal: ID
 }
 
 type PostEdge {
@@ -213,6 +222,8 @@ enum PostOrderByInput {
   canonical_DESC
   tagsOriginal_ASC
   tagsOriginal_DESC
+  treasuryProposal_ASC
+  treasuryProposal_DESC
 }
 
 input PostUpdateInput {
@@ -241,6 +252,7 @@ input PostUpdateInput {
   image: String
   canonical: String
   tagsOriginal: String
+  treasuryProposal: ID
 }
 
 input PostWhereInput {
@@ -398,9 +410,12 @@ input PostWhereInput {
   tagsOriginal_startsWith: String
   tagsOriginal_endsWith: String
   tagsOriginal_in: [String!]
+  treasuryProposal_eq: ID
+  treasuryProposal_in: [ID!]
   tags_none: TagWhereInput
   tags_some: TagWhereInput
   tags_every: TagWhereInput
+  treasuryProposal: TreasuryProposalWhereInput
   AND: [PostWhereInput!]
   OR: [PostWhereInput!]
 }
@@ -428,6 +443,9 @@ type Query {
   tags(offset: Int, limit: Int = 50, where: TagWhereInput, orderBy: [TagOrderByInput!]): [Tag!]!
   tagByUniqueInput(where: TagWhereUniqueInput!): Tag
   tagsConnection(first: Int, after: String, last: Int, before: String, where: TagWhereInput, orderBy: [TagOrderByInput!]): TagConnection!
+  treasuryProposals(offset: Int, limit: Int = 50, where: TreasuryProposalWhereInput, orderBy: [TreasuryProposalOrderByInput!]): [TreasuryProposal!]!
+  treasuryProposalByUniqueInput(where: TreasuryProposalWhereUniqueInput!): TreasuryProposal
+  treasuryProposalsConnection(first: Int, after: String, last: Int, before: String, where: TreasuryProposalWhereInput, orderBy: [TreasuryProposalOrderByInput!]): TreasuryProposalConnection!
 }
 
 type Space implements BaseGraphQLObject {
@@ -773,5 +791,107 @@ input TagWhereInput {
 }
 
 input TagWhereUniqueInput {
+  id: ID!
+}
+
+type TreasuryProposal implements BaseGraphQLObject {
+  id: ID!
+  createdAt: DateTime!
+  createdById: String!
+  updatedAt: DateTime
+  updatedById: String
+  deletedAt: DateTime
+  deletedById: String
+  version: Int!
+  postId: String!
+  proposalId: Int!
+  network: Network!
+  posttreasuryProposal: [Post!]
+}
+
+type TreasuryProposalConnection {
+  totalCount: Int!
+  edges: [TreasuryProposalEdge!]!
+  pageInfo: PageInfo!
+}
+
+input TreasuryProposalCreateInput {
+  postId: String!
+  proposalId: Float!
+  network: Network!
+}
+
+type TreasuryProposalEdge {
+  node: TreasuryProposal!
+  cursor: String!
+}
+
+enum TreasuryProposalOrderByInput {
+  createdAt_ASC
+  createdAt_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+  deletedAt_ASC
+  deletedAt_DESC
+  postId_ASC
+  postId_DESC
+  proposalId_ASC
+  proposalId_DESC
+  network_ASC
+  network_DESC
+}
+
+input TreasuryProposalUpdateInput {
+  postId: String
+  proposalId: Float
+  network: Network
+}
+
+input TreasuryProposalWhereInput {
+  id_eq: ID
+  id_in: [ID!]
+  createdAt_eq: DateTime
+  createdAt_lt: DateTime
+  createdAt_lte: DateTime
+  createdAt_gt: DateTime
+  createdAt_gte: DateTime
+  createdById_eq: ID
+  createdById_in: [ID!]
+  updatedAt_eq: DateTime
+  updatedAt_lt: DateTime
+  updatedAt_lte: DateTime
+  updatedAt_gt: DateTime
+  updatedAt_gte: DateTime
+  updatedById_eq: ID
+  updatedById_in: [ID!]
+  deletedAt_all: Boolean
+  deletedAt_eq: DateTime
+  deletedAt_lt: DateTime
+  deletedAt_lte: DateTime
+  deletedAt_gt: DateTime
+  deletedAt_gte: DateTime
+  deletedById_eq: ID
+  deletedById_in: [ID!]
+  postId_eq: String
+  postId_contains: String
+  postId_startsWith: String
+  postId_endsWith: String
+  postId_in: [String!]
+  proposalId_eq: Int
+  proposalId_gt: Int
+  proposalId_gte: Int
+  proposalId_lt: Int
+  proposalId_lte: Int
+  proposalId_in: [Int!]
+  network_eq: Network
+  network_in: [Network!]
+  posttreasuryProposal_none: PostWhereInput
+  posttreasuryProposal_some: PostWhereInput
+  posttreasuryProposal_every: PostWhereInput
+  AND: [TreasuryProposalWhereInput!]
+  OR: [TreasuryProposalWhereInput!]
+}
+
+input TreasuryProposalWhereUniqueInput {
   id: ID!
 }

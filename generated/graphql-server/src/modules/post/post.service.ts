@@ -12,6 +12,8 @@ import { PostWhereArgs, PostWhereInput } from '../../../generated';
 
 import { Tag } from '../tag/tag.model';
 import { TagService } from '../tag/tag.service';
+import { TreasuryProposal } from '../treasury-proposal/treasury-proposal.model';
+import { TreasuryProposalService } from '../treasury-proposal/treasury-proposal.service';
 import { getConnection, getRepository, In, Not } from 'typeorm';
 import _ from 'lodash';
 
@@ -19,6 +21,8 @@ import _ from 'lodash';
 export class PostService extends WarthogBaseService<Post> {
   @Inject('TagService')
   public readonly tagsService!: TagService;
+  @Inject('TreasuryProposalService')
+  public readonly treasuryProposalService!: TreasuryProposalService;
 
   constructor(@InjectRepository(Post) protected readonly repository: Repository<Post>) {
     super(Post, repository);
@@ -56,6 +60,9 @@ export class PostService extends WarthogBaseService<Post> {
     delete where.tags_some;
     delete where.tags_none;
     delete where.tags_every;
+    // remove relation filters to enable warthog query builders
+    const { treasuryProposal } = where;
+    delete where.treasuryProposal;
 
     let mainQuery = this.buildFindQueryWithParams(<any>where, orderBy, undefined, fields, 'main').take(undefined); // remove LIMIT
 
@@ -125,6 +132,17 @@ export class PostService extends WarthogBaseService<Post> {
                     AND tags_subq.cnt_filtered = tags_subq.cnt_total
                 )`);
       }
+    }
+
+    if (treasuryProposal) {
+      // OTO or MTO
+      const treasuryProposalQuery = this.treasuryProposalService
+        .buildFindQueryWithParams(<any>treasuryProposal, undefined, undefined, ['id'], 'treasuryProposal')
+        .take(undefined); // remove the default LIMIT
+
+      mainQuery = mainQuery.andWhere(`"post"."treasury_proposal_id" IN (${treasuryProposalQuery.getQuery()})`);
+
+      parameters = { ...parameters, ...treasuryProposalQuery.getParameters() };
     }
 
     mainQuery = mainQuery.setParameters(parameters);

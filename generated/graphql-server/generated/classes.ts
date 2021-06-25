@@ -24,6 +24,7 @@ const { GraphQLJSONObject } = require('graphql-type-json');
 import { BaseWhereInput, JsonObject, PaginationArgs, DateOnlyString, DateTimeString, BigInt, Bytes } from 'warthog';
 
 import { PostKind } from "../src/modules/post/post.model";
+import { Network } from "../src/modules/treasury-proposal/treasury-proposal.model";
 
 // @ts-ignore
 import { Space } from "../src/modules/space/space.model";
@@ -31,6 +32,8 @@ import { Space } from "../src/modules/space/space.model";
 import { Tag } from "../src/modules/tag/tag.model";
 // @ts-ignore
 import { Post } from "../src/modules/post/post.model";
+// @ts-ignore
+import { TreasuryProposal } from "../src/modules/treasury-proposal/treasury-proposal.model";
 
 export enum SpaceOrderByEnum {
   createdAt_ASC = "createdAt_ASC",
@@ -850,7 +853,10 @@ export enum PostOrderByEnum {
   canonical_DESC = "canonical_DESC",
 
   tagsOriginal_ASC = "tagsOriginal_ASC",
-  tagsOriginal_DESC = "tagsOriginal_DESC"
+  tagsOriginal_DESC = "tagsOriginal_DESC",
+
+  treasuryProposal_ASC = "treasuryProposal_ASC",
+  treasuryProposal_DESC = "treasuryProposal_DESC"
 }
 
 registerEnumType(PostOrderByEnum, {
@@ -1321,6 +1327,12 @@ export class PostWhereInput {
   @TypeGraphQLField(() => [String], { nullable: true })
   tagsOriginal_in?: string[];
 
+  @TypeGraphQLField(() => ID, { nullable: true })
+  treasuryProposal_eq?: string;
+
+  @TypeGraphQLField(() => [ID], { nullable: true })
+  treasuryProposal_in?: string[];
+
   @TypeGraphQLField(() => TagWhereInput, { nullable: true })
   tags_none?: TagWhereInput;
 
@@ -1329,6 +1341,9 @@ export class PostWhereInput {
 
   @TypeGraphQLField(() => TagWhereInput, { nullable: true })
   tags_every?: TagWhereInput;
+
+  @TypeGraphQLField(() => TreasuryProposalWhereInput, { nullable: true })
+  treasuryProposal?: TreasuryProposalWhereInput;
 
   @TypeGraphQLField(() => PostWhereInput, { nullable: true })
   AND?: [PostWhereInput];
@@ -1419,6 +1434,9 @@ export class PostCreateInput {
 
   @TypeGraphQLField({ nullable: true })
   tagsOriginal?: string;
+
+  @TypeGraphQLField(() => ID, { nullable: true })
+  treasuryProposal?: string;
 }
 
 @TypeGraphQLInputType()
@@ -1497,6 +1515,9 @@ export class PostUpdateInput {
 
   @TypeGraphQLField({ nullable: true })
   tagsOriginal?: string;
+
+  @TypeGraphQLField(() => ID, { nullable: true })
+  treasuryProposal?: string;
 }
 
 @ArgsType()
@@ -1518,4 +1539,208 @@ export class PostCreateManyArgs {
 export class PostUpdateArgs {
   @TypeGraphQLField() data!: PostUpdateInput;
   @TypeGraphQLField() where!: PostWhereUniqueInput;
+}
+
+export enum TreasuryProposalOrderByEnum {
+  createdAt_ASC = "createdAt_ASC",
+  createdAt_DESC = "createdAt_DESC",
+
+  updatedAt_ASC = "updatedAt_ASC",
+  updatedAt_DESC = "updatedAt_DESC",
+
+  deletedAt_ASC = "deletedAt_ASC",
+  deletedAt_DESC = "deletedAt_DESC",
+
+  postId_ASC = "postId_ASC",
+  postId_DESC = "postId_DESC",
+
+  proposalId_ASC = "proposalId_ASC",
+  proposalId_DESC = "proposalId_DESC",
+
+  network_ASC = "network_ASC",
+  network_DESC = "network_DESC"
+}
+
+registerEnumType(TreasuryProposalOrderByEnum, {
+  name: "TreasuryProposalOrderByInput"
+});
+
+@TypeGraphQLInputType()
+export class TreasuryProposalWhereInput {
+  @TypeGraphQLField(() => ID, { nullable: true })
+  id_eq?: string;
+
+  @TypeGraphQLField(() => [ID], { nullable: true })
+  id_in?: string[];
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  createdAt_eq?: Date;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  createdAt_lt?: Date;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  createdAt_lte?: Date;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  createdAt_gt?: Date;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  createdAt_gte?: Date;
+
+  @TypeGraphQLField(() => ID, { nullable: true })
+  createdById_eq?: string;
+
+  @TypeGraphQLField(() => [ID], { nullable: true })
+  createdById_in?: string[];
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  updatedAt_eq?: Date;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  updatedAt_lt?: Date;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  updatedAt_lte?: Date;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  updatedAt_gt?: Date;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  updatedAt_gte?: Date;
+
+  @TypeGraphQLField(() => ID, { nullable: true })
+  updatedById_eq?: string;
+
+  @TypeGraphQLField(() => [ID], { nullable: true })
+  updatedById_in?: string[];
+
+  @TypeGraphQLField({ nullable: true })
+  deletedAt_all?: Boolean;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  deletedAt_eq?: Date;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  deletedAt_lt?: Date;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  deletedAt_lte?: Date;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  deletedAt_gt?: Date;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  deletedAt_gte?: Date;
+
+  @TypeGraphQLField(() => ID, { nullable: true })
+  deletedById_eq?: string;
+
+  @TypeGraphQLField(() => [ID], { nullable: true })
+  deletedById_in?: string[];
+
+  @TypeGraphQLField({ nullable: true })
+  postId_eq?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  postId_contains?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  postId_startsWith?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  postId_endsWith?: string;
+
+  @TypeGraphQLField(() => [String], { nullable: true })
+  postId_in?: string[];
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  proposalId_eq?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  proposalId_gt?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  proposalId_gte?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  proposalId_lt?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  proposalId_lte?: number;
+
+  @TypeGraphQLField(() => [Int], { nullable: true })
+  proposalId_in?: number[];
+
+  @TypeGraphQLField(() => Network, { nullable: true })
+  network_eq?: Network;
+
+  @TypeGraphQLField(() => [Network], { nullable: true })
+  network_in?: Network[];
+
+  @TypeGraphQLField(() => PostWhereInput, { nullable: true })
+  posttreasuryProposal_none?: PostWhereInput;
+
+  @TypeGraphQLField(() => PostWhereInput, { nullable: true })
+  posttreasuryProposal_some?: PostWhereInput;
+
+  @TypeGraphQLField(() => PostWhereInput, { nullable: true })
+  posttreasuryProposal_every?: PostWhereInput;
+
+  @TypeGraphQLField(() => TreasuryProposalWhereInput, { nullable: true })
+  AND?: [TreasuryProposalWhereInput];
+
+  @TypeGraphQLField(() => TreasuryProposalWhereInput, { nullable: true })
+  OR?: [TreasuryProposalWhereInput];
+}
+
+@TypeGraphQLInputType()
+export class TreasuryProposalWhereUniqueInput {
+  @TypeGraphQLField(() => ID)
+  id?: string;
+}
+
+@TypeGraphQLInputType()
+export class TreasuryProposalCreateInput {
+  @TypeGraphQLField()
+  postId!: string;
+
+  @TypeGraphQLField()
+  proposalId!: number;
+
+  @TypeGraphQLField(() => Network)
+  network!: Network;
+}
+
+@TypeGraphQLInputType()
+export class TreasuryProposalUpdateInput {
+  @TypeGraphQLField({ nullable: true })
+  postId?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  proposalId?: number;
+
+  @TypeGraphQLField(() => Network, { nullable: true })
+  network?: Network;
+}
+
+@ArgsType()
+export class TreasuryProposalWhereArgs extends PaginationArgs {
+  @TypeGraphQLField(() => TreasuryProposalWhereInput, { nullable: true })
+  where?: TreasuryProposalWhereInput;
+
+  @TypeGraphQLField(() => TreasuryProposalOrderByEnum, { nullable: true })
+  orderBy?: TreasuryProposalOrderByEnum[];
+}
+
+@ArgsType()
+export class TreasuryProposalCreateManyArgs {
+  @TypeGraphQLField(() => [TreasuryProposalCreateInput])
+  data!: TreasuryProposalCreateInput[];
+}
+
+@ArgsType()
+export class TreasuryProposalUpdateArgs {
+  @TypeGraphQLField() data!: TreasuryProposalUpdateInput;
+  @TypeGraphQLField() where!: TreasuryProposalWhereUniqueInput;
 }
