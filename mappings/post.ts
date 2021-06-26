@@ -27,7 +27,10 @@ export async function postCreated({ event, store }: EventContext & StoreContext)
 
   const post = new Post()
 
-  const [, value] = (Object.entries(event.extrinsic.args[1].value)[0] || []) as [PostKind, string | object]
+  const [, value] = (Object.entries(
+    event.extrinsic.args[1]?.value || event.extrinsic.args[0]?.value
+  )[0] || []) as [PostKind, string | object]
+
   post.createdByAccount = postStruct.createdByAccount
   post.createdAtBlock = postStruct.createdAtBlock
   post.createdAtTime = postStruct.createdAtTime
