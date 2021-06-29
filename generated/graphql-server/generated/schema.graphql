@@ -68,9 +68,9 @@ interface DeleteResponse {
 }
 
 enum Network {
-  subsocial
-  polkadot
-  kusama
+  Subsocial
+  Polkadot
+  Kusama
 }
 
 type PageInfo {

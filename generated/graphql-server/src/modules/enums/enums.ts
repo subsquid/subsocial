@@ -4,7 +4,7 @@ export enum PostKind {
   RegularPost = 'RegularPost'
 }
 export enum Network {
-  subsocial = 'subsocial',
-  polkadot = 'polkadot',
-  kusama = 'kusama'
+  Subsocial = 'Subsocial',
+  Polkadot = 'Polkadot',
+  Kusama = 'Kusama'
 }

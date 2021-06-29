@@ -52,9 +52,9 @@ export const Binding = makeBindingClass<BindingConstructor<Binding>>({ schema: s
  * Types
 */
 
-export type Network =   'subsocial' |
-  'polkadot' |
-  'kusama'
+export type Network =   'Subsocial' |
+  'Polkadot' |
+  'Kusama'
 
 export type PostKind =   'Comment' |
   'SharedPost' |

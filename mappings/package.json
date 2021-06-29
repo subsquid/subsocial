@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@joystream/hydra-common": "^3.1.0-alpha.1",
-    "@subsocial/types": "0.5.5"
+    "@subsocial/types": "0.5.8"
   },
   "devDependencies": {
     "copyfiles": "^2.4.1",

@@ -5,9 +5,9 @@ enum PostKind {
 }
 
 enum Network {
-  subsocial
-  polkadot
-  kusama
+  Subsocial
+  Polkadot
+  Kusama
 }
 
 type Space @entity {

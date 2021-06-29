@@ -47,8 +47,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@subsocial/api": "0.5.5",
-    "@subsocial/types": "0.5.5",
+    "@subsocial/api": "0.5.8",
+    "@subsocial/types": "0.5.8",
     "@subsocial/utils": "^0.4.39",
     "tslib": "^2.0.0",
     "@types/bn.js": "^4.11.6",
