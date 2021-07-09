@@ -39,7 +39,7 @@ const operations: Record<string, any> = {
 
 export const getOperation = <T>(op: string, value: T): FindOperator<T> => operations[op](value);
 
-export const parseWhere = (where: WhereInputType, subnetQueryPart: string): string => {
+export const parseWhere = (where: WhereInputType, subnetQueryPart?: string): string => {
   if (!where) return subnetQueryPart ? `where ${subnetQueryPart}` : '';
 
   let result: string[] = [];

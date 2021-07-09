@@ -1,44 +1,49 @@
-import { ArgsType, Field, Args, Query, Resolver } from 'type-graphql';
+import { ArgsType, Field, Args, Query, Resolver, Int } from 'type-graphql';
 import { Post } from './post.model';
 import { Fields, PaginationArgs } from 'warthog';
 import { getRepository } from 'typeorm';
 import { camelToSnakeCase, parseOffset, parseOrderBy, parseWhere, parseLimit } from '../../utils';
 import { PostOrderByEnum, PostWhereInput } from '../../../generated';
+import { KusamaProposalsWhereInput } from '../../../generated/classes';
 
 const named = require('yesql').pg;
 
 @ArgsType()
-export class PostWithSubnetConnectionWhereArgs extends PaginationArgs {
+export class PostwithProposalConnectionWhereArgs extends PaginationArgs {
   @Field(() => PostWhereInput, { nullable: true })
   where?: PostWhereInput;
 
+  @Field(() => KusamaProposalsWhereInput, { nullable: true })
+  proposalWhere?: KusamaProposalsWhereInput;
+
   @Field(() => String, { nullable: true })
-  subnetId?: string;
+  network?: String;
+
+  @Field(() => Int, { nullable: true })
+  proposalIndex?: number;
 
   @Field(() => [PostOrderByEnum], { nullable: true })
   orderBy?: PostOrderByEnum[];
 }
 
 @Resolver(Post)
-export class SpaceResolver {
+export class PostWithProposal {
   @Query(() => [Post])
-  async postsWithSubnet(
-    @Args() { where, orderBy, limit, offset, subnetId: subnetId }: PostWithSubnetConnectionWhereArgs,
+  async postWithProposal(
+    @Args() { where, proposalWhere, orderBy, limit, offset, network, proposalIndex  }: PostwithProposalConnectionWhereArgs,
     @Fields() fields: string[]
   ): Promise<Post[]> {
-    const subnetQueryPart = subnetId
+    const queryPart = network && proposalIndex
       ? `
-        (space_id in (select child_space_id from subnet where parent_id = :subnetId) or root_post_id in
-          (select post_id from public.post where space_id in
-            (select child_space_id from subnet where parent_id = :subnetId)))`
+        (proposal_index = (select proposal_index from public.${network}_proposals ${proposalWhere ? `${parseWhere(proposalWhere)} and`: 'where'} proposal_index = :proposalIndex ))`
       : '';
 
-    const params = { subnetId, offset, limit };
+    const params = { network, offset, limit, proposalIndex };
 
     const result: Post[] = await getRepository(Post).query(
       named(`
       select ${camelToSnakeCase(fields, 'select')} from public.post
-      ${parseWhere(where, subnetQueryPart)}
+      ${parseWhere(where, queryPart)}
       ${parseOrderBy(orderBy)}
       ${parseOffset(offset)}
       ${parseLimit(limit)}

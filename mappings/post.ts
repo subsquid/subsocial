@@ -1,7 +1,7 @@
 import { DatabaseManager, EventContext, StoreContext } from "@joystream/hydra-common"
 import { resolvePostStruct, resolveIpfsPostData } from './resolvers/resolvePostData';
 import { Post } from '../generated/graphql-server/src/modules/post/post.model';
-import { getDateWithoutTime, getOrInsertProposal } from './utils';
+import { getDateWithoutTime/* , getOrInsertProposal */ } from './utils';
 import { PostKind } from '../generated/graphql-server/src/modules/enums/enums';
 import { PostId, SpaceId } from '@subsocial/types/substrate/interfaces';
 import { insertTagInPostTags } from './tag';
@@ -27,9 +27,7 @@ export async function postCreated({ event, store }: EventContext & StoreContext)
 
   const post = new Post()
 
-  const [, value] = (Object.entries(
-    event.extrinsic.args[1]?.value || event.extrinsic.args[0]?.value
-  )[0] || []) as [PostKind, string | object]
+  const [, value] = (Object.entries(event.extrinsic.args[1]?.value)[0] || []) as [PostKind, string | object]
 
   post.createdByAccount = postStruct.createdByAccount
   post.createdAtBlock = postStruct.createdAtBlock
@@ -97,8 +95,8 @@ export async function postCreated({ event, store }: EventContext & StoreContext)
     const meta = postContent.meta
 
     if(meta && !isEmptyArray(meta)) {
-      const proposal = await getOrInsertProposal(store, meta[0], post)
-      post.treasuryProposal = proposal
+      // const proposal = await getOrInsertProposal(store, meta[0], post)
+      post.proposalIndex = meta[0].proposalIndex
     }
   }
 

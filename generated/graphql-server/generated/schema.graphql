@@ -67,10 +67,132 @@ interface DeleteResponse {
   id: ID!
 }
 
-enum Network {
-  Subsocial
-  Polkadot
-  Kusama
+type KusamaProposals implements BaseGraphQLObject {
+  id: ID!
+  createdAt: DateTime!
+  createdById: String!
+  updatedAt: DateTime
+  updatedById: String
+  deletedAt: DateTime
+  deletedById: String
+  version: Int!
+  proposalIndex: Int
+  proposer: String
+  beneficiary: String
+  requestedAmount: String
+  boundedAmount: String
+  status: Status
+}
+
+type KusamaProposalsConnection {
+  totalCount: Int!
+  edges: [KusamaProposalsEdge!]!
+  pageInfo: PageInfo!
+}
+
+input KusamaProposalsCreateInput {
+  proposalIndex: Float
+  proposer: String
+  beneficiary: String
+  requestedAmount: String
+  boundedAmount: String
+  status: Status
+}
+
+type KusamaProposalsEdge {
+  node: KusamaProposals!
+  cursor: String!
+}
+
+enum KusamaProposalsOrderByInput {
+  createdAt_ASC
+  createdAt_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+  deletedAt_ASC
+  deletedAt_DESC
+  proposalIndex_ASC
+  proposalIndex_DESC
+  proposer_ASC
+  proposer_DESC
+  beneficiary_ASC
+  beneficiary_DESC
+  requestedAmount_ASC
+  requestedAmount_DESC
+  boundedAmount_ASC
+  boundedAmount_DESC
+  status_ASC
+  status_DESC
+}
+
+input KusamaProposalsUpdateInput {
+  proposalIndex: Float
+  proposer: String
+  beneficiary: String
+  requestedAmount: String
+  boundedAmount: String
+  status: Status
+}
+
+input KusamaProposalsWhereInput {
+  id_eq: ID
+  id_in: [ID!]
+  createdAt_eq: DateTime
+  createdAt_lt: DateTime
+  createdAt_lte: DateTime
+  createdAt_gt: DateTime
+  createdAt_gte: DateTime
+  createdById_eq: ID
+  createdById_in: [ID!]
+  updatedAt_eq: DateTime
+  updatedAt_lt: DateTime
+  updatedAt_lte: DateTime
+  updatedAt_gt: DateTime
+  updatedAt_gte: DateTime
+  updatedById_eq: ID
+  updatedById_in: [ID!]
+  deletedAt_all: Boolean
+  deletedAt_eq: DateTime
+  deletedAt_lt: DateTime
+  deletedAt_lte: DateTime
+  deletedAt_gt: DateTime
+  deletedAt_gte: DateTime
+  deletedById_eq: ID
+  deletedById_in: [ID!]
+  proposalIndex_eq: Int
+  proposalIndex_gt: Int
+  proposalIndex_gte: Int
+  proposalIndex_lt: Int
+  proposalIndex_lte: Int
+  proposalIndex_in: [Int!]
+  proposer_eq: String
+  proposer_contains: String
+  proposer_startsWith: String
+  proposer_endsWith: String
+  proposer_in: [String!]
+  beneficiary_eq: String
+  beneficiary_contains: String
+  beneficiary_startsWith: String
+  beneficiary_endsWith: String
+  beneficiary_in: [String!]
+  requestedAmount_eq: String
+  requestedAmount_contains: String
+  requestedAmount_startsWith: String
+  requestedAmount_endsWith: String
+  requestedAmount_in: [String!]
+  boundedAmount_eq: String
+  boundedAmount_contains: String
+  boundedAmount_startsWith: String
+  boundedAmount_endsWith: String
+  boundedAmount_in: [String!]
+  status_eq: Status
+  status_in: [Status!]
+  AND: [KusamaProposalsWhereInput!]
+  OR: [KusamaProposalsWhereInput!]
+}
+
+input KusamaProposalsWhereUniqueInput {
+  id: ID!
 }
 
 type PageInfo {
@@ -115,8 +237,7 @@ type Post implements BaseGraphQLObject {
   canonical: String
   tagsOriginal: String
   tags: [Tag!]!
-  treasuryProposal: TreasuryProposal
-  treasuryProposalId: String
+  proposalIndex: Int
 }
 
 type PostConnection {
@@ -151,7 +272,7 @@ input PostCreateInput {
   image: String
   canonical: String
   tagsOriginal: String
-  treasuryProposal: ID
+  proposalIndex: Float
 }
 
 type PostEdge {
@@ -222,8 +343,8 @@ enum PostOrderByInput {
   canonical_DESC
   tagsOriginal_ASC
   tagsOriginal_DESC
-  treasuryProposal_ASC
-  treasuryProposal_DESC
+  proposalIndex_ASC
+  proposalIndex_DESC
 }
 
 input PostUpdateInput {
@@ -252,7 +373,7 @@ input PostUpdateInput {
   image: String
   canonical: String
   tagsOriginal: String
-  treasuryProposal: ID
+  proposalIndex: Float
 }
 
 input PostWhereInput {
@@ -410,12 +531,15 @@ input PostWhereInput {
   tagsOriginal_startsWith: String
   tagsOriginal_endsWith: String
   tagsOriginal_in: [String!]
-  treasuryProposal_eq: ID
-  treasuryProposal_in: [ID!]
+  proposalIndex_eq: Int
+  proposalIndex_gt: Int
+  proposalIndex_gte: Int
+  proposalIndex_lt: Int
+  proposalIndex_lte: Int
+  proposalIndex_in: [Int!]
   tags_none: TagWhereInput
   tags_some: TagWhereInput
   tags_every: TagWhereInput
-  treasuryProposal: TreasuryProposalWhereInput
   AND: [PostWhereInput!]
   OR: [PostWhereInput!]
 }
@@ -432,9 +556,13 @@ type ProcessorState {
 }
 
 type Query {
+  kusamaProposals(offset: Int, limit: Int = 50, where: KusamaProposalsWhereInput, orderBy: [KusamaProposalsOrderByInput!]): [KusamaProposals!]!
+  kusamaProposalsByUniqueInput(where: KusamaProposalsWhereUniqueInput!): KusamaProposals
+  kusamaProposalsConnection(first: Int, after: String, last: Int, before: String, where: KusamaProposalsWhereInput, orderBy: [KusamaProposalsOrderByInput!]): KusamaProposalsConnection!
   posts(offset: Int, limit: Int = 50, where: PostWhereInput, orderBy: [PostOrderByInput!]): [Post!]!
   postByUniqueInput(where: PostWhereUniqueInput!): Post
   postsConnection(first: Int, after: String, last: Int, before: String, where: PostWhereInput, orderBy: [PostOrderByInput!]): PostConnection!
+  postWithProposal(offset: Int, limit: Int = 50, where: PostWhereInput, proposalWhere: KusamaProposalsWhereInput, network: String, proposalIndex: Int, orderBy: [PostOrderByInput!]): [Post!]!
   postsWithSubnet(offset: Int, limit: Int = 50, where: PostWhereInput, subnetId: String, orderBy: [PostOrderByInput!]): [Post!]!
   spaces(offset: Int, limit: Int = 50, where: SpaceWhereInput, orderBy: [SpaceOrderByInput!]): [Space!]!
   spaceByUniqueInput(where: SpaceWhereUniqueInput!): Space
@@ -443,9 +571,6 @@ type Query {
   tags(offset: Int, limit: Int = 50, where: TagWhereInput, orderBy: [TagOrderByInput!]): [Tag!]!
   tagByUniqueInput(where: TagWhereUniqueInput!): Tag
   tagsConnection(first: Int, after: String, last: Int, before: String, where: TagWhereInput, orderBy: [TagOrderByInput!]): TagConnection!
-  treasuryProposals(offset: Int, limit: Int = 50, where: TreasuryProposalWhereInput, orderBy: [TreasuryProposalOrderByInput!]): [TreasuryProposal!]!
-  treasuryProposalByUniqueInput(where: TreasuryProposalWhereUniqueInput!): TreasuryProposal
-  treasuryProposalsConnection(first: Int, after: String, last: Int, before: String, where: TreasuryProposalWhereInput, orderBy: [TreasuryProposalOrderByInput!]): TreasuryProposalConnection!
 }
 
 type Space implements BaseGraphQLObject {
@@ -702,6 +827,12 @@ type StandardDeleteResponse {
   id: ID!
 }
 
+enum Status {
+  Awarded
+  Proposed
+  Rejected
+}
+
 type Subscription {
   stateSubscription: ProcessorState!
 }
@@ -791,107 +922,5 @@ input TagWhereInput {
 }
 
 input TagWhereUniqueInput {
-  id: ID!
-}
-
-type TreasuryProposal implements BaseGraphQLObject {
-  id: ID!
-  createdAt: DateTime!
-  createdById: String!
-  updatedAt: DateTime
-  updatedById: String
-  deletedAt: DateTime
-  deletedById: String
-  version: Int!
-  postId: String!
-  proposalId: Int!
-  network: Network!
-  posttreasuryProposal: [Post!]
-}
-
-type TreasuryProposalConnection {
-  totalCount: Int!
-  edges: [TreasuryProposalEdge!]!
-  pageInfo: PageInfo!
-}
-
-input TreasuryProposalCreateInput {
-  postId: String!
-  proposalId: Float!
-  network: Network!
-}
-
-type TreasuryProposalEdge {
-  node: TreasuryProposal!
-  cursor: String!
-}
-
-enum TreasuryProposalOrderByInput {
-  createdAt_ASC
-  createdAt_DESC
-  updatedAt_ASC
-  updatedAt_DESC
-  deletedAt_ASC
-  deletedAt_DESC
-  postId_ASC
-  postId_DESC
-  proposalId_ASC
-  proposalId_DESC
-  network_ASC
-  network_DESC
-}
-
-input TreasuryProposalUpdateInput {
-  postId: String
-  proposalId: Float
-  network: Network
-}
-
-input TreasuryProposalWhereInput {
-  id_eq: ID
-  id_in: [ID!]
-  createdAt_eq: DateTime
-  createdAt_lt: DateTime
-  createdAt_lte: DateTime
-  createdAt_gt: DateTime
-  createdAt_gte: DateTime
-  createdById_eq: ID
-  createdById_in: [ID!]
-  updatedAt_eq: DateTime
-  updatedAt_lt: DateTime
-  updatedAt_lte: DateTime
-  updatedAt_gt: DateTime
-  updatedAt_gte: DateTime
-  updatedById_eq: ID
-  updatedById_in: [ID!]
-  deletedAt_all: Boolean
-  deletedAt_eq: DateTime
-  deletedAt_lt: DateTime
-  deletedAt_lte: DateTime
-  deletedAt_gt: DateTime
-  deletedAt_gte: DateTime
-  deletedById_eq: ID
-  deletedById_in: [ID!]
-  postId_eq: String
-  postId_contains: String
-  postId_startsWith: String
-  postId_endsWith: String
-  postId_in: [String!]
-  proposalId_eq: Int
-  proposalId_gt: Int
-  proposalId_gte: Int
-  proposalId_lt: Int
-  proposalId_lte: Int
-  proposalId_in: [Int!]
-  network_eq: Network
-  network_in: [Network!]
-  posttreasuryProposal_none: PostWhereInput
-  posttreasuryProposal_some: PostWhereInput
-  posttreasuryProposal_every: PostWhereInput
-  AND: [TreasuryProposalWhereInput!]
-  OR: [TreasuryProposalWhereInput!]
-}
-
-input TreasuryProposalWhereUniqueInput {
   id: ID!
 }

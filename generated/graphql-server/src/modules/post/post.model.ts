@@ -1,21 +1,10 @@
-import {
-  BaseModel,
-  IntField,
-  NumericField,
-  DateTimeField,
-  Model,
-  ManyToOne,
-  ManyToMany,
-  EnumField,
-  StringField
-} from 'warthog';
+import { BaseModel, IntField, NumericField, DateTimeField, Model, ManyToMany, EnumField, StringField } from 'warthog';
 
 import BN from 'bn.js';
 
 import { JoinTable } from 'typeorm';
 
 import { Tag } from '../tag/tag.model';
-import { TreasuryProposal } from '../treasury-proposal/treasury-proposal.model';
 
 import { PostKind } from '../enums/enums';
 export { PostKind };
@@ -165,18 +154,10 @@ export class Post extends BaseModel {
   })
   tags!: Tag[];
 
-  @ManyToOne(
-    () => TreasuryProposal,
-    (param: TreasuryProposal) => param.posttreasuryProposal,
-    {
-      skipGraphQLField: true,
-      nullable: true,
-      modelName: 'Post',
-      relModelName: 'TreasuryProposal',
-      propertyName: 'treasuryProposal'
-    }
-  )
-  treasuryProposal?: TreasuryProposal;
+  @IntField({
+    nullable: true
+  })
+  proposalIndex?: number;
 
   constructor(init?: Partial<Post>) {
     super();

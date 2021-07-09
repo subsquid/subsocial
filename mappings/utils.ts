@@ -2,10 +2,10 @@ import { DatabaseManager } from "@joystream/hydra-common"
 import dayjs from "dayjs"
 import { Post } from "../generated/graphql-server/src/modules/post/post.model"
 import { Space } from "../generated/graphql-server/src/modules/space/space.model"
-import localizedFormat from 'dayjs/plugin/localizedFormat';
-import { MetaItem } from "@subsocial/types"
-import { PostId } from "@subsocial/types/substrate/interfaces"
-import { Network, TreasuryProposal } from "../generated/graphql-server/src/modules/treasury-proposal/treasury-proposal.model"
+import localizedFormat from 'dayjs/plugin/localizedFormat'
+// import { MetaItem } from "@subsocial/types"
+// import { PostId } from "@subsocial/types/substrate/interfaces"
+// import { Network, TreasuryProposal } from "../generated/graphql-server/src/modules/treasury-proposal/treasury-proposal.model"
 
 dayjs.extend(localizedFormat)
 
@@ -56,33 +56,33 @@ export const stringDateToTimestamp = (date: string | undefined) =>
 export const getDateWithoutTime = (date: Date | undefined): Date | undefined =>
   date ? new Date(dayjs(date).format('YYYY-MM-DD')) : undefined;
 
-export const getOrInsertProposal = async (db: DatabaseManager, meta: MetaItem, post: Post) => {
-  const { network, proposalIndex: proposalId } = meta
+// export const getOrInsertProposal = async (db: DatabaseManager, meta: MetaItem, post: Post) => {
+//   const { network, proposalIndex: proposalId } = meta
 
-  const proposalById = await db.get(TreasuryProposal, { where: { proposalId: proposalId }, relations: ['posttreasuryProposal'] })
+//   const proposalById = await db.get(TreasuryProposal, { where: { proposalId: proposalId }, relations: ['posttreasuryProposal'] })
 
-  if (proposalById) {
-    if(proposalById.postId !== post.postId) {
-      proposalById['posttreasuryProposal']?.push(post)
+//   if (proposalById) {
+//     if(proposalById.postId !== post.postId) {
+//       proposalById['posttreasuryProposal']?.push(post)
 
-      await db.save<TreasuryProposal>(proposalById)
-    }
+//       await db.save<TreasuryProposal>(proposalById)
+//     }
 
-    return proposalById
-  } else {
-    const proposal = new TreasuryProposal()
+//     return proposalById
+//   } else {
+//     const proposal = new TreasuryProposal()
 
-    if (proposal['posttreasuryProposal']) {
-      proposal['posttreasuryProposal'].push(post)
-    } else {
-      proposal['posttreasuryProposal'] = [post]
-    }
+//     if (proposal['posttreasuryProposal']) {
+//       proposal['posttreasuryProposal'].push(post)
+//     } else {
+//       proposal['posttreasuryProposal'] = [post]
+//     }
 
-    proposal.postId = post.postId,
-    proposal.proposalId = proposalId,
-    proposal.network = network as Network,
+//     proposal.postId = post.postId,
+//     proposal.proposalId = proposalId,
+//     proposal.network = network as Network,
 
-    await db.save<TreasuryProposal>(proposal)
-    return proposal
-  }
-}
+//     await db.save<TreasuryProposal>(proposal)
+//     return proposal
+//   }
+// }
