@@ -12,7 +12,7 @@ export interface Query {
     posts: <T = Array<Post>>(args: { offset?: Int | null, limit?: Int | null, where?: PostWhereInput | null, orderBy?: Array<PostOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
     postByUniqueInput: <T = Post | null>(args: { where: PostWhereUniqueInput }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T | null> ,
     postsConnection: <T = PostConnection>(args: { first?: Int | null, after?: String | null, last?: Int | null, before?: String | null, where?: PostWhereInput | null, orderBy?: Array<PostOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
-    postWithProposal: <T = Array<Post>>(args: { offset?: Int | null, limit?: Int | null, where?: PostWhereInput | null, proposalWhere?: KusamaProposalsWhereInput | null, network?: String | null, proposalIndex?: Int | null, orderBy?: Array<PostOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
+    postWithProposal: <T = Array<PostWithCount>>(args: { offset?: Int | null, limit?: Int | null, where?: PostWhereInput | null, proposalWhere?: KusamaProposalsWhereInput | null, network?: String | null, proposalIndex?: Int | null, orderBy?: Array<PostOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
     postsWithSubnet: <T = Array<Post>>(args: { offset?: Int | null, limit?: Int | null, where?: PostWhereInput | null, subnetId?: String | null, orderBy?: Array<PostOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
     spaces: <T = Array<Space>>(args: { offset?: Int | null, limit?: Int | null, where?: SpaceWhereInput | null, orderBy?: Array<SpaceOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
     spaceByUniqueInput: <T = Space | null>(args: { where: SpaceWhereUniqueInput }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T | null> ,
@@ -522,6 +522,244 @@ export interface PostWhereUniqueInput {
   id: ID_Output
 }
 
+export interface PostWithCountCreateInput {
+  createdByAccount?: String | null
+  createdAtBlock?: BigInt | null
+  createdAtTime?: DateTime | null
+  createdOnDay?: DateTime | null
+  postId: String
+  updatedAtTime?: DateTime | null
+  spaceId: String
+  content?: String | null
+  kind?: PostKind | null
+  parentId?: String | null
+  rootPostId?: String | null
+  sharedPostId?: String | null
+  repliesCount?: Float | null
+  publicRepliesCount?: Float | null
+  hiddenRepliesCount?: Float | null
+  sharesCount?: Float | null
+  upvotesCount?: Float | null
+  downvotesCount?: Float | null
+  score?: Float | null
+  title?: String | null
+  slug?: String | null
+  summary?: String | null
+  image?: String | null
+  canonical?: String | null
+  tagsOriginal?: String | null
+  proposalIndex?: Float | null
+  totalCount?: Float | null
+}
+
+export interface PostWithCountUpdateInput {
+  createdByAccount?: String | null
+  createdAtBlock?: BigInt | null
+  createdAtTime?: DateTime | null
+  createdOnDay?: DateTime | null
+  postId?: String | null
+  updatedAtTime?: DateTime | null
+  spaceId?: String | null
+  content?: String | null
+  kind?: PostKind | null
+  parentId?: String | null
+  rootPostId?: String | null
+  sharedPostId?: String | null
+  repliesCount?: Float | null
+  publicRepliesCount?: Float | null
+  hiddenRepliesCount?: Float | null
+  sharesCount?: Float | null
+  upvotesCount?: Float | null
+  downvotesCount?: Float | null
+  score?: Float | null
+  title?: String | null
+  slug?: String | null
+  summary?: String | null
+  image?: String | null
+  canonical?: String | null
+  tagsOriginal?: String | null
+  proposalIndex?: Float | null
+  totalCount?: Float | null
+}
+
+export interface PostWithCountWhereInput {
+  id_eq?: ID_Input | null
+  id_in?: ID_Output[] | ID_Output | null
+  createdAt_eq?: DateTime | null
+  createdAt_lt?: DateTime | null
+  createdAt_lte?: DateTime | null
+  createdAt_gt?: DateTime | null
+  createdAt_gte?: DateTime | null
+  createdById_eq?: ID_Input | null
+  createdById_in?: ID_Output[] | ID_Output | null
+  updatedAt_eq?: DateTime | null
+  updatedAt_lt?: DateTime | null
+  updatedAt_lte?: DateTime | null
+  updatedAt_gt?: DateTime | null
+  updatedAt_gte?: DateTime | null
+  updatedById_eq?: ID_Input | null
+  updatedById_in?: ID_Output[] | ID_Output | null
+  deletedAt_all?: Boolean | null
+  deletedAt_eq?: DateTime | null
+  deletedAt_lt?: DateTime | null
+  deletedAt_lte?: DateTime | null
+  deletedAt_gt?: DateTime | null
+  deletedAt_gte?: DateTime | null
+  deletedById_eq?: ID_Input | null
+  deletedById_in?: ID_Output[] | ID_Output | null
+  createdByAccount_eq?: String | null
+  createdByAccount_contains?: String | null
+  createdByAccount_startsWith?: String | null
+  createdByAccount_endsWith?: String | null
+  createdByAccount_in?: String[] | String | null
+  createdAtBlock_eq?: BigInt | null
+  createdAtBlock_gt?: BigInt | null
+  createdAtBlock_gte?: BigInt | null
+  createdAtBlock_lt?: BigInt | null
+  createdAtBlock_lte?: BigInt | null
+  createdAtBlock_in?: BigInt[] | BigInt | null
+  createdAtTime_eq?: DateTime | null
+  createdAtTime_lt?: DateTime | null
+  createdAtTime_lte?: DateTime | null
+  createdAtTime_gt?: DateTime | null
+  createdAtTime_gte?: DateTime | null
+  createdOnDay_eq?: DateTime | null
+  createdOnDay_lt?: DateTime | null
+  createdOnDay_lte?: DateTime | null
+  createdOnDay_gt?: DateTime | null
+  createdOnDay_gte?: DateTime | null
+  postId_eq?: String | null
+  postId_contains?: String | null
+  postId_startsWith?: String | null
+  postId_endsWith?: String | null
+  postId_in?: String[] | String | null
+  updatedAtTime_eq?: DateTime | null
+  updatedAtTime_lt?: DateTime | null
+  updatedAtTime_lte?: DateTime | null
+  updatedAtTime_gt?: DateTime | null
+  updatedAtTime_gte?: DateTime | null
+  spaceId_eq?: String | null
+  spaceId_contains?: String | null
+  spaceId_startsWith?: String | null
+  spaceId_endsWith?: String | null
+  spaceId_in?: String[] | String | null
+  content_eq?: String | null
+  content_contains?: String | null
+  content_startsWith?: String | null
+  content_endsWith?: String | null
+  content_in?: String[] | String | null
+  kind_eq?: PostKind | null
+  kind_in?: PostKind[] | PostKind | null
+  parentId_eq?: String | null
+  parentId_contains?: String | null
+  parentId_startsWith?: String | null
+  parentId_endsWith?: String | null
+  parentId_in?: String[] | String | null
+  rootPostId_eq?: String | null
+  rootPostId_contains?: String | null
+  rootPostId_startsWith?: String | null
+  rootPostId_endsWith?: String | null
+  rootPostId_in?: String[] | String | null
+  sharedPostId_eq?: String | null
+  sharedPostId_contains?: String | null
+  sharedPostId_startsWith?: String | null
+  sharedPostId_endsWith?: String | null
+  sharedPostId_in?: String[] | String | null
+  repliesCount_eq?: Int | null
+  repliesCount_gt?: Int | null
+  repliesCount_gte?: Int | null
+  repliesCount_lt?: Int | null
+  repliesCount_lte?: Int | null
+  repliesCount_in?: Int[] | Int | null
+  publicRepliesCount_eq?: Int | null
+  publicRepliesCount_gt?: Int | null
+  publicRepliesCount_gte?: Int | null
+  publicRepliesCount_lt?: Int | null
+  publicRepliesCount_lte?: Int | null
+  publicRepliesCount_in?: Int[] | Int | null
+  hiddenRepliesCount_eq?: Int | null
+  hiddenRepliesCount_gt?: Int | null
+  hiddenRepliesCount_gte?: Int | null
+  hiddenRepliesCount_lt?: Int | null
+  hiddenRepliesCount_lte?: Int | null
+  hiddenRepliesCount_in?: Int[] | Int | null
+  sharesCount_eq?: Int | null
+  sharesCount_gt?: Int | null
+  sharesCount_gte?: Int | null
+  sharesCount_lt?: Int | null
+  sharesCount_lte?: Int | null
+  sharesCount_in?: Int[] | Int | null
+  upvotesCount_eq?: Int | null
+  upvotesCount_gt?: Int | null
+  upvotesCount_gte?: Int | null
+  upvotesCount_lt?: Int | null
+  upvotesCount_lte?: Int | null
+  upvotesCount_in?: Int[] | Int | null
+  downvotesCount_eq?: Int | null
+  downvotesCount_gt?: Int | null
+  downvotesCount_gte?: Int | null
+  downvotesCount_lt?: Int | null
+  downvotesCount_lte?: Int | null
+  downvotesCount_in?: Int[] | Int | null
+  score_eq?: Int | null
+  score_gt?: Int | null
+  score_gte?: Int | null
+  score_lt?: Int | null
+  score_lte?: Int | null
+  score_in?: Int[] | Int | null
+  title_eq?: String | null
+  title_contains?: String | null
+  title_startsWith?: String | null
+  title_endsWith?: String | null
+  title_in?: String[] | String | null
+  slug_eq?: String | null
+  slug_contains?: String | null
+  slug_startsWith?: String | null
+  slug_endsWith?: String | null
+  slug_in?: String[] | String | null
+  summary_eq?: String | null
+  summary_contains?: String | null
+  summary_startsWith?: String | null
+  summary_endsWith?: String | null
+  summary_in?: String[] | String | null
+  image_eq?: String | null
+  image_contains?: String | null
+  image_startsWith?: String | null
+  image_endsWith?: String | null
+  image_in?: String[] | String | null
+  canonical_eq?: String | null
+  canonical_contains?: String | null
+  canonical_startsWith?: String | null
+  canonical_endsWith?: String | null
+  canonical_in?: String[] | String | null
+  tagsOriginal_eq?: String | null
+  tagsOriginal_contains?: String | null
+  tagsOriginal_startsWith?: String | null
+  tagsOriginal_endsWith?: String | null
+  tagsOriginal_in?: String[] | String | null
+  proposalIndex_eq?: Int | null
+  proposalIndex_gt?: Int | null
+  proposalIndex_gte?: Int | null
+  proposalIndex_lt?: Int | null
+  proposalIndex_lte?: Int | null
+  proposalIndex_in?: Int[] | Int | null
+  tags_none?: TagWhereInput | null
+  tags_some?: TagWhereInput | null
+  tags_every?: TagWhereInput | null
+  AND?: PostWithCountWhereInput[] | PostWithCountWhereInput | null
+  OR?: PostWithCountWhereInput[] | PostWithCountWhereInput | null
+  totalCount_eq?: Int | null
+  totalCount_gt?: Int | null
+  totalCount_gte?: Int | null
+  totalCount_lt?: Int | null
+  totalCount_lte?: Int | null
+  totalCount_in?: Int[] | Int | null
+}
+
+export interface PostWithCountWhereUniqueInput {
+  id: ID_Output
+}
+
 export interface SpaceCreateInput {
   createdByAccount?: String | null
   createdAtBlock?: BigInt | null
@@ -860,6 +1098,45 @@ export interface PostConnection {
 export interface PostEdge {
   node: Post
   cursor: String
+}
+
+export interface PostWithCount extends BaseGraphQLObject {
+  id: ID_Output
+  createdAt: DateTime
+  createdById: String
+  updatedAt?: DateTime | null
+  updatedById?: String | null
+  deletedAt?: DateTime | null
+  deletedById?: String | null
+  version: Int
+  createdByAccount?: String | null
+  createdAtBlock?: BigInt | null
+  createdAtTime?: DateTime | null
+  createdOnDay?: DateTime | null
+  postId: String
+  updatedAtTime?: DateTime | null
+  spaceId: String
+  content?: String | null
+  kind?: PostKind | null
+  parentId?: String | null
+  rootPostId?: String | null
+  sharedPostId?: String | null
+  repliesCount?: Int | null
+  publicRepliesCount?: Int | null
+  hiddenRepliesCount?: Int | null
+  sharesCount?: Int | null
+  upvotesCount?: Int | null
+  downvotesCount?: Int | null
+  score?: Int | null
+  title?: String | null
+  slug?: String | null
+  summary?: String | null
+  image?: String | null
+  canonical?: String | null
+  tagsOriginal?: String | null
+  tags: Array<Tag>
+  proposalIndex?: Int | null
+  totalCount?: Int | null
 }
 
 export interface ProcessorState {
