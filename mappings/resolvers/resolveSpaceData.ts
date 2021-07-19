@@ -1,8 +1,8 @@
-import { SpaceId } from "@subsocial/types/substrate/interfaces";
 import { resolveSubsocialApi } from '../../connection/subsocial';
-import { summarizeMd } from '@subsocial/utils/summarize';
-import { formatTegs } from '../utils';
+import { SpaceId } from '@subsocial/types/substrate/interfaces';
 import BN from 'bn.js';
+import { formatTegs } from '../utils';
+import { summarizeMd } from '@subsocial/utils/summarize';
 
 export type SpaceStruct = {
   createdByAccount: string,

@@ -1,31 +1,31 @@
-import { DatabaseManager } from '@dzlzv/hydra-db-utils'
-import { Space } from '../generated/graphql-server/src/modules/space/space.model';
+import { DatabaseManager, EventContext, StoreContext } from "@joystream/hydra-common"
+import { SpaceId } from "@subsocial/types/substrate/interfaces"
+import { Space } from "../generated/graphql-server/src/modules/space/space.model"
+import { SpaceFollows } from "./generated/types"
 import { resolveSpaceStruct } from './resolvers/resolveSpaceData';
-import { SpaceId } from '@subsocial/types/substrate/interfaces';
-import { SpaceFollows } from './generated/types';
 
-export async function spaceFollowed(db: DatabaseManager, event: SpaceFollows.SpaceFollowedEvent) {
-  const { spaceId: id } = event.data
+export async function spaceFollowed({ event, store }: EventContext & StoreContext) {
+  const [, id ] = new SpaceFollows.SpaceFollowedEvent(event).params
 
-  if (event.ctx.extrinsic === undefined) {
+  if (event.extrinsic === undefined) {
     throw new Error(`No extrinsic has been provided`)
   }
 
-  await spaceFollowedOrUnfollowed(db, id)
+  await spaceFollowedOrUnfollowed(store, id)
 }
 
-export async function spaceUnfollowed(db: DatabaseManager, event: SpaceFollows.SpaceUnfollowedEvent) {
-  const { spaceId: id } = event.data
+export async function spaceUnfollowed({ event, store }: EventContext & StoreContext) {
+  const [, id ] = new SpaceFollows.SpaceUnfollowedEvent(event).params
 
-  if (event.ctx.extrinsic === undefined) {
+  if (event.extrinsic === undefined) {
     throw new Error(`No extrinsic has been provided`)
   }
 
-  await spaceFollowedOrUnfollowed(db, id)
+  await spaceFollowedOrUnfollowed(store, id)
 }
 
-const spaceFollowedOrUnfollowed = async (db: DatabaseManager, spaceId: SpaceId) => {
-  const space = await db.get(Space, { where: `space_id = '${spaceId.toString()}'` })
+const spaceFollowedOrUnfollowed = async (store: DatabaseManager, spaceId: SpaceId) => {
+  const space = await store.get(Space, { where: `space_id = '${spaceId.toString()}'` })
   if (!space) return
 
   const spaceStruct = await resolveSpaceStruct(spaceId)
@@ -33,5 +33,5 @@ const spaceFollowedOrUnfollowed = async (db: DatabaseManager, spaceId: SpaceId) 
 
   space.followersCount = spaceStruct.followersCount
 
-  await db.save<Space>(space)
+  await store.save<Space>(space)
 }

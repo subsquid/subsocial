@@ -8,7 +8,7 @@ import { PostOrderByEnum, PostWhereInput } from '../../../generated';
 const named = require('yesql').pg;
 
 @ArgsType()
-export class CustomSpaceConnectionWhereArgs extends PaginationArgs {
+export class PostWithSubnetConnectionWhereArgs extends PaginationArgs {
   @Field(() => PostWhereInput, { nullable: true })
   where?: PostWhereInput;
 
@@ -23,7 +23,7 @@ export class CustomSpaceConnectionWhereArgs extends PaginationArgs {
 export class SpaceResolver {
   @Query(() => [Post])
   async postsWithSubnet(
-    @Args() { where, orderBy, limit, offset, subnetId: subnetId }: CustomSpaceConnectionWhereArgs,
+    @Args() { where, orderBy, limit, offset, subnetId: subnetId }: PostWithSubnetConnectionWhereArgs,
     @Fields() fields: string[]
   ): Promise<Post[]> {
     const subnetQueryPart = subnetId

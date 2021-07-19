@@ -1,41 +1,41 @@
-import { DatabaseManager } from '@dzlzv/hydra-db-utils'
+import { DatabaseManager, EventContext, StoreContext } from "@joystream/hydra-common"
+import { PostId } from "@subsocial/types/substrate/interfaces"
+import { Post } from "../generated/graphql-server/src/modules/post/post.model"
+import { Reactions } from "./generated/types"
 import { resolvePostStruct } from './resolvers/resolvePostData';
-import { PostId, Reaction } from '@subsocial/types/substrate/interfaces';
-import { Post } from '../generated/graphql-server/src/modules/post/post.model';
-import { Reactions } from './generated/types';
 
-export async function postReactionCreated(db: DatabaseManager, event: Reactions.PostReactionCreatedEvent) {
-  const { postId: id } = event.data
+export async function postReactionCreated({ event, store }: EventContext & StoreContext) {
+  const [, id] = new Reactions.PostReactionCreatedEvent(event).params
 
-  if (event.ctx.extrinsic === undefined) {
+  if (event.extrinsic === undefined) {
     throw new Error(`No extrinsic has been provided`)
   }
 
-  await upvoteOrDownvotePost(db, id)
+  await upvoteOrDownvotePost(store, id)
 }
 
-export async function postReactionUpdated(db: DatabaseManager, event: Reactions.PostReactionUpdatedEvent) {
-  const { postId: id } = event.data
+export async function postReactionUpdated({ event, store }: EventContext & StoreContext) {
+  const [, id] = new Reactions.PostReactionUpdatedEvent(event).params
 
-  if (event.ctx.extrinsic === undefined) {
+  if (event.extrinsic === undefined) {
     throw new Error(`No extrinsic has been provided`)
   }
 
-  await upvoteOrDownvotePost(db, id)
+  await upvoteOrDownvotePost(store, id)
 }
 
-export async function postReactionDeleted(db: DatabaseManager, event: Reactions.PostReactionDeletedEvent) {
-  const { postId: id } = event.data
+export async function postReactionDeleted({ event, store }: EventContext & StoreContext) {
+    const [, id] = new Reactions.PostReactionDeletedEvent(event).params
 
-  if (event.ctx.extrinsic === undefined) {
+  if (event.extrinsic === undefined) {
     throw new Error(`No extrinsic has been provided`)
   }
 
-  await upvoteOrDownvotePost(db, id)
+  await upvoteOrDownvotePost(store, id)
 }
 
-const upvoteOrDownvotePost = async (db: DatabaseManager, id: PostId) => {
-  const post = await db.get(Post, { where: `post_id = '${id.toString()}'` })
+const upvoteOrDownvotePost = async (store: DatabaseManager, id: PostId) => {
+  const post = await store.get(Post, { where: `post_id = '${id.toString()}'` })
   if (!post) return
 
   const postStruct = await resolvePostStruct(id)
@@ -45,5 +45,5 @@ const upvoteOrDownvotePost = async (db: DatabaseManager, id: PostId) => {
   post.downvotesCount = postStruct.downvotesCount
   post.score = postStruct.score
 
-  await db.save<Post>(post)
+  await store.save<Post>(post)
 }

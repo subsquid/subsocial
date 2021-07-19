@@ -10,12 +10,13 @@ import {
   Field,
   Int,
   ArgsType,
-  Info
+  Info,
+  Ctx
 } from 'type-graphql';
 import graphqlFields from 'graphql-fields';
 import { Inject } from 'typedi';
 import { Min } from 'class-validator';
-import { Fields, StandardDeleteResponse, UserId, PageInfo, RawFields } from 'warthog';
+import { Fields, StandardDeleteResponse, UserId, PageInfo, RawFields, NestedFields, BaseContext } from 'warthog';
 
 import {
   SpaceCreateInput,
@@ -31,7 +32,9 @@ import { Space } from './space.model';
 import { SpaceService } from './space.service';
 
 import { Tag } from '../tag/tag.model';
-import { getConnection } from 'typeorm';
+import { TagService } from '../tag/tag.service';
+import { getConnection, getRepository, In, Not } from 'typeorm';
+import _ from 'lodash';
 
 @ObjectType()
 export class SpaceEdge {
@@ -77,7 +80,7 @@ export class SpaceConnectionWhereArgs extends ConnectionPageInputOptions {
   where?: SpaceWhereInput;
 
   @Field(() => SpaceOrderByEnum, { nullable: true })
-  orderBy?: SpaceOrderByEnum;
+  orderBy?: [SpaceOrderByEnum];
 }
 
 @Resolver(Space)
@@ -93,7 +96,10 @@ export class SpaceResolver {
   }
 
   @Query(() => Space, { nullable: true })
-  async space(@Arg('where') where: SpaceWhereUniqueInput, @Fields() fields: string[]): Promise<Space | null> {
+  async spaceByUniqueInput(
+    @Arg('where') where: SpaceWhereUniqueInput,
+    @Fields() fields: string[]
+  ): Promise<Space | null> {
     const result = await this.service.find(where, undefined, 1, 0, fields);
     return result && result.length >= 1 ? result[0] : null;
   }
@@ -127,13 +133,7 @@ export class SpaceResolver {
   }
 
   @FieldResolver(() => Tag)
-  async tags(@Root() r: Space): Promise<Tag[] | null> {
-    const result = await getConnection()
-      .getRepository(Space)
-      .findOne(r.id, { relations: ['tags'] });
-    if (result && result.tags !== undefined) {
-      return result.tags;
-    }
-    return null;
+  async tags(@Root() r: Space, @Ctx() ctx: BaseContext): Promise<Tag[] | null> {
+    return ctx.dataLoader.loaders.Space.tags.load(r);
   }
 }

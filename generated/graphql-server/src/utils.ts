@@ -3,7 +3,6 @@ import { FindOperator } from 'typeorm';
 import { SpaceOrderByEnum, SpaceWhereInput } from '../generated';
 import { PostWhereInput } from '../generated/binding';
 import { PostOrderByEnum } from '../generated/classes';
-import dayjs from 'dayjs';
 
 type OrderByType = SpaceOrderByEnum[] | PostOrderByEnum[];
 type WhereInputType = SpaceWhereInput | PostWhereInput | undefined;
@@ -40,7 +39,7 @@ const operations: Record<string, any> = {
 
 export const getOperation = <T>(op: string, value: T): FindOperator<T> => operations[op](value);
 
-export const parseWhere = (where: WhereInputType, subnetQueryPart: string): string => {
+export const parseWhere = (where: WhereInputType, subnetQueryPart?: string): string => {
   if (!where) return subnetQueryPart ? `where ${subnetQueryPart}` : '';
 
   let result: string[] = [];

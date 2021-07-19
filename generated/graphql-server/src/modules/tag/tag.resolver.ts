@@ -10,12 +10,13 @@ import {
   Field,
   Int,
   ArgsType,
-  Info
+  Info,
+  Ctx
 } from 'type-graphql';
 import graphqlFields from 'graphql-fields';
 import { Inject } from 'typedi';
 import { Min } from 'class-validator';
-import { Fields, StandardDeleteResponse, UserId, PageInfo, RawFields } from 'warthog';
+import { Fields, StandardDeleteResponse, UserId, PageInfo, RawFields, NestedFields, BaseContext } from 'warthog';
 
 import {
   TagCreateInput,
@@ -31,8 +32,11 @@ import { Tag } from './tag.model';
 import { TagService } from './tag.service';
 
 import { Post } from '../post/post.model';
+import { PostService } from '../post/post.service';
 import { Space } from '../space/space.model';
-import { getConnection } from 'typeorm';
+import { SpaceService } from '../space/space.service';
+import { getConnection, getRepository, In, Not } from 'typeorm';
+import _ from 'lodash';
 
 @ObjectType()
 export class TagEdge {
@@ -78,7 +82,7 @@ export class TagConnectionWhereArgs extends ConnectionPageInputOptions {
   where?: TagWhereInput;
 
   @Field(() => TagOrderByEnum, { nullable: true })
-  orderBy?: TagOrderByEnum;
+  orderBy?: [TagOrderByEnum];
 }
 
 @Resolver(Tag)
@@ -91,7 +95,7 @@ export class TagResolver {
   }
 
   @Query(() => Tag, { nullable: true })
-  async tag(@Arg('where') where: TagWhereUniqueInput, @Fields() fields: string[]): Promise<Tag | null> {
+  async tagByUniqueInput(@Arg('where') where: TagWhereUniqueInput, @Fields() fields: string[]): Promise<Tag | null> {
     const result = await this.service.find(where, undefined, 1, 0, fields);
     return result && result.length >= 1 ? result[0] : null;
   }
@@ -125,23 +129,12 @@ export class TagResolver {
   }
 
   @FieldResolver(() => Post)
-  async posts(@Root() r: Tag): Promise<Post[] | null> {
-    const result = await getConnection()
-      .getRepository(Tag)
-      .findOne(r.id, { relations: ['posts'] });
-    if (result && result.posts !== undefined) {
-      return result.posts;
-    }
-    return null;
+  async posts(@Root() r: Tag, @Ctx() ctx: BaseContext): Promise<Post[] | null> {
+    return ctx.dataLoader.loaders.Tag.posts.load(r);
   }
+
   @FieldResolver(() => Space)
-  async spaces(@Root() r: Tag): Promise<Space[] | null> {
-    const result = await getConnection()
-      .getRepository(Tag)
-      .findOne(r.id, { relations: ['spaces'] });
-    if (result && result.spaces !== undefined) {
-      return result.spaces;
-    }
-    return null;
+  async spaces(@Root() r: Tag, @Ctx() ctx: BaseContext): Promise<Space[] | null> {
+    return ctx.dataLoader.loaders.Tag.spaces.load(r);
   }
 }

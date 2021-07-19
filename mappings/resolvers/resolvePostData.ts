@@ -1,10 +1,11 @@
-import { PostId } from "@subsocial/types/substrate/interfaces";
-import { resolveSubsocialApi } from '../../connection/subsocial';
-import { summarizeMd } from '@subsocial/utils/summarize';
-import { createPostSlug } from '@subsocial/utils/slugify';
-import { formatTegs } from '../utils';
 import BN from 'bn.js';
 import { PostKind } from '../../generated/graphql-server/src/modules/enums/enums';
+import { resolveSubsocialApi } from '../../connection/subsocial';
+import { createPostSlug } from '@subsocial/utils/slugify';
+import { formatTegs } from '../utils';
+import { summarizeMd } from '@subsocial/utils/summarize';
+import { PostId } from '@subsocial/types/substrate/interfaces/types'
+import { MetaItem } from '@subsocial/types'
 
 export type PostCounters = {
   createdByAccount: string,
@@ -28,6 +29,7 @@ export type PostContent = {
   summarize: string,
   slug: string,
   tags: string[]
+  meta?: MetaItem[]
 }
 
 export const resolvePostStruct = async (id: PostId): Promise<PostCounters | undefined> => {
@@ -77,7 +79,8 @@ export const resolveIpfsPostData = async (cid: string, postId: string): Promise<
       image: content.image,
       summarize: content.body ? summarizeMd(content.body).summary : '',
       slug,
-      tags
+      tags,
+      meta: content.meta
     }
   }
 }

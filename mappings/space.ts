@@ -1,25 +1,25 @@
-import { DatabaseManager } from '@dzlzv/hydra-db-utils'
-import { Space } from '../generated/graphql-server/src/modules/space/space.model'
-import { resolveIpfsSpaceData, resolveSpaceStruct } from './resolvers/resolveSpaceData'
+import { DatabaseManager, EventContext, StoreContext, SubstrateEvent } from '@joystream/hydra-common';
+import { isEmptyArray } from "@subsocial/utils"
+import { Space } from "../generated/graphql-server/src/modules/space/space.model"
+import { Spaces } from "./generated/types"
+import { resolveSpaceStruct, resolveIpfsSpaceData } from './resolvers/resolveSpaceData';
 import { insertTagInSpaceTags } from './tag';
-import { isEmptyArray } from '@subsocial/utils'
-import { Spaces } from './generated/types'
 import { getDateWithoutTime } from './utils';
 
-export async function spaceCreated(db: DatabaseManager, event: Spaces.SpaceCreatedEvent) {
-  await createSpace(db, event)
+export async function spaceCreated({ event, store }: EventContext & StoreContext) {
+  await createSpace(store, event)
 }
 
-export async function spaceUpdated(db: DatabaseManager, event: Spaces.SpaceUpdatedEvent) {
-  const { spaceId: id } = event.data
+export async function spaceUpdated({ event, store }: EventContext & StoreContext) {
+  const [, id] = new Spaces.SpaceUpdatedEvent(event).params
 
-  if (event.ctx.extrinsic === undefined) {
+  if (event.extrinsic === undefined) {
     throw new Error(`No extrinsic has been provided`)
   }
 
-  let space = await db.get(Space, { where: `space_id = '${id.toString()}'` })
+  let space = await store.get(Space, { where: `space_id = '${id.toString()}'` })
   if (!space) {
-    await createSpace(db, event)
+    await createSpace(store, event)
     return
   }
 
@@ -47,20 +47,20 @@ export async function spaceUpdated(db: DatabaseManager, event: Spaces.SpaceUpdat
     space.image = spaceContent.image
     space.tagsOriginal = spaceContent.tags.join(',')
 
-    const tags = await insertTagInSpaceTags(db, spaceContent.tags, space.spaceId, space)
+    const tags = await insertTagInSpaceTags(store, spaceContent.tags, space.spaceId, space)
 
     if (!isEmptyArray(tags)) {
       space.tags = tags
     }
   }
 
-  await db.save<Space>(space)
+  await store.save<Space>(space)
 }
 
-const createSpace = async (db: DatabaseManager, event: Spaces.SpaceCreatedEvent | Spaces.SpaceUpdatedEvent) => {
-  const { spaceId: id } = event.data
+const createSpace = async (store: DatabaseManager, event: SubstrateEvent) => {
+  const [, id] = new Spaces.SpaceCreatedEvent(event).params
 
-  if (event.ctx.extrinsic === undefined) {
+  if (event.extrinsic === undefined) {
     throw new Error(`No extrinsic has been provided`)
   }
 
@@ -93,12 +93,12 @@ const createSpace = async (db: DatabaseManager, event: Spaces.SpaceCreatedEvent 
     space.image = spaceContent.image
     space.tagsOriginal = spaceContent.tags.join(',')
 
-    const tags = await insertTagInSpaceTags(db, spaceContent.tags, space.spaceId, space)
+    const tags = await insertTagInSpaceTags(store, spaceContent.tags, space.spaceId, space)
 
     if (!isEmptyArray(tags)) {
       space.tags = tags
     }
   }
 
-  await db.save<Space>(space)
+  await store.save<Space>(space)
 }

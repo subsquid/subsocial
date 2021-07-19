@@ -1,5 +1,5 @@
 import { createTypeUnsafe } from "@polkadot/types/create";
-import { SubstrateEvent, SubstrateExtrinsic } from "@dzlzv/hydra-common";
+import { SubstrateEvent, SubstrateExtrinsic } from "@joystream/hydra-common";
 import { Codec } from "@polkadot/types/types";
 import { typeRegistry } from ".";
 
@@ -16,8 +16,18 @@ export namespace Reactions {
 
     constructor(public readonly ctx: SubstrateEvent) {}
 
-    get data(): PostReactionCreated_Params {
-      return new PostReactionCreated_Params(this.ctx);
+    get params(): [AccountId, PostId, ReactionId] {
+      return [
+        createTypeUnsafe<AccountId & Codec>(typeRegistry, "AccountId", [
+          this.ctx.params[0].value
+        ]),
+        createTypeUnsafe<PostId & Codec>(typeRegistry, "PostId", [
+          this.ctx.params[1].value
+        ]),
+        createTypeUnsafe<ReactionId & Codec>(typeRegistry, "ReactionId", [
+          this.ctx.params[2].value
+        ])
+      ];
     }
 
     validateParams(): boolean {
@@ -34,34 +44,23 @@ export namespace Reactions {
     }
   }
 
-  class PostReactionCreated_Params {
-    constructor(public readonly ctx: SubstrateEvent) {}
-
-    get accountId(): AccountId {
-      return createTypeUnsafe<AccountId & Codec>(typeRegistry, "AccountId", [
-        this.ctx.params[0].value
-      ]);
-    }
-
-    get postId(): PostId {
-      return createTypeUnsafe<PostId & Codec>(typeRegistry, "PostId", [
-        this.ctx.params[1].value
-      ]);
-    }
-
-    get reactionId(): ReactionId {
-      return createTypeUnsafe<ReactionId & Codec>(typeRegistry, "ReactionId", [
-        this.ctx.params[2].value
-      ]);
-    }
-  }
   export class PostReactionUpdatedEvent {
     public readonly expectedParamTypes = ["AccountId", "PostId", "ReactionId"];
 
     constructor(public readonly ctx: SubstrateEvent) {}
 
-    get data(): PostReactionUpdated_Params {
-      return new PostReactionUpdated_Params(this.ctx);
+    get params(): [AccountId, PostId, ReactionId] {
+      return [
+        createTypeUnsafe<AccountId & Codec>(typeRegistry, "AccountId", [
+          this.ctx.params[0].value
+        ]),
+        createTypeUnsafe<PostId & Codec>(typeRegistry, "PostId", [
+          this.ctx.params[1].value
+        ]),
+        createTypeUnsafe<ReactionId & Codec>(typeRegistry, "ReactionId", [
+          this.ctx.params[2].value
+        ])
+      ];
     }
 
     validateParams(): boolean {
@@ -78,34 +77,23 @@ export namespace Reactions {
     }
   }
 
-  class PostReactionUpdated_Params {
-    constructor(public readonly ctx: SubstrateEvent) {}
-
-    get accountId(): AccountId {
-      return createTypeUnsafe<AccountId & Codec>(typeRegistry, "AccountId", [
-        this.ctx.params[0].value
-      ]);
-    }
-
-    get postId(): PostId {
-      return createTypeUnsafe<PostId & Codec>(typeRegistry, "PostId", [
-        this.ctx.params[1].value
-      ]);
-    }
-
-    get reactionId(): ReactionId {
-      return createTypeUnsafe<ReactionId & Codec>(typeRegistry, "ReactionId", [
-        this.ctx.params[2].value
-      ]);
-    }
-  }
   export class PostReactionDeletedEvent {
     public readonly expectedParamTypes = ["AccountId", "PostId", "ReactionId"];
 
     constructor(public readonly ctx: SubstrateEvent) {}
 
-    get data(): PostReactionDeleted_Params {
-      return new PostReactionDeleted_Params(this.ctx);
+    get params(): [AccountId, PostId, ReactionId] {
+      return [
+        createTypeUnsafe<AccountId & Codec>(typeRegistry, "AccountId", [
+          this.ctx.params[0].value
+        ]),
+        createTypeUnsafe<PostId & Codec>(typeRegistry, "PostId", [
+          this.ctx.params[1].value
+        ]),
+        createTypeUnsafe<ReactionId & Codec>(typeRegistry, "ReactionId", [
+          this.ctx.params[2].value
+        ])
+      ];
     }
 
     validateParams(): boolean {
@@ -119,28 +107,6 @@ export namespace Reactions {
         }
       });
       return valid;
-    }
-  }
-
-  class PostReactionDeleted_Params {
-    constructor(public readonly ctx: SubstrateEvent) {}
-
-    get accountId(): AccountId {
-      return createTypeUnsafe<AccountId & Codec>(typeRegistry, "AccountId", [
-        this.ctx.params[0].value
-      ]);
-    }
-
-    get postId(): PostId {
-      return createTypeUnsafe<PostId & Codec>(typeRegistry, "PostId", [
-        this.ctx.params[1].value
-      ]);
-    }
-
-    get reactionId(): ReactionId {
-      return createTypeUnsafe<ReactionId & Codec>(typeRegistry, "ReactionId", [
-        this.ctx.params[2].value
-      ]);
     }
   }
 

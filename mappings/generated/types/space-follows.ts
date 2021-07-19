@@ -1,5 +1,5 @@
 import { createTypeUnsafe } from "@polkadot/types/create";
-import { SubstrateEvent, SubstrateExtrinsic } from "@dzlzv/hydra-common";
+import { SubstrateEvent, SubstrateExtrinsic } from "@joystream/hydra-common";
 import { Codec } from "@polkadot/types/types";
 import { typeRegistry } from ".";
 
@@ -12,8 +12,15 @@ export namespace SpaceFollows {
 
     constructor(public readonly ctx: SubstrateEvent) {}
 
-    get data(): SpaceFollowed_Params {
-      return new SpaceFollowed_Params(this.ctx);
+    get params(): [AccountId, SpaceId] {
+      return [
+        createTypeUnsafe<AccountId & Codec>(typeRegistry, "AccountId", [
+          this.ctx.params[0].value
+        ]),
+        createTypeUnsafe<SpaceId & Codec>(typeRegistry, "SpaceId", [
+          this.ctx.params[1].value
+        ])
+      ];
     }
 
     validateParams(): boolean {
@@ -30,28 +37,20 @@ export namespace SpaceFollows {
     }
   }
 
-  class SpaceFollowed_Params {
-    constructor(public readonly ctx: SubstrateEvent) {}
-
-    get accountId(): AccountId {
-      return createTypeUnsafe<AccountId & Codec>(typeRegistry, "AccountId", [
-        this.ctx.params[0].value
-      ]);
-    }
-
-    get spaceId(): SpaceId {
-      return createTypeUnsafe<SpaceId & Codec>(typeRegistry, "SpaceId", [
-        this.ctx.params[1].value
-      ]);
-    }
-  }
   export class SpaceUnfollowedEvent {
     public readonly expectedParamTypes = ["AccountId", "SpaceId"];
 
     constructor(public readonly ctx: SubstrateEvent) {}
 
-    get data(): SpaceUnfollowed_Params {
-      return new SpaceUnfollowed_Params(this.ctx);
+    get params(): [AccountId, SpaceId] {
+      return [
+        createTypeUnsafe<AccountId & Codec>(typeRegistry, "AccountId", [
+          this.ctx.params[0].value
+        ]),
+        createTypeUnsafe<SpaceId & Codec>(typeRegistry, "SpaceId", [
+          this.ctx.params[1].value
+        ])
+      ];
     }
 
     validateParams(): boolean {
@@ -65,22 +64,6 @@ export namespace SpaceFollows {
         }
       });
       return valid;
-    }
-  }
-
-  class SpaceUnfollowed_Params {
-    constructor(public readonly ctx: SubstrateEvent) {}
-
-    get accountId(): AccountId {
-      return createTypeUnsafe<AccountId & Codec>(typeRegistry, "AccountId", [
-        this.ctx.params[0].value
-      ]);
-    }
-
-    get spaceId(): SpaceId {
-      return createTypeUnsafe<SpaceId & Codec>(typeRegistry, "SpaceId", [
-        this.ctx.params[1].value
-      ]);
     }
   }
 

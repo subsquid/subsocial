@@ -4,6 +4,12 @@ enum PostKind {
   RegularPost
 }
 
+enum Network {
+  Subsocial
+  Polkadot
+  Kusama
+}
+
 type Space @entity {
   createdByAccount: String
   createdAtBlock: BigInt
@@ -56,7 +62,15 @@ type Post @entity {
   tagsOriginal: String
 
   tags: [Tag!]!
+  # treasuryProposal: TreasuryProposal
+  proposalIndex: Int
 }
+
+# type TreasuryProposal @entity {
+#   postId: String!
+#   proposalId: Int!
+#   network: Network!
+# }
 
 type Tag @entity {
   id: String!

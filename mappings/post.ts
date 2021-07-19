@@ -1,23 +1,24 @@
-import { DatabaseManager } from '@dzlzv/hydra-db-utils'
-import { Post, PostKind } from '../generated/graphql-server/src/modules/post/post.model'
-import { PostId, SpaceId } from '@subsocial/types/substrate/interfaces';
+import { DatabaseManager, EventContext, StoreContext } from "@joystream/hydra-common"
 import { resolvePostStruct, resolveIpfsPostData } from './resolvers/resolvePostData';
-import { Space } from '../generated/graphql-server/src/modules/space/space.model';
-import { resolveSpaceStruct } from './resolvers/resolveSpaceData';
-import { isEmptyArray } from '@subsocial/utils';
-import { Posts } from './generated/types'
-import { getDateWithoutTime } from './utils';
+import { Post } from '../generated/graphql-server/src/modules/post/post.model';
+import { getDateWithoutTime/* , getOrInsertProposal */ } from './utils';
+import { PostKind } from '../generated/graphql-server/src/modules/enums/enums';
+import { PostId, SpaceId } from '@subsocial/types/substrate/interfaces';
 import { insertTagInPostTags } from './tag';
+import { isEmptyArray } from "@subsocial/utils"
+import { resolveSpaceStruct } from './resolvers/resolveSpaceData';
+import { Space } from "../generated/graphql-server/src/modules/space/space.model"
+import { Posts } from "./generated/types"
 
 type Comment = {
   root_post_id: string,
   parent_id?: string
 }
 
-export async function postCreated(db: DatabaseManager, event: Posts.PostCreatedEvent) {
-  const { postId: id } = event.data
+export async function postCreated({ event, store }: EventContext & StoreContext) {
+  const [, id ] = new Posts.PostCreatedEvent(event).params
 
-  if (event.ctx.extrinsic === undefined) {
+  if (event.extrinsic === undefined) {
     throw new Error(`No extrinsic has been provided`)
   }
 
@@ -26,7 +27,8 @@ export async function postCreated(db: DatabaseManager, event: Posts.PostCreatedE
 
   const post = new Post()
 
-  const [_kind, value] = (Object.entries(event.ctx.extrinsic.args[1].value)[0] || []) as [PostKind, string | object]
+  const [, value] = (Object.entries(event.extrinsic.args[1]?.value)[0] || []) as [PostKind, string | object]
+
   post.createdByAccount = postStruct.createdByAccount
   post.createdAtBlock = postStruct.createdAtBlock
   post.createdAtTime = postStruct.createdAtTime
@@ -43,7 +45,7 @@ export async function postCreated(db: DatabaseManager, event: Posts.PostCreatedE
   post.updatedAtTime = postStruct.updatedAtTime
   post.spaceId = postStruct.spaceId
   if (postStruct.spaceId != '') {
-    await updateCountersInSpace(db, postStruct.spaceId as unknown as SpaceId)
+    await updateCountersInSpace(store, postStruct.spaceId as unknown as SpaceId)
   }
 
   switch (postStruct.kind) {
@@ -56,9 +58,9 @@ export async function postCreated(db: DatabaseManager, event: Posts.PostCreatedE
       post.parentId = parentId
 
       if (rootPostId != '' && rootPostId != null)
-        await updateReplyCount(db, rootPostId as unknown as PostId)
+        await updateReplyCount(store, rootPostId as unknown as PostId)
       if (parentId != '' && parentId != null)
-        await updateReplyCount(db, parentId as unknown as PostId)
+        await updateReplyCount(store, parentId as unknown as PostId)
 
       break
     }
@@ -83,24 +85,32 @@ export async function postCreated(db: DatabaseManager, event: Posts.PostCreatedE
     post.slug = postContent.slug
     post.tagsOriginal = postContent.tags.join(',')
 
-    const tags = await insertTagInPostTags(db, postContent.tags, post.postId, post)
+    const tags = await insertTagInPostTags(store, postContent.tags, post.postId, post)
+
 
     if (!isEmptyArray(tags)) {
       post.tags = tags
     }
+
+    const meta = postContent.meta
+
+    if(meta && !isEmptyArray(meta)) {
+      // const proposal = await getOrInsertProposal(store, meta[0], post)
+      post.proposalIndex = meta[0].proposalIndex
+    }
   }
 
-  await db.save<Post>(post)
+  await store.save<Post>(post)
 }
 
-export async function postUpdated(db: DatabaseManager, event: Posts.PostUpdatedEvent) {
-  const { postId: id } = event.data
+export async function postUpdated({ event, store }: EventContext & StoreContext) {
+  const [, id ] = new Posts.PostUpdatedEvent(event).params
 
-  if (event.ctx.extrinsic === undefined) {
+  if (event.extrinsic === undefined) {
     throw new Error(`No extrinsic has been provided`)
   }
 
-  const post = await db.get(Post, { where: `post_id = '${id.toString()}'` })
+  const post = await store.get(Post, { where: `post_id = '${id.toString()}'` })
   if (!post) return
 
   const postStruct = await resolvePostStruct(id as unknown as PostId)
@@ -116,7 +126,7 @@ export async function postUpdated(db: DatabaseManager, event: Posts.PostUpdatedE
   post.updatedAtTime = postStruct.updatedAtTime
 
   if (postStruct.spaceId != '') {
-    await updateCountersInSpace(db, postStruct.spaceId as unknown as SpaceId)
+    await updateCountersInSpace(store, postStruct.spaceId as unknown as SpaceId)
   }
 
   const postContent = await resolveIpfsPostData(content, post.postId)
@@ -128,24 +138,24 @@ export async function postUpdated(db: DatabaseManager, event: Posts.PostUpdatedE
     post.slug = postContent.slug
     post.tagsOriginal = postContent.tags.join(',')
 
-    const tags = await insertTagInPostTags(db, postContent.tags, post.postId, post)
+    const tags = await insertTagInPostTags(store, postContent.tags, post.postId, post)
 
     if (!isEmptyArray(tags)) {
       post.tags = tags
     }
   }
 
-  await db.save<Post>(post)
+  await store.save<Post>(post)
 }
 
-export async function postShared(db: DatabaseManager, event: Posts.PostSharedEvent) {
-  const { postId: id } = event.data
+export async function postShared({ event, store }: EventContext & StoreContext) {
+  const [, id ] = new Posts.PostSharedEvent(event).params
 
-  if (event.ctx.extrinsic === undefined) {
+  if (event.extrinsic === undefined) {
     throw new Error(`No extrinsic has been provided`)
   }
 
-  const post = await db.get(Post, { where: `post_id = '${id.toString()}'` })
+  const post = await store.get(Post, { where: `post_id = '${id.toString()}'` })
   if (!post) return
 
   const postStruct = await resolvePostStruct(id as unknown as PostId)
@@ -153,11 +163,11 @@ export async function postShared(db: DatabaseManager, event: Posts.PostSharedEve
 
   post.sharesCount = postStruct.sharesCount
 
-  await db.save<Post>(post)
+  await store.save<Post>(post)
 }
 
-const updateReplyCount = async (db: DatabaseManager, postId: PostId) => {
-  const post = await db.get(Post, { where: `post_id = '${postId.toString()}'` })
+const updateReplyCount = async (store: DatabaseManager, postId: PostId) => {
+  const post = await store.get(Post, { where: `post_id = '${postId.toString()}'` })
   if (!post) return
 
   const postStruct = await resolvePostStruct(postId)
@@ -167,11 +177,11 @@ const updateReplyCount = async (db: DatabaseManager, postId: PostId) => {
   post.hiddenRepliesCount = postStruct.hiddenRepliesCount
   post.publicRepliesCount = post.repliesCount - post.hiddenRepliesCount
 
-  await db.save<Post>(post)
+  await store.save<Post>(post)
 }
 
-const updateCountersInSpace = async (db: DatabaseManager, spaceId: SpaceId) => {
-  const space = await db.get(Space, { where: `space_id = '${spaceId.toString()}'` })
+const updateCountersInSpace = async (store: DatabaseManager, spaceId: SpaceId) => {
+  const space = await store.get(Space, { where: `space_id = '${spaceId.toString()}'` })
   if (!space) return
 
   const spaceStruct = await resolveSpaceStruct(spaceId)
@@ -181,5 +191,5 @@ const updateCountersInSpace = async (db: DatabaseManager, spaceId: SpaceId) => {
   space.hiddenPostsCount = spaceStruct.hiddenPostsCount
   space.publicPostsCount = space.postsCount - space.hiddenPostsCount
 
-  await db.save<Space>(space)
+  await store.save<Space>(space)
 }
