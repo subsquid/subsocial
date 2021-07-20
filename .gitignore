@@ -3,3 +3,4 @@
 **/mapping/generated
 .env
 .vscode
+.idea
