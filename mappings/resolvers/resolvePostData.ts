@@ -6,13 +6,15 @@ import { formatTegs } from '../utils';
 import { summarizeMd } from '@subsocial/utils/summarize';
 import { PostId } from '@subsocial/types/substrate/interfaces/types'
 import { MetaItem } from '@subsocial/types'
+import { PostExtension } from '@subsocial/types/substrate/interfaces';
 
 export type PostCounters = {
   createdByAccount: string,
   createdAtBlock: BN,
   createdAtTime: Date | undefined,
   updatedAtTime: Date | undefined,
-  kind: PostKind
+  kind: PostKind,
+  extension: PostExtension
   spaceId: string,
   content: string,
   repliesCount: number,
@@ -52,6 +54,7 @@ export const resolvePostStruct = async (id: PostId): Promise<PostCounters | unde
     createdAtTime,
     updatedAtTime,
     kind,
+    extension,
     spaceId,
     content: !content.isNone ? content.asIpfs.toString() : '',
     repliesCount: replies_count.toNumber(),

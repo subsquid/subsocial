@@ -5,6 +5,7 @@ import { Spaces } from "./generated/types"
 import { resolveSpaceStruct, resolveIpfsSpaceData } from './resolvers/resolveSpaceData';
 import { insertTagInSpaceTags } from './tag';
 import { getDateWithoutTime } from './utils';
+import { SpaceId } from '@subsocial/types/substrate/interfaces';
 
 export async function spaceCreated({ event, store }: EventContext & StoreContext) {
   await createSpace(store, event)
@@ -63,11 +64,19 @@ const createSpace = async (store: DatabaseManager, event: SubstrateEvent) => {
   if (event.extrinsic === undefined) {
     throw new Error(`No extrinsic has been provided`)
   }
+  const space = await insertSpace(id, store)
+
+  if(space) {
+    await store.save<Space>(space)
+  }
+}
+
+export const insertSpace = async (id: SpaceId, store?: DatabaseManager) => {
+  const spaceStruct = await resolveSpaceStruct(id)
+  if (!spaceStruct) return
 
   const space = new Space()
 
-  const spaceStruct = await resolveSpaceStruct(id)
-  if (!spaceStruct) return
   space.spaceId = id.toString()
   space.createdByAccount = spaceStruct.createdByAccount
   space.createdAtBlock = spaceStruct.createdAtBlock
@@ -79,26 +88,29 @@ const createSpace = async (store: DatabaseManager, event: SubstrateEvent) => {
   const content = spaceStruct.content
   space.content = content
 
-  const spaceContent = await resolveIpfsSpaceData(content)
+  if(content !== '') {
+    const spaceContent = await resolveIpfsSpaceData(content)
 
-  space.postsCount = spaceStruct.postsCount
-  space.hiddenPostsCount = spaceStruct.hiddenPostsCount
-  space.publicPostsCount = space.postsCount - space.hiddenPostsCount
-  space.followersCount = spaceStruct.followersCount
-  space.score = spaceStruct.score
+    space.postsCount = spaceStruct.postsCount
+    space.hiddenPostsCount = spaceStruct.hiddenPostsCount
+    space.publicPostsCount = space.postsCount - space.hiddenPostsCount
+    space.followersCount = spaceStruct.followersCount
+    space.score = spaceStruct.score
 
-  if (spaceContent) {
-    space.name = spaceContent.name
-    space.summary = spaceContent.about
-    space.image = spaceContent.image
-    space.tagsOriginal = spaceContent.tags.join(',')
+    if (spaceContent) {
+      space.name = spaceContent.name
+      space.summary = spaceContent.about
+      space.image = spaceContent.image
+      space.tagsOriginal = spaceContent.tags.join(',')
 
-    const tags = await insertTagInSpaceTags(store, spaceContent.tags, space.spaceId, space)
-
-    if (!isEmptyArray(tags)) {
-      space.tags = tags
+      if(store) {
+        const tags = await insertTagInSpaceTags(store, spaceContent.tags, space.spaceId, space)
+        if (!isEmptyArray(tags)) {
+          space.tags = tags
+        }
+      }
     }
   }
 
-  await store.save<Space>(space)
+  return space
 }
