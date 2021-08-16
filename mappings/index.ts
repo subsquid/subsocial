@@ -8,5 +8,6 @@ export {
   spaceCreated,
   spaceUpdated,
   spaceFollowed,
-  spaceUnfollowed
+  spaceUnfollowed,
+  genesisLoader
 } from './mappings'

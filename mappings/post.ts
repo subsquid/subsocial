@@ -1,19 +1,13 @@
 import { DatabaseManager, EventContext, StoreContext } from "@joystream/hydra-common"
 import { resolvePostStruct, resolveIpfsPostData } from './resolvers/resolvePostData';
 import { Post } from '../generated/graphql-server/src/modules/post/post.model';
-import { getDateWithoutTime/* , getOrInsertProposal */ } from './utils';
-import { PostKind } from '../generated/graphql-server/src/modules/enums/enums';
+import { getDateWithoutTime } from './utils';
 import { PostId, SpaceId } from '@subsocial/types/substrate/interfaces';
 import { insertTagInPostTags } from './tag';
 import { isEmptyArray } from "@subsocial/utils"
 import { resolveSpaceStruct } from './resolvers/resolveSpaceData';
 import { Space } from "../generated/graphql-server/src/modules/space/space.model"
 import { Posts } from "./generated/types"
-
-type Comment = {
-  root_post_id: string,
-  parent_id?: string
-}
 
 export async function postCreated({ event, store }: EventContext & StoreContext) {
   const [, id ] = new Posts.PostCreatedEvent(event).params
@@ -22,85 +16,11 @@ export async function postCreated({ event, store }: EventContext & StoreContext)
     throw new Error(`No extrinsic has been provided`)
   }
 
-  const postStruct = await resolvePostStruct(id)
-  if (!postStruct) return
+  const post = await insertPost(id, store)
 
-  const post = new Post()
-
-  const [, value] = (Object.entries(event.extrinsic.args[1]?.value)[0] || []) as [PostKind, string | object]
-
-  post.createdByAccount = postStruct.createdByAccount
-  post.createdAtBlock = postStruct.createdAtBlock
-  post.createdAtTime = postStruct.createdAtTime
-  post.createdOnDay = getDateWithoutTime(postStruct.createdAtTime)
-  post.postId = id.toString()
-  const content = postStruct.content
-
-  post.content = content
-
-  const postContent = await resolveIpfsPostData(content, post.postId)
-
-  post.kind = postStruct.kind
-
-  post.updatedAtTime = postStruct.updatedAtTime
-  post.spaceId = postStruct.spaceId
-  if (postStruct.spaceId != '') {
-    await updateCountersInSpace(store, postStruct.spaceId as unknown as SpaceId)
+  if(post) {
+    await store.save<Post>(post)
   }
-
-  switch (postStruct.kind) {
-    case 'Comment': {
-      const comment = value as Comment
-      const rootPostId = comment.root_post_id
-      const parentId = comment.parent_id
-
-      post.rootPostId = rootPostId
-      post.parentId = parentId
-
-      if (rootPostId != '' && rootPostId != null)
-        await updateReplyCount(store, rootPostId as unknown as PostId)
-      if (parentId != '' && parentId != null)
-        await updateReplyCount(store, parentId as unknown as PostId)
-
-      break
-    }
-    case 'SharedPost': {
-      post.sharedPostId = value as string
-      break
-    }
-  }
-
-  post.repliesCount = postStruct.repliesCount
-  post.hiddenRepliesCount = postStruct.hiddenRepliesCount
-  post.publicRepliesCount = post.repliesCount - post.hiddenRepliesCount
-  post.sharesCount = postStruct.sharesCount
-  post.upvotesCount = postStruct.upvotesCount
-  post.downvotesCount = postStruct.downvotesCount
-  post.score = postStruct.score
-
-  if (postContent) {
-    post.title = postContent.title
-    post.image = postContent.image
-    post.summary = postContent.summarize
-    post.slug = postContent.slug
-    post.tagsOriginal = postContent.tags.join(',')
-
-    const tags = await insertTagInPostTags(store, postContent.tags, post.postId, post)
-
-
-    if (!isEmptyArray(tags)) {
-      post.tags = tags
-    }
-
-    const meta = postContent.meta
-
-    if(meta && !isEmptyArray(meta)) {
-      // const proposal = await getOrInsertProposal(store, meta[0], post)
-      post.proposalIndex = meta[0].proposalIndex
-    }
-  }
-
-  await store.save<Post>(post)
 }
 
 export async function postUpdated({ event, store }: EventContext & StoreContext) {
@@ -192,4 +112,83 @@ const updateCountersInSpace = async (store: DatabaseManager, spaceId: SpaceId) =
   space.publicPostsCount = space.postsCount - space.hiddenPostsCount
 
   await store.save<Space>(space)
+}
+
+export const insertPost = async (id: PostId, store?: DatabaseManager) => {
+  const postStruct = await resolvePostStruct(id)
+  if (!postStruct) return
+
+  const post = new Post()
+
+  post.createdByAccount = postStruct.createdByAccount
+  post.createdAtBlock = postStruct.createdAtBlock
+  post.createdAtTime = postStruct.createdAtTime
+  post.createdOnDay = getDateWithoutTime(postStruct.createdAtTime)
+  post.postId = id.toString()
+  const content = postStruct.content
+
+  post.content = content
+
+  const postContent = await resolveIpfsPostData(content, post.postId)
+
+  post.kind = postStruct.kind
+
+  post.updatedAtTime = postStruct.updatedAtTime
+  post.spaceId = postStruct.spaceId
+  if (postStruct.spaceId != '' && store) {
+    await updateCountersInSpace(store, postStruct.spaceId as unknown as SpaceId)
+  }
+
+  switch (postStruct.kind) {
+    case 'Comment': {
+      const extencionParentId = postStruct.extension.asComment.parent_id
+      const rootPostId =  postStruct.extension.asComment.root_post_id
+      const parentId = extencionParentId.isNone ? undefined : extencionParentId.unwrap()
+
+      post.rootPostId = rootPostId.toString()
+      post.parentId = parentId?.toString()
+
+      if (rootPostId && rootPostId != null && store)
+        await updateReplyCount(store, rootPostId)
+      if (parentId && parentId != null && store)
+        await updateReplyCount(store, parentId)
+
+      break
+    }
+    case 'SharedPost': {
+      post.sharedPostId = postStruct.extension.asSharedPost.toString()
+      break
+    }
+  }
+
+  post.repliesCount = postStruct.repliesCount
+  post.hiddenRepliesCount = postStruct.hiddenRepliesCount
+  post.publicRepliesCount = post.repliesCount - post.hiddenRepliesCount
+  post.sharesCount = postStruct.sharesCount
+  post.upvotesCount = postStruct.upvotesCount
+  post.downvotesCount = postStruct.downvotesCount
+  post.score = postStruct.score
+
+  if (postContent) {
+    post.title = postContent.title
+    post.image = postContent.image
+    post.summary = postContent.summarize
+    post.slug = postContent.slug
+    post.tagsOriginal = postContent.tags.join(',')
+    
+    if(store) {
+      const tags = await insertTagInPostTags(store, postContent.tags, post.postId, post)
+      if (!isEmptyArray(tags)) {
+        post.tags = tags
+      }
+    }
+
+    const meta = postContent.meta
+
+    if(meta && !isEmptyArray(meta)) {
+      post.proposalIndex = meta[0].proposalIndex
+    }
+  }
+
+  return post
 }

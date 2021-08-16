@@ -5,7 +5,7 @@ services:
     image: postgres:12.4
     restart: always
     ports:
-      - "${DB_PORT}"
+      - ${DB_PORT}
     volumes:
       - /var/lib/postgresql/data
     environment:
@@ -19,7 +19,7 @@ services:
     environment:
       - INDEXER_WORKERS=5
       - DB_NAME=indexer-db
-      - DB_HOST=indexer-db
+      - DB_HOST=192.168.0.101
       - DB_USER=${DB_USER}
       - DB_PASS=${DB_PASS}
       - DB_PORT=${DB_PORT}
