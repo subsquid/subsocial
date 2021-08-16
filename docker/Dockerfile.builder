@@ -10,7 +10,7 @@ COPY ./connection ./connection
 COPY ./*.yml ./
 COPY ./*.json ./
 COPY ./*.graphql ./
-COPY ./.env .
+COPY ./localhost.env .env
 COPY ./env.ts .
 
 RUN yarn
@@ -21,3 +21,4 @@ RUN yarn workspace sample-mappings install
 RUN yarn mapping-build
 
 RUN yarn workspace query-node install
+RUN yarn workspace query-node compile
