@@ -21,4 +21,3 @@ RUN yarn workspace sample-mappings install
 RUN yarn mapping-build
 
 RUN yarn workspace query-node install
-RUN yarn workspace query-node compile
