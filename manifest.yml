@@ -36,5 +36,5 @@ mappings:
   preBlockHooks:
     - handler: genesisLoader
       filter:
-        height: '[658170, 658170]'
+        height: '[54527, 54527]'
 

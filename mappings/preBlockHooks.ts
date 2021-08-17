@@ -9,6 +9,7 @@ import { SpaceId, PostId } from '@subsocial/types/substrate/interfaces';
 import { insertSpace } from './space';
 import { insertPost } from './post';
 import { newLogger } from '@subsocial/utils'
+import pThrottle from "p-throttle"
 
 const log = newLogger('PreBlockHooks')
 
@@ -40,7 +41,13 @@ const reindexSpaces: ReindexerFn = async (substrate, store) => {
     }
   })
 
-  await Promise.all(spaceIndexators)
+  const throttle = pThrottle({
+    limit: 2,
+    interval: 5000
+  });
+
+
+  throttle(() => spaceIndexators)
 }
 
 const reindexPosts: ReindexerFn = async (substrate, store) => {
@@ -62,7 +69,12 @@ const reindexPosts: ReindexerFn = async (substrate, store) => {
     }
   })
 
-  await Promise.all(postIndexators)
+  const throttle = pThrottle({
+    limit: 4,
+    interval: 5000
+  });
+
+  throttle(() => postIndexators)
 }
 
 type IReindexerFunction = Record<string, ReindexerFn>
@@ -75,15 +87,7 @@ const ReindexerFunction: IReindexerFunction = {
 const AllReindexerFunctions = Object.values(ReindexerFunction)
 
 async function reindexContentFromStorages(substrate: SubsocialSubstrateApi, store: DatabaseManager  ) {
-  const uniqueArguments = getUniqueIds(argv)
-  let reindexPromises = uniqueArguments.filter(arg => ReindexerFunction[arg])
-    .map(async argument => {
-      const func = ReindexerFunction[argument]
-      await func(substrate, store)
-    })
-
-  if (isEmptyArray(reindexPromises) || argv.includes('all'))
-    reindexPromises = AllReindexerFunctions.map(fn => fn(substrate, store))
-
-  await Promise.all(reindexPromises)
+  for (const fn of AllReindexerFunctions) {
+    await fn(substrate, store)
+  }
 }
