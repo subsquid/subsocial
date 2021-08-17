@@ -37,4 +37,3 @@ mappings:
     - handler: genesisLoader
       filter:
         height: '[54527, 54527]'
-
