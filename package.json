@@ -51,10 +51,11 @@
     "@subsocial/api": "0.5.8",
     "@subsocial/types": "0.5.8",
     "@subsocial/utils": "^0.4.39",
-    "tslib": "^2.0.0",
     "@types/bn.js": "^4.11.6",
-    "dayjs": "^1.10.4",
     "bn.js": "^5.1.2",
+    "dayjs": "^1.10.4",
+    "p-throttle": "^4.1.1",
+    "tslib": "^2.0.0",
     "yesql": "^5.0.0"
   },
   "devDependencies": {
