@@ -88,14 +88,14 @@ export const insertSpace = async (id: SpaceId, store?: DatabaseManager) => {
   const content = spaceStruct.content
   space.content = content
 
+  space.postsCount = spaceStruct.postsCount
+  space.hiddenPostsCount = spaceStruct.hiddenPostsCount
+  space.publicPostsCount = space.postsCount - space.hiddenPostsCount
+  space.followersCount = spaceStruct.followersCount
+  space.score = spaceStruct.score
+
   if(content !== '') {
     const spaceContent = await resolveIpfsSpaceData(content)
-
-    space.postsCount = spaceStruct.postsCount
-    space.hiddenPostsCount = spaceStruct.hiddenPostsCount
-    space.publicPostsCount = space.postsCount - space.hiddenPostsCount
-    space.followersCount = spaceStruct.followersCount
-    space.score = spaceStruct.score
 
     if (spaceContent) {
       space.name = spaceContent.name

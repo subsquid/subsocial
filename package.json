@@ -43,7 +43,7 @@
     "copy-data-file": "find ./ -name 'data.json' | cpio -pd ./mappings/lib",
     "mapping-build": "yarn mappings:build && yarn copy-types && yarn copy-data-file",
     "set-subnets": "yarn copy-data-file && node mappings/lib/mappings/subnetwork/index.js",
-    "backup-storages": "node mappings/lib/mappings/preBlockHooks.js"
+    "reindex-storages": "node mappings/lib/mappings/preBlockHooks.js"
   },
   "author": "",
   "license": "ISC",
