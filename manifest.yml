@@ -33,8 +33,4 @@ mappings:
       handler: spaceFollowed
     - event: spaceFollows.SpaceUnfollowed
       handler: spaceUnfollowed
-  preBlockHooks:
-    - handler: genesisLoader
-      filter:
-        height: '[54527, 54527]'
 
