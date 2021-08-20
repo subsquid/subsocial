@@ -41,13 +41,14 @@ export class PostWithProposal {
     @Args() { where, proposalWhere, orderBy, limit, offset, network, proposalIndex  }: PostwithProposalConnectionWhereArgs,
     @Fields() fields: string[]
   ): Promise<PostWithCount[]> {
-    const queryPart = network && proposalIndex
+    const queryPart = network
       ? `
-        (proposal_index =
+        (proposal_index ${proposalIndex ? '=' : 'in'}
           (select proposal_index
             from public.${network}_proposals
-            ${proposalWhere ? `${parseWhere(proposalWhere)} and`: 'where'}
-            proposal_index = :proposalIndex
+            ${proposalWhere ?
+              `${parseWhere(proposalWhere)} and`:
+              `${proposalIndex && 'where proposal_index = :proposalIndex'}`}
           )
         )`
       : '';
@@ -66,7 +67,6 @@ export class PostWithProposal {
     `)(params)
     );
 
-    console.log(result)
     return result;
   }
 }

@@ -34,6 +34,8 @@ import { Space } from "../src/modules/space/space.model";
 import { Tag } from "../src/modules/tag/tag.model";
 // @ts-ignore
 import { Post } from "../src/modules/post/post.model";
+// @ts-ignore
+import { PostWithCount } from "../src/modules/post/postsWithProposal.resolver";
 
 export enum KusamaProposalsOrderByEnum {
   createdAt_ASC = "createdAt_ASC",
@@ -1815,4 +1817,802 @@ export class PostCreateManyArgs {
 export class PostUpdateArgs {
   @TypeGraphQLField() data!: PostUpdateInput;
   @TypeGraphQLField() where!: PostWhereUniqueInput;
+}
+
+export enum PostWithCountOrderByEnum {
+  createdAt_ASC = "createdAt_ASC",
+  createdAt_DESC = "createdAt_DESC",
+
+  updatedAt_ASC = "updatedAt_ASC",
+  updatedAt_DESC = "updatedAt_DESC",
+
+  deletedAt_ASC = "deletedAt_ASC",
+  deletedAt_DESC = "deletedAt_DESC",
+
+  createdByAccount_ASC = "createdByAccount_ASC",
+  createdByAccount_DESC = "createdByAccount_DESC",
+
+  createdAtBlock_ASC = "createdAtBlock_ASC",
+  createdAtBlock_DESC = "createdAtBlock_DESC",
+
+  createdAtTime_ASC = "createdAtTime_ASC",
+  createdAtTime_DESC = "createdAtTime_DESC",
+
+  createdOnDay_ASC = "createdOnDay_ASC",
+  createdOnDay_DESC = "createdOnDay_DESC",
+
+  postId_ASC = "postId_ASC",
+  postId_DESC = "postId_DESC",
+
+  updatedAtTime_ASC = "updatedAtTime_ASC",
+  updatedAtTime_DESC = "updatedAtTime_DESC",
+
+  spaceId_ASC = "spaceId_ASC",
+  spaceId_DESC = "spaceId_DESC",
+
+  content_ASC = "content_ASC",
+  content_DESC = "content_DESC",
+
+  kind_ASC = "kind_ASC",
+  kind_DESC = "kind_DESC",
+
+  parentId_ASC = "parentId_ASC",
+  parentId_DESC = "parentId_DESC",
+
+  rootPostId_ASC = "rootPostId_ASC",
+  rootPostId_DESC = "rootPostId_DESC",
+
+  sharedPostId_ASC = "sharedPostId_ASC",
+  sharedPostId_DESC = "sharedPostId_DESC",
+
+  repliesCount_ASC = "repliesCount_ASC",
+  repliesCount_DESC = "repliesCount_DESC",
+
+  publicRepliesCount_ASC = "publicRepliesCount_ASC",
+  publicRepliesCount_DESC = "publicRepliesCount_DESC",
+
+  hiddenRepliesCount_ASC = "hiddenRepliesCount_ASC",
+  hiddenRepliesCount_DESC = "hiddenRepliesCount_DESC",
+
+  sharesCount_ASC = "sharesCount_ASC",
+  sharesCount_DESC = "sharesCount_DESC",
+
+  upvotesCount_ASC = "upvotesCount_ASC",
+  upvotesCount_DESC = "upvotesCount_DESC",
+
+  downvotesCount_ASC = "downvotesCount_ASC",
+  downvotesCount_DESC = "downvotesCount_DESC",
+
+  score_ASC = "score_ASC",
+  score_DESC = "score_DESC",
+
+  title_ASC = "title_ASC",
+  title_DESC = "title_DESC",
+
+  slug_ASC = "slug_ASC",
+  slug_DESC = "slug_DESC",
+
+  summary_ASC = "summary_ASC",
+  summary_DESC = "summary_DESC",
+
+  image_ASC = "image_ASC",
+  image_DESC = "image_DESC",
+
+  canonical_ASC = "canonical_ASC",
+  canonical_DESC = "canonical_DESC",
+
+  tagsOriginal_ASC = "tagsOriginal_ASC",
+  tagsOriginal_DESC = "tagsOriginal_DESC",
+
+  proposalIndex_ASC = "proposalIndex_ASC",
+  proposalIndex_DESC = "proposalIndex_DESC",
+
+  totalCount_ASC = "totalCount_ASC",
+  totalCount_DESC = "totalCount_DESC"
+}
+
+registerEnumType(PostWithCountOrderByEnum, {
+  name: "PostWithCountOrderByInput"
+});
+
+@TypeGraphQLInputType()
+export class PostWithCountWhereInput extends PostWhereInput {
+  @TypeGraphQLField(() => ID, { nullable: true })
+  id_eq?: string;
+
+  @TypeGraphQLField(() => [ID], { nullable: true })
+  id_in?: string[];
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  createdAt_eq?: Date;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  createdAt_lt?: Date;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  createdAt_lte?: Date;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  createdAt_gt?: Date;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  createdAt_gte?: Date;
+
+  @TypeGraphQLField(() => ID, { nullable: true })
+  createdById_eq?: string;
+
+  @TypeGraphQLField(() => [ID], { nullable: true })
+  createdById_in?: string[];
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  updatedAt_eq?: Date;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  updatedAt_lt?: Date;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  updatedAt_lte?: Date;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  updatedAt_gt?: Date;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  updatedAt_gte?: Date;
+
+  @TypeGraphQLField(() => ID, { nullable: true })
+  updatedById_eq?: string;
+
+  @TypeGraphQLField(() => [ID], { nullable: true })
+  updatedById_in?: string[];
+
+  @TypeGraphQLField({ nullable: true })
+  deletedAt_all?: Boolean;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  deletedAt_eq?: Date;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  deletedAt_lt?: Date;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  deletedAt_lte?: Date;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  deletedAt_gt?: Date;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  deletedAt_gte?: Date;
+
+  @TypeGraphQLField(() => ID, { nullable: true })
+  deletedById_eq?: string;
+
+  @TypeGraphQLField(() => [ID], { nullable: true })
+  deletedById_in?: string[];
+
+  @TypeGraphQLField({ nullable: true })
+  createdByAccount_eq?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  createdByAccount_contains?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  createdByAccount_startsWith?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  createdByAccount_endsWith?: string;
+
+  @TypeGraphQLField(() => [String], { nullable: true })
+  createdByAccount_in?: string[];
+
+  @TypeGraphQLField(() => BigInt, { nullable: true })
+  createdAtBlock_eq?: BN;
+
+  @TypeGraphQLField(() => BigInt, { nullable: true })
+  createdAtBlock_gt?: BN;
+
+  @TypeGraphQLField(() => BigInt, { nullable: true })
+  createdAtBlock_gte?: BN;
+
+  @TypeGraphQLField(() => BigInt, { nullable: true })
+  createdAtBlock_lt?: BN;
+
+  @TypeGraphQLField(() => BigInt, { nullable: true })
+  createdAtBlock_lte?: BN;
+
+  @TypeGraphQLField(() => [BigInt], { nullable: true })
+  createdAtBlock_in?: BN[];
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  createdAtTime_eq?: DateTimeString;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  createdAtTime_lt?: DateTimeString;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  createdAtTime_lte?: DateTimeString;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  createdAtTime_gt?: DateTimeString;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  createdAtTime_gte?: DateTimeString;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  createdOnDay_eq?: DateTimeString;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  createdOnDay_lt?: DateTimeString;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  createdOnDay_lte?: DateTimeString;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  createdOnDay_gt?: DateTimeString;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  createdOnDay_gte?: DateTimeString;
+
+  @TypeGraphQLField({ nullable: true })
+  postId_eq?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  postId_contains?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  postId_startsWith?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  postId_endsWith?: string;
+
+  @TypeGraphQLField(() => [String], { nullable: true })
+  postId_in?: string[];
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  updatedAtTime_eq?: DateTimeString;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  updatedAtTime_lt?: DateTimeString;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  updatedAtTime_lte?: DateTimeString;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  updatedAtTime_gt?: DateTimeString;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  updatedAtTime_gte?: DateTimeString;
+
+  @TypeGraphQLField({ nullable: true })
+  spaceId_eq?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  spaceId_contains?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  spaceId_startsWith?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  spaceId_endsWith?: string;
+
+  @TypeGraphQLField(() => [String], { nullable: true })
+  spaceId_in?: string[];
+
+  @TypeGraphQLField({ nullable: true })
+  content_eq?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  content_contains?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  content_startsWith?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  content_endsWith?: string;
+
+  @TypeGraphQLField(() => [String], { nullable: true })
+  content_in?: string[];
+
+  @TypeGraphQLField(() => PostKind, { nullable: true })
+  kind_eq?: PostKind;
+
+  @TypeGraphQLField(() => [PostKind], { nullable: true })
+  kind_in?: PostKind[];
+
+  @TypeGraphQLField({ nullable: true })
+  parentId_eq?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  parentId_contains?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  parentId_startsWith?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  parentId_endsWith?: string;
+
+  @TypeGraphQLField(() => [String], { nullable: true })
+  parentId_in?: string[];
+
+  @TypeGraphQLField({ nullable: true })
+  rootPostId_eq?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  rootPostId_contains?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  rootPostId_startsWith?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  rootPostId_endsWith?: string;
+
+  @TypeGraphQLField(() => [String], { nullable: true })
+  rootPostId_in?: string[];
+
+  @TypeGraphQLField({ nullable: true })
+  sharedPostId_eq?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  sharedPostId_contains?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  sharedPostId_startsWith?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  sharedPostId_endsWith?: string;
+
+  @TypeGraphQLField(() => [String], { nullable: true })
+  sharedPostId_in?: string[];
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  repliesCount_eq?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  repliesCount_gt?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  repliesCount_gte?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  repliesCount_lt?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  repliesCount_lte?: number;
+
+  @TypeGraphQLField(() => [Int], { nullable: true })
+  repliesCount_in?: number[];
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  publicRepliesCount_eq?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  publicRepliesCount_gt?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  publicRepliesCount_gte?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  publicRepliesCount_lt?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  publicRepliesCount_lte?: number;
+
+  @TypeGraphQLField(() => [Int], { nullable: true })
+  publicRepliesCount_in?: number[];
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  hiddenRepliesCount_eq?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  hiddenRepliesCount_gt?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  hiddenRepliesCount_gte?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  hiddenRepliesCount_lt?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  hiddenRepliesCount_lte?: number;
+
+  @TypeGraphQLField(() => [Int], { nullable: true })
+  hiddenRepliesCount_in?: number[];
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  sharesCount_eq?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  sharesCount_gt?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  sharesCount_gte?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  sharesCount_lt?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  sharesCount_lte?: number;
+
+  @TypeGraphQLField(() => [Int], { nullable: true })
+  sharesCount_in?: number[];
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  upvotesCount_eq?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  upvotesCount_gt?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  upvotesCount_gte?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  upvotesCount_lt?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  upvotesCount_lte?: number;
+
+  @TypeGraphQLField(() => [Int], { nullable: true })
+  upvotesCount_in?: number[];
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  downvotesCount_eq?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  downvotesCount_gt?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  downvotesCount_gte?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  downvotesCount_lt?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  downvotesCount_lte?: number;
+
+  @TypeGraphQLField(() => [Int], { nullable: true })
+  downvotesCount_in?: number[];
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  score_eq?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  score_gt?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  score_gte?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  score_lt?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  score_lte?: number;
+
+  @TypeGraphQLField(() => [Int], { nullable: true })
+  score_in?: number[];
+
+  @TypeGraphQLField({ nullable: true })
+  title_eq?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  title_contains?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  title_startsWith?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  title_endsWith?: string;
+
+  @TypeGraphQLField(() => [String], { nullable: true })
+  title_in?: string[];
+
+  @TypeGraphQLField({ nullable: true })
+  slug_eq?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  slug_contains?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  slug_startsWith?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  slug_endsWith?: string;
+
+  @TypeGraphQLField(() => [String], { nullable: true })
+  slug_in?: string[];
+
+  @TypeGraphQLField({ nullable: true })
+  summary_eq?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  summary_contains?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  summary_startsWith?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  summary_endsWith?: string;
+
+  @TypeGraphQLField(() => [String], { nullable: true })
+  summary_in?: string[];
+
+  @TypeGraphQLField({ nullable: true })
+  image_eq?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  image_contains?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  image_startsWith?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  image_endsWith?: string;
+
+  @TypeGraphQLField(() => [String], { nullable: true })
+  image_in?: string[];
+
+  @TypeGraphQLField({ nullable: true })
+  canonical_eq?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  canonical_contains?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  canonical_startsWith?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  canonical_endsWith?: string;
+
+  @TypeGraphQLField(() => [String], { nullable: true })
+  canonical_in?: string[];
+
+  @TypeGraphQLField({ nullable: true })
+  tagsOriginal_eq?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  tagsOriginal_contains?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  tagsOriginal_startsWith?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  tagsOriginal_endsWith?: string;
+
+  @TypeGraphQLField(() => [String], { nullable: true })
+  tagsOriginal_in?: string[];
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  proposalIndex_eq?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  proposalIndex_gt?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  proposalIndex_gte?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  proposalIndex_lt?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  proposalIndex_lte?: number;
+
+  @TypeGraphQLField(() => [Int], { nullable: true })
+  proposalIndex_in?: number[];
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  totalCount_eq?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  totalCount_gt?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  totalCount_gte?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  totalCount_lt?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  totalCount_lte?: number;
+
+  @TypeGraphQLField(() => [Int], { nullable: true })
+  totalCount_in?: number[];
+
+  @TypeGraphQLField(() => PostWithCountWhereInput, { nullable: true })
+  AND?: [PostWithCountWhereInput];
+
+  @TypeGraphQLField(() => PostWithCountWhereInput, { nullable: true })
+  OR?: [PostWithCountWhereInput];
+}
+
+@TypeGraphQLInputType()
+export class PostWithCountWhereUniqueInput extends PostWhereUniqueInput {
+  @TypeGraphQLField(() => ID)
+  id?: string;
+}
+
+@TypeGraphQLInputType()
+export class PostWithCountCreateInput extends PostCreateInput {
+  @TypeGraphQLField({ nullable: true })
+  createdByAccount?: string;
+
+  @TypeGraphQLField(() => BigInt, { nullable: true })
+  createdAtBlock?: BN;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  createdAtTime?: DateTimeString;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  createdOnDay?: DateTimeString;
+
+  @TypeGraphQLField()
+  postId!: string;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  updatedAtTime?: DateTimeString;
+
+  @TypeGraphQLField()
+  spaceId!: string;
+
+  @TypeGraphQLField({ nullable: true })
+  content?: string;
+
+  @TypeGraphQLField(() => PostKind, { nullable: true })
+  kind?: PostKind;
+
+  @TypeGraphQLField({ nullable: true })
+  parentId?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  rootPostId?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  sharedPostId?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  repliesCount?: number;
+
+  @TypeGraphQLField({ nullable: true })
+  publicRepliesCount?: number;
+
+  @TypeGraphQLField({ nullable: true })
+  hiddenRepliesCount?: number;
+
+  @TypeGraphQLField({ nullable: true })
+  sharesCount?: number;
+
+  @TypeGraphQLField({ nullable: true })
+  upvotesCount?: number;
+
+  @TypeGraphQLField({ nullable: true })
+  downvotesCount?: number;
+
+  @TypeGraphQLField({ nullable: true })
+  score?: number;
+
+  @TypeGraphQLField({ nullable: true })
+  title?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  slug?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  summary?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  image?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  canonical?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  tagsOriginal?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  proposalIndex?: number;
+
+  @TypeGraphQLField({ nullable: true })
+  totalCount?: number;
+}
+
+@TypeGraphQLInputType()
+export class PostWithCountUpdateInput extends PostUpdateInput {
+  @TypeGraphQLField({ nullable: true })
+  createdByAccount?: string;
+
+  @TypeGraphQLField(() => BigInt, { nullable: true })
+  createdAtBlock?: BN;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  createdAtTime?: DateTimeString;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  createdOnDay?: DateTimeString;
+
+  @TypeGraphQLField({ nullable: true })
+  postId?: string;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  updatedAtTime?: DateTimeString;
+
+  @TypeGraphQLField({ nullable: true })
+  spaceId?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  content?: string;
+
+  @TypeGraphQLField(() => PostKind, { nullable: true })
+  kind?: PostKind;
+
+  @TypeGraphQLField({ nullable: true })
+  parentId?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  rootPostId?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  sharedPostId?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  repliesCount?: number;
+
+  @TypeGraphQLField({ nullable: true })
+  publicRepliesCount?: number;
+
+  @TypeGraphQLField({ nullable: true })
+  hiddenRepliesCount?: number;
+
+  @TypeGraphQLField({ nullable: true })
+  sharesCount?: number;
+
+  @TypeGraphQLField({ nullable: true })
+  upvotesCount?: number;
+
+  @TypeGraphQLField({ nullable: true })
+  downvotesCount?: number;
+
+  @TypeGraphQLField({ nullable: true })
+  score?: number;
+
+  @TypeGraphQLField({ nullable: true })
+  title?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  slug?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  summary?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  image?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  canonical?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  tagsOriginal?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  proposalIndex?: number;
+
+  @TypeGraphQLField({ nullable: true })
+  totalCount?: number;
+}
+
+@ArgsType()
+export class PostWithCountWhereArgs extends PaginationArgs {
+  @TypeGraphQLField(() => PostWithCountWhereInput, { nullable: true })
+  where?: PostWithCountWhereInput;
+
+  @TypeGraphQLField(() => PostWithCountOrderByEnum, { nullable: true })
+  orderBy?: PostWithCountOrderByEnum[];
+}
+
+@ArgsType()
+export class PostWithCountCreateManyArgs {
+  @TypeGraphQLField(() => [PostWithCountCreateInput])
+  data!: PostWithCountCreateInput[];
+}
+
+@ArgsType()
+export class PostWithCountUpdateArgs {
+  @TypeGraphQLField() data!: PostWithCountUpdateInput;
+  @TypeGraphQLField() where!: PostWithCountWhereUniqueInput;
 }
