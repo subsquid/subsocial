@@ -1,13 +1,13 @@
 import { Pool } from 'pg'
 import { readFileSync } from 'fs'
-import { dbName, dbUser, dbPass, dbHost, dbPost } from '../../env'
+import { dbName, dbUser, dbPass, dbHost, dbPort } from '../../env'
 
 const pgConf: any = {
   user: dbUser,
   host: dbHost,
   database: dbName,
   password: dbPass,
-  port: parseInt(dbPost),
+  port: dbPort,
 }
 
 const pg = new Pool(pgConf)

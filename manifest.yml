@@ -33,4 +33,3 @@ mappings:
       handler: spaceFollowed
     - event: spaceFollows.SpaceUnfollowed
       handler: spaceUnfollowed
-
