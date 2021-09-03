@@ -8,7 +8,6 @@ import pThrottle from "p-throttle"
 import { dbUser, dbHost, dbName, dbPass, dbPost } from '../env';
 import { Pool } from 'pg';
 import { insertPost } from './post';
-import { exit } from 'process'
 const named = require('yesql').pg
 
 const log = newLogger('PreBlockHooks')
@@ -57,7 +56,7 @@ const reindexSpaces: ReindexerFn = async (substrate) => {
 
   const spaceIds = Array.from({ length: lastSpaceId.toNumber() }, (_, i) => i + 1)
 
-  const spaceIndexators = spaceIds.map(async (spaceId) => {
+  for (const spaceId of spaceIds) {
     const id = new BN(spaceId) as SpaceId
 
     log.info(`Index space # ${spaceId} out of ${lastSpaceIdStr}`)
@@ -80,9 +79,7 @@ const reindexSpaces: ReindexerFn = async (substrate) => {
       await pg.query(named(insertSpaceQuery)(space))
       log.info(`Space with id - ${id.toString()} is inserted`)
     }
-  })
-
-  throttle(() => spaceIndexators)
+  }
 }
 
 const reindexPosts: ReindexerFn = async (substrate) => {
@@ -91,7 +88,7 @@ const reindexPosts: ReindexerFn = async (substrate) => {
 
   const postIds = Array.from({ length: lastPostId.toNumber() }, (_, i) => i + 1)
 
-  const postIndexators = postIds.map(async (postId) => {
+  for (const postId of postIds) {
     const id = new BN(postId) as PostId
 
     log.info(`Index post # ${postId} out of ${lastPostIdStr}`)
@@ -118,11 +115,7 @@ const reindexPosts: ReindexerFn = async (substrate) => {
       await pg.query(named(insertPosQuery)(post))
       log.info(`Post with id - ${id.toString()} is insetred`)
     }
-  })
-
-
-
-  throttle(() => postIndexators)
+  }
 }
 
 type IReindexerFunction = Record<string, ReindexerFn>
