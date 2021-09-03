@@ -5,7 +5,7 @@ import { SpaceId, PostId } from '@subsocial/types/substrate/interfaces';
 import { insertSpace } from './space';
 import { newLogger } from '@subsocial/utils'
 import pThrottle from "p-throttle"
-import { dbUser, dbHost, dbName, dbPass, dbPost } from '../env';
+import { dbUser, dbHost, dbName, dbPass, dbPort } from '../env';
 import { Pool } from 'pg';
 import { insertPost } from './post';
 const named = require('yesql').pg
@@ -19,7 +19,7 @@ const pgConf: any = {
   host: dbHost,
   database: dbName,
   password: dbPass,
-  port: parseInt(dbPost),
+  port: dbPort,
 }
 
 const pg = new Pool(pgConf)
@@ -69,6 +69,7 @@ const reindexSpaces: ReindexerFn = async (substrate) => {
       space.createdAt = new Date()
       space.createdById = space.createdByAccount || ''
       space.version = 1
+
       space.updatedAtTime = space?.updatedAtTime
       space.name = space?.name
       space.image = space?.image
@@ -98,8 +99,9 @@ const reindexPosts: ReindexerFn = async (substrate) => {
       post.id = id.toString()
       post.createdAt = new Date()
       post.createdById = post.createdByAccount || ''
-      post.updatedAtTime = post?.updatedAtTime
       post.version = 1
+
+      post.updatedAtTime = post?.updatedAtTime
       post.parentId = post?.parentId
       post.sharedPostId = post?.sharedPostId
       post.rootPostId = post?.rootPostId
