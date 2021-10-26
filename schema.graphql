@@ -1,6 +1,81 @@
-" All transfers "
-type Post @entity {
-  content: String!
-  author: Bytes!
-} 
+enum PostKind {
+  Comment
+  SharedPost
+  RegularPost
+}
 
+enum Network {
+  Subsocial
+  Polkadot
+  Kusama
+}
+
+type Space @entity {
+  createdByAccount: String
+  createdAtBlock: BigInt
+  createdAtTime: DateTime
+  createdOnDay: DateTime
+  spaceId: String!
+  updatedAtTime: DateTime
+  ownerId: String
+  postsCount: Int
+  publicPostsCount: Int
+  hiddenPostsCount: Int
+  followersCount: Int
+  score: Int
+
+  content: String
+  name: String
+  image: String
+  summary: String
+  tagsOriginal: String
+
+  tags: [Tag]!
+}
+
+type Post @entity {
+  createdByAccount: String
+  createdAtBlock: BigInt
+  createdAtTime: DateTime
+  createdOnDay: DateTime
+  postId: String!
+  updatedAtTime: DateTime
+  spaceId: String!
+  content: String
+  kind: PostKind
+  parentId: String
+  rootPostId: String
+  sharedPostId: String
+  repliesCount: Int
+  publicRepliesCount: Int
+  hiddenRepliesCount: Int
+  sharesCount: Int
+  upvotesCount: Int
+  downvotesCount: Int
+  score: Int
+
+  title: String
+  slug: String
+  summary: String
+  image: String
+  canonical: String
+  tagsOriginal: String
+
+  tags: [Tag!]!
+  # treasuryProposal: TreasuryProposal
+  proposalIndex: Int
+}
+
+# type TreasuryProposal @entity {
+#   postId: String!
+#   proposalId: Int!
+#   network: Network!
+# }
+
+type Tag @entity {
+  id: String!
+  tag: String
+
+  posts: [Post!]! @derivedFrom(field: "tags")
+  spaces: [Space!]! @derivedFrom(field: "tags")
+}
