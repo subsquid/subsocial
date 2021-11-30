@@ -1,19 +1,24 @@
+FROM node:14 AS builder
+WORKDIR /hydra-build
+ADD package.json .
+ADD package-lock.json .
+RUN npm ci
+ADD tsconfig.json .
+ADD src src
+RUN npm run build
+
+
 FROM node:14 AS processor
 WORKDIR /hydra-project
-ADD package.json .
-ADD yarn.lock .
-
-RUN yarn install
-
-ADD tsconfig.json .
-ADD generated generated
-RUN yarn workspace query-node install
-ADD mappings mappings
-RUN yarn workspace sample-mappings install
+COPY --from=builder /hydra-build/package.json .
+COPY --from=builder /hydra-build/package-lock.json .
+RUN npm ci --production
+COPY --from=builder /hydra-build/lib lib
+ADD db db
 ADD manifest.yml .
-ADD localhost.env ./.env
-CMD yarn db:bootstrap && yarn processor:start
+ADD .env .
+CMD ["npm", "run", "processor:start"]
 
 
 FROM processor AS query-node
-CMD ["yarn", "run", "query-node:start:prod"]
+CMD ["node", "./lib/generated/server.js"]

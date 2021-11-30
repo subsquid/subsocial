@@ -1,4 +1,5 @@
 {
+  "Address": "AccountId",
   "IpfsCid": "Text",
   "DonationId": "u64",
   "DonationRecipient": {
@@ -26,19 +27,19 @@
     "min_amount": "Option<Option<Balance>>",
     "max_amount": "Option<Option<Balance>>"
   },
-  "DropId": "u64",
-  "Drop": {
-    "id": "DropId",
-    "first_drop_at": "BlockNumber",
-    "total_dropped": "Balance"
+  "Faucet": {
+    "enabled": "bool",
+    "period": "BlockNumber",
+    "period_limit": "Balance",
+    "drip_limit": "Balance",
+    "next_period_at": "BlockNumber",
+    "dripped_in_current_period": "Balance"
   },
-  "FaucetSettings": {
+  "FaucetUpdate": {
+    "enabled": "Option<bool>",
     "period": "Option<BlockNumber>",
-    "period_limit": "Balance"
-  },
-  "FaucetSettingsUpdate": {
-    "period": "Option<Option<BlockNumber>>",
-    "period_limit": "Option<Balance>"
+    "period_limit": "Option<Balance>",
+    "drip_limit": "Option<Balance>"
   },
   "ReportId": "u64",
   "EntityId": {
@@ -302,38 +303,5 @@
       "IPFS": "Text",
       "Hyper": "Text"
     }
-  },
-  "Faucet": {
-    "enabled": "bool",
-    "period": "BlockNumber",
-    "period_limit": "Balance",
-    "drip_limit": "Balance",
-    "next_period_at": "BlockNumber",
-    "dripped_in_current_period": "Balance"
-  },
-  "FaucetUpdate": {
-    "enabled": "Option<bool>",
-    "period": "Option<BlockNumber>",
-    "period_limit": "Option<Balance>",
-    "drip_limit": "Option<Balance>"
-  },
-  "ChangeId": "u64",
-  "SpaceOwners": {
-    "created": "WhoAndWhen",
-    "space_id": "SpaceId",
-    "owners": "Vec<AccountId>",
-    "threshold": "u16",
-    "changes_count": "u16"
-  },
-  "Change": {
-    "created": "WhoAndWhen",
-    "id": "ChangeId",
-    "space_id": "SpaceId",
-    "add_owners": "Vec<AccountId>",
-    "remove_owners": "Vec<AccountId>",
-    "new_threshold": "Option<u16>",
-    "notes": "Text",
-    "confirmed_by": "Vec<AccountId>",
-    "expires_at": "BlockNumber"
   }
 }

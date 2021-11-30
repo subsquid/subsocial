@@ -1,7 +1,10 @@
-**/node_modules/
-**/lib
-**/dist
-**/mapping/generated
+/.idea
+/node_modules
+/lib
+
+/src/generated
+
+/src/types-V1
+/src/types-V2
+
 .env
-.vscode
-.idea
