@@ -1,6 +1,8 @@
 typegen:
+  outDir: src/types-${PREFIX}
   metadata:
     source: wss://arch.subsocial.network
+    blockHash: '${HASH}'
   events:
     - posts.PostCreated
     - posts.PostUpdated
@@ -25,4 +27,3 @@ typegen:
   customTypes:
     lib: '@subsocial/types/substrate/interfaces'
     typedefsLoc: typedefs.json
-  outDir: ./mappings/generated/types

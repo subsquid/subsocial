@@ -30,7 +30,7 @@ type Space @entity {
   summary: String
   tagsOriginal: String
 
-  tags: [Tag]!
+  # tags: [Tag]!
 }
 
 type Post @entity {
@@ -61,7 +61,7 @@ type Post @entity {
   canonical: String
   tagsOriginal: String
 
-  tags: [Tag!]!
+  # tags: [Tag!]!
   # treasuryProposal: TreasuryProposal
   proposalIndex: Int
 }
@@ -72,10 +72,10 @@ type Post @entity {
 #   network: Network!
 # }
 
-type Tag @entity {
-  id: String!
-  tag: String
+# type Tag @entity {
+#   id: String!
+#   tag: String
 
-  posts: [Post!]! @derivedFrom(field: "tags")
-  spaces: [Space!]! @derivedFrom(field: "tags")
-}
+#   posts: [Post!]! @derivedFrom(field: "tags")
+#   spaces: [Space!]! @derivedFrom(field: "tags")
+# }

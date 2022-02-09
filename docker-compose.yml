@@ -1,47 +1,12 @@
 version: "3.4"
+
 services:
-  postgres:
-    image: postgres:12.4
-    restart: on-failure
-    command: -p ${DB_PORT}
-    volumes:
-      - /var/lib/postgresql/data
+  db:
+    image: postgres:12
     ports:
-      - "${DB_PORT}"
+      - "${DB_PORT}:5432"
     environment:
+      POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASS}
-      POSTGRES_DB: ${DB_NAME}
-
-  query-node:
-    image: subsocial-query-node:latest
-    restart: on-failure
-    build:
-      dockerfile: docker/Dockerfile.query-node
-      context: ./
-    env_file:
-      - .env
-    environment:
-      DB_HOST: postgres
-    ports:
-      - "8080:${GRAPHQL_SERVER_PORT}"
-    depends_on:
-      - postgres
-
-
-  processor:
-    image: subsocial-hydra-processor:latest
-    restart: on-failure
-    network_mode: host
-    build:
-      dockerfile: docker/Dockerfile.processor
-      context: ./
-    env_file:
-      - .env
-    environment:
-      - POLL_INTERVAL_MS=300
-      - DEBUG=hydra-processor:*
-    command: sh -c "yarn codegen && yarn db:bootstrap && yarn processor:start"
-    depends_on:
-      - postgres
-
+    # command: ["postgres", "-c", "log_statement=all"]
