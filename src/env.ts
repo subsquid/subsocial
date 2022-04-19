@@ -1,6 +1,6 @@
 require('dotenv').config()
 
-export const ipfsReadOnlyNodeUrl = process.env.IPFS_READ_ONLY_NODE_URL || 'http://localhost:8080'
+export const ipfsReadOnlyNodeUrl = process.env.IPFS_READ_ONLY_NODE_URL || 'https://app.subsocial/network/ipfs'
 
 export const dbName = process.env.DB_NAME || "subsocial";
 export const dbUser = process.env.DB_USER || "dev";
