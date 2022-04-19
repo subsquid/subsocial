@@ -1,6 +1,6 @@
 import { registry } from '@subsocial/types/substrate/registry';
 import { ApiPromise } from '@polkadot/api';
-import { Api, SubsocialApi } from '@subsocial/api'
+import { getSubstrateApi, SubsocialApi } from '@subsocial/api'
 import { ipfsReadOnlyNodeUrl, port } from '../env'
 let subsocial: SubsocialApi
 
@@ -17,7 +17,7 @@ export const resolveSubsocialApi = async (): Promise<Api> => {
   // Connect to Subsocial's Substrate node:
 
   if (!subsocial) {
-    const api = await Api.connect(process.env.CHAIN_NODE)
+    const api = await getSubstrateApi(process.env.CHAIN_NODE);
     const properties = await api.rpc.system.properties()
 
     registry.setChainProperties(properties)

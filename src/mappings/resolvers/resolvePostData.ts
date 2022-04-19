@@ -3,9 +3,9 @@ import { resolveSubsocialApi } from '../../connection/subsocial'
 import { createPostSlug } from '@subsocial/utils/slugify'
 import { formatTegs } from '../utils'
 import { summarizeMd } from '@subsocial/utils/summarize'
-import { PostExtension } from '@subsocial/types/substrate/interfaces/types'
 import { AnyPostId, MetaItem } from '@subsocial/types'
 import { PostKind } from '../../model'
+import { PostExtension } from '@subsocial/types/substrate/interfaces'
 
 export type PostCounters = {
 	createdByAccount: string
@@ -43,12 +43,12 @@ export const resolvePostStruct = async (
 
 	const {
 		created,
-		space_id,
-		replies_count,
-		hidden_replies_count,
-		shares_count,
-		upvotes_count,
-		downvotes_count,
+		spaceId,
+		repliesCount,
+		hiddenRepliesCount,
+		sharesCount,
+		upvotesCount,
+		downvotesCount,
 		score,
 		content,
 		updated,
@@ -60,7 +60,7 @@ export const resolvePostStruct = async (
 	const updatedAtTime = updated.isSome
 		? new Date(updated.unwrap().time.toNumber())
 		: undefined
-	const spaceId = space_id.isSome ? space_id.unwrap().toString() : ''
+	const spaceIdString = spaceId.isSome ? spaceId.unwrap().toString() : ''
 	const kind = extension.type as PostKind
 
 	return {
@@ -70,13 +70,13 @@ export const resolvePostStruct = async (
 		updatedAtTime,
 		kind,
 		extension: extension as unknown as PostExtension,
-		spaceId,
+		spaceId: spaceIdString,
 		content: !content.isNone ? content.asIpfs.toString() : '',
-		repliesCount: replies_count.toNumber(),
-		hiddenRepliesCount: hidden_replies_count.toNumber(),
-		sharesCount: shares_count.toNumber(),
-		upvotesCount: upvotes_count.toNumber(),
-		downvotesCount: downvotes_count.toNumber(),
+		repliesCount: repliesCount.toNumber(),
+		hiddenRepliesCount: hiddenRepliesCount.toNumber(),
+		sharesCount: sharesCount.toNumber(),
+		upvotesCount: upvotesCount.toNumber(),
+		downvotesCount: downvotesCount.toNumber(),
 		score: score.toNumber(),
 	}
 }

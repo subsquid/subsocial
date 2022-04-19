@@ -30,7 +30,7 @@ export const resolveSpaceStruct = async (id: AnySpaceId): Promise<SpaceStruct | 
   const space = await subsocial.findSpace({ id })
   if (!space) return
 
-  const { created, owner, content, posts_count, hidden_posts_count, followers_count, score, updated } = space.struct
+  const { created, owner, content, postsCount, hiddenPostsCount, followersCount, score, updated } = space.struct
   const { account, block, time } = created
   const createdAtTime = !time.isEmpty ? new Date(time.toNumber()) : undefined
   const updatedAtTime = updated.isSome ? new Date(updated.unwrap().time.toNumber()) : undefined
@@ -42,9 +42,9 @@ export const resolveSpaceStruct = async (id: AnySpaceId): Promise<SpaceStruct | 
     updatedAtTime,
     owner: owner.toString(),
     content: !content.isNone ? content.asIpfs.toString() : '',
-    postsCount: posts_count.toNumber(),
-    hiddenPostsCount: hidden_posts_count.toNumber(),
-    followersCount: followers_count.toNumber(),
+    postsCount: postsCount.toNumber(),
+    hiddenPostsCount: hiddenPostsCount.toNumber(),
+    followersCount: followersCount.toNumber(),
     score: score.toNumber()
   }
 }

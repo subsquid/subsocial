@@ -12,9 +12,9 @@
     "query-node:start": "squid-graphql-server"
   },
   "dependencies": {
-    "@subsocial/api": "0.6.5-dev.10",
-    "@subsocial/types": "0.6.5-dev.10",
-    "@subsocial/utils": "^0.6.5-dev.10",
+    "@subsocial/api": "^0.6.8",
+    "@subsocial/types": "^0.6.8",
+    "@subsocial/utils": "^0.6.8",
     "@subsquid/archive-registry": "^0.0.6",
     "@subsquid/graphql-server": "^0.1.5",
     "@subsquid/ss58": "^0.1.0",

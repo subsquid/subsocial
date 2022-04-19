@@ -146,8 +146,8 @@ export const insertPost = async (id: bigint, store?: Store) => {
 
   switch (postStruct.kind) {
     case 'Comment': {
-      const extencionParentId = postStruct.extension.asComment.parent_id
-      const rootPostId =  postStruct.extension.asComment.root_post_id
+      const extencionParentId = postStruct.extension.asComment.parentId
+      const rootPostId =  postStruct.extension.asComment.rootPostId
       const parentId = extencionParentId.isNone ? undefined : extencionParentId.unwrap()
 
       post.rootPostId = rootPostId.toString()

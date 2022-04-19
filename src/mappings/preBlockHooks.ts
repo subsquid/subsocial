@@ -51,7 +51,8 @@ const throttle = pThrottle({
 });
 
 const reindexSpaces: ReindexerFn = async (substrate) => {
-  const lastSpaceId = (await substrate.nextSpaceId()).sub(one)
+  const spaceId = await substrate.nextSpaceId();
+  const lastSpaceId = (new BN(spaceId.toString())).sub(one)
   const lastSpaceIdStr = lastSpaceId.toString()
 
   const spaceIds = Array.from({ length: lastSpaceId.toNumber() }, (_, i) => i + 1)
@@ -84,7 +85,8 @@ const reindexSpaces: ReindexerFn = async (substrate) => {
 }
 
 const reindexPosts: ReindexerFn = async (substrate) => {
-  const lastPostId = (await substrate.nextPostId()).sub(one)
+  const postId = await substrate.nextPostId();
+  const lastPostId = (new BN(postId.toString())).sub(one)
   const lastPostIdStr = lastPostId.toString()
 
   const postIds = Array.from({ length: lastPostId.toNumber() }, (_, i) => i + 1)
