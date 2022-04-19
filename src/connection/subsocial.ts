@@ -1,7 +1,7 @@
 import { registry } from '@subsocial/types/substrate/registry';
 import { ApiPromise } from '@polkadot/api';
 import { getSubstrateApi, newFlatSubsocialApi } from '@subsocial/api'
-import { ipfsReadOnlyNodeUrl, port,  } from '../env'
+import { ipfsReadOnlyNodeUrl, offchainUrl } from '../env'
 import { FlatSubsocialApi } from '@subsocial/api/flat-subsocial';
 import { chainNode } from "../env";
 
@@ -9,7 +9,7 @@ let subsocial: FlatSubsocialApi;
 
 const ipfsConfig = {
   ipfsNodeUrl: ipfsReadOnlyNodeUrl,
-  offchainUrl: `http://localhost:${port}`
+  offchainUrl: `https://app.subsocial/network/offchain`
 }
 
 export const resolveSubsocialApi = async (): Promise<FlatSubsocialApi> => {
