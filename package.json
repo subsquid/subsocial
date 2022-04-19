@@ -36,6 +36,7 @@
     "@types/inflected": "^1.1.29",
     "@types/pg": "^8.6.5",
     "envsub": "^4.0.7",
+    "ts-node": "^10.7.0",
     "typescript": "~4.6.3"
   }
 }

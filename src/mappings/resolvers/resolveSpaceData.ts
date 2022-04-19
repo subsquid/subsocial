@@ -3,67 +3,16 @@ import BN from 'bn.js';
 import { formatTegs } from '../utils';
 import { summarizeMd } from '@subsocial/utils/summarize';
 import { AnySpaceId } from '@subsocial/types';
+import { SpaceData, SpaceStruct } from '@subsocial/types/dto';
 
-export type SpaceStruct = {
-  createdByAccount: string,
-  createdAtBlock: BN,
-  createdAtTime: Date | undefined,
-  updatedAtTime: Date | undefined,
-  owner: string,
-  content: string,
-  postsCount: number,
-  hiddenPostsCount: number,
-  followersCount: number,
-  score: number
-}
+export const resolveSpace = async (id: AnySpaceId): Promise<SpaceData | undefined> => {
+  const subsocial = await resolveSubsocialApi()
 
-export type SpaceContent = {
-  name: string,
-  about: string,
-  image: string,
-  tags: string[]
+  return await subsocial.findSpace({ id: id.toString() });
 }
 
 export const resolveSpaceStruct = async (id: AnySpaceId): Promise<SpaceStruct | undefined> => {
   const subsocial = await resolveSubsocialApi()
 
-  const space = await subsocial.findSpace({ id })
-  if (!space) return
-
-  const { created, owner, content, postsCount, hiddenPostsCount, followersCount, score, updated } = space.struct
-  const { account, block, time } = created
-  const createdAtTime = !time.isEmpty ? new Date(time.toNumber()) : undefined
-  const updatedAtTime = updated.isSome ? new Date(updated.unwrap().time.toNumber()) : undefined
-
-  return {
-    createdByAccount: account.toString(),
-    createdAtBlock: new BN(block),
-    createdAtTime,
-    updatedAtTime,
-    owner: owner.toString(),
-    content: !content.isNone ? content.asIpfs.toString() : '',
-    postsCount: postsCount.toNumber(),
-    hiddenPostsCount: hiddenPostsCount.toNumber(),
-    followersCount: followersCount.toNumber(),
-    score: score.toNumber()
-  }
-}
-
-export const resolveIpfsSpaceData = async (cid: string): Promise<SpaceContent | undefined> => {
-  const { ipfs } = await resolveSubsocialApi()
-
-  const content = await ipfs.findSpace(cid)
-  if (!content) return
-
-  const name = content.name ? content.name : ''
-  const tags = content.tags ? formatTegs(content.tags) : []
-
-  if (content) {
-    return {
-      name,
-      about: summarizeMd(content.about).summary,
-      image: content.image,
-      tags
-    }
-  }
+  return await subsocial.findSpaceStruct(id.toString());
 }

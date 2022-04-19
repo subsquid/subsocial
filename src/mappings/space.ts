@@ -1,6 +1,5 @@
 import {
-	resolveSpaceStruct,
-	resolveIpfsSpaceData,
+	resolveSpace,
 } from './resolvers/resolveSpaceData'
 import { getDateWithoutTime } from './utils'
 import { SpaceId } from '@subsocial/types/substrate/interfaces'
@@ -25,22 +24,28 @@ export async function spaceUpdated(ctx: EventHandlerContext) {
 
 	let space = await ctx.store.get(Space, { where: `space_id = '${id.toString()}'` })
 	if (!space) {
-		space = await insertSpace(id, ctx.store);
-		return
+		const spaceRet = await insertSpace(id, ctx.store);
+		if (!spaceRet) {
+			return;
+		}
+
+		space = spaceRet;
 	}
 
-	const spaceStruct = await resolveSpaceStruct(new BN(id.toString()))
-	if (!spaceStruct) return
+	const spaceData = await resolveSpace(new BN(id.toString(), 10))
+	if (!spaceData) return;
 
-	if (space.updatedAtTime === spaceStruct.updatedAtTime) return
+	const spaceStruct = spaceData.struct;
+	if (!spaceStruct) return;
+
+	if (spaceStruct.updatedAtTime && space.updatedAtTime === new Date(spaceStruct.updatedAtTime)) return
 
 	space.createdByAccount = spaceStruct.createdByAccount
-	space.ownerId = spaceStruct.owner
+	space.ownerId = spaceStruct.ownerId
 
-	const content = spaceStruct.content
-	space.content = content
+	space.content = spaceStruct.contentId
 
-	const spaceContent = await resolveIpfsSpaceData(content)
+	const spaceContent = spaceData.content;
 
 	space.postsCount = spaceStruct.postsCount
 	space.hiddenPostsCount = spaceStruct.hiddenPostsCount
@@ -79,22 +84,25 @@ const createSpace = async (ctx: EventHandlerContext) => {
 	}
 }
 
-export const insertSpace = async (id: bigint, store?: Store) => {
-	const spaceStruct = await resolveSpaceStruct(new BN(id.toString()))
-	if (!spaceStruct) return
+export const insertSpace = async (id: bigint, store?: Store): Promise<Space | null> => {
+	const spaceData = await resolveSpace(new BN(id.toString(), 10))
+	if (!spaceData) return null;
 
 	const space = new Space()
 
+	const spaceStruct = spaceData.struct;
+	const spaceContent = spaceData.content;
+
 	space.spaceId = id.toString()
+	space.id = id.toString()
 	space.createdByAccount = spaceStruct.createdByAccount
 	space.createdAtBlock = BigInt(spaceStruct.createdAtBlock.toString())
-	space.createdAtTime = spaceStruct.createdAtTime
-	space.createdOnDay = getDateWithoutTime(spaceStruct.createdAtTime)
+	space.createdAtTime = new Date(spaceStruct.createdAtTime)
+	space.createdOnDay = getDateWithoutTime(new Date(spaceStruct.createdAtTime))
 
-	space.ownerId = spaceStruct.owner
+	space.ownerId = spaceStruct.ownerId
 
-	const content = spaceStruct.content
-	space.content = content
+	space.content = spaceStruct.contentId
 
 	space.postsCount = spaceStruct.postsCount
 	space.hiddenPostsCount = spaceStruct.hiddenPostsCount
@@ -102,26 +110,22 @@ export const insertSpace = async (id: bigint, store?: Store) => {
 	space.followersCount = spaceStruct.followersCount
 	space.score = spaceStruct.score
 
-	if (content !== '') {
-		const spaceContent = await resolveIpfsSpaceData(content)
+	if (spaceContent) {
+		space.name = spaceContent.name
+		space.summary = spaceContent.about
+		space.image = spaceContent.image
+		space.tagsOriginal = spaceContent.tags?.join(',')
 
-		if (spaceContent) {
-			space.name = spaceContent.name
-			space.summary = spaceContent.about
-			space.image = spaceContent.image
-			space.tagsOriginal = spaceContent.tags.join(',')
-
-			if (store) {
-				// const tags = await insertTagInSpaceTags(
-				// 	store,
-				// 	spaceContent.tags,
-				// 	space.spaceId,
-				// 	space
-				// )
-				// if (!isEmptyArray(tags)) {
-				// 	space.tags = tags
-				// }
-			}
+		if (store) {
+			// const tags = await insertTagInSpaceTags(
+			// 	store,
+			// 	spaceContent.tags,
+			// 	space.spaceId,
+			// 	space
+			// )
+			// if (!isEmptyArray(tags)) {
+			// 	space.tags = tags
+			// }
 		}
 	}
 

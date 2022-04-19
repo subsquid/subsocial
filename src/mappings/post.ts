@@ -1,9 +1,9 @@
-import { resolvePostStruct, resolveIpfsPostData } from './resolvers/resolvePostData';
+import { resolvePostStruct, resolvePost } from './resolvers/resolvePostData';
 import { getDateWithoutTime } from './utils';
 import { PostId, SpaceId } from '@subsocial/types/substrate/interfaces';
 import { isEmptyArray } from "@subsocial/utils"
 import { resolveSpaceStruct } from './resolvers/resolveSpaceData';
-import { Post, Space } from '../model/generated'
+import { Post, PostKind, Space } from '../model/generated'
 import { EventHandlerContext, Store } from '@subsquid/substrate-processor';
 import { PostsPostCreatedEvent, PostsPostSharedEvent, PostsPostUpdatedEvent } from '../types/events';
 import BN from 'bn.js';
@@ -36,30 +36,31 @@ export async function postUpdated(ctx: EventHandlerContext) {
   const post = await ctx.store.get(Post, { where: `post_id = '${id.toString()}'` })
   if (!post) return
 
-  const postStruct = await resolvePostStruct(id as unknown as PostId)
-  if (!postStruct) return
+  const postData = await resolvePost(id as unknown as PostId)
+  if (!postData) return
+
+  const postStruct = postData.post.struct;
+
+  const postContent = postData.post.content;
 
   if (post.updatedAtTime === postStruct.updatedAtTime) return
 
   post.createdByAccount = postStruct.createdByAccount
 
-  const content = postStruct.content
-  post.content = content
+  post.content = postStruct.contentId
 
-  post.updatedAtTime = postStruct.updatedAtTime
+  post.updatedAtTime = postStruct.updatedAtTime ? new Date(postStruct.updatedAtTime) : null;
 
-  if (postStruct.spaceId != '') {
-    await updateCountersInSpace(ctx.store, BigInt(postStruct.spaceId))
+  if (postStruct.spaceId) {
+    await updateCountersInSpace(ctx.store, BigInt(postStruct.spaceId));
   }
-
-  const postContent = await resolveIpfsPostData(content, post.postId)
 
   if (postContent) {
     post.title = postContent.title
     post.image = postContent.image
-    post.summary = postContent.summarize
-    post.slug = postContent.slug
-    post.tagsOriginal = postContent.tags.join(',')
+    post.summary = postContent.summary
+    post.slug = null
+    post.tagsOriginal = postContent.tags?.join(',')
 
     // const tags = await insertTagInPostTags(store, postContent.tags, post.postId, post)
 
@@ -95,7 +96,7 @@ const updateReplyCount = async (store: Store, postId: bigint) => {
   const post = await store.get(Post, { where: `post_id = '${postId.toString()}'` })
   if (!post) return
 
-  const postStruct = await resolvePostStruct(new BN(postId.toString()))
+  const postStruct = await resolvePostStruct(new BN(postId.toString(), 10))
   if (!postStruct) return
 
   post.repliesCount = postStruct.repliesCount
@@ -109,7 +110,7 @@ const updateCountersInSpace = async (store: Store, spaceId: bigint) => {
   const space = await store.get(Space, { where: `space_id = '${spaceId.toString()}'` })
   if (!space) return
 
-  const spaceStruct = await resolveSpaceStruct(new BN(spaceId.toString()))
+  const spaceStruct = await resolveSpaceStruct(new BN(spaceId.toString(), 10))
   if (!spaceStruct) return
 
   space.postsCount = spaceStruct.postsCount
@@ -119,33 +120,43 @@ const updateCountersInSpace = async (store: Store, spaceId: bigint) => {
   await store.save<Space>(space)
 }
 
-export const insertPost = async (id: bigint, store?: Store) => {
-  const postStruct = await resolvePostStruct(new BN(id.toString()))
-  if (!postStruct) return
+export const insertPost = async (id: bigint, store?: Store): Promise<Post | null> => {
+  const postData = await resolvePost(new BN(id.toString(), 10))
+  if (!postData) return null;
+
+  const postStruct = postData.post.struct;
+  const postContent = postData.post.content;
 
   const post = new Post()
 
   post.createdByAccount = postStruct.createdByAccount
   post.createdAtBlock = BigInt(postStruct.createdAtBlock.toString())
-  post.createdAtTime = postStruct.createdAtTime
-  post.createdOnDay = getDateWithoutTime(postStruct.createdAtTime)
+  post.createdAtTime = new Date(postStruct.createdAtTime)
+  post.createdOnDay = getDateWithoutTime(new Date(postStruct.createdAtTime))
   post.postId = id.toString()
-  const content = postStruct.content
+  post.id = id.toString()
+  post.content = postStruct.contentId;
 
-  post.content = content
+  if (postStruct.isComment) {
+    post.kind = PostKind.Comment;
+  } else if (postStruct.isRegularPost) {
+    post.kind = PostKind.RegularPost;
+  } else if (postStruct.isSharedPost) {
+    post.kind = PostKind.SharedPost;
+  }
 
-  const postContent = await resolveIpfsPostData(content, post.postId)
-
-  post.kind = postStruct.kind
-
-  post.updatedAtTime = postStruct.updatedAtTime
+  post.updatedAtTime = postStruct.updatedAtTime ? new Date(postStruct.updatedAtTime) : null;
+  if (!postStruct.spaceId) {
+    return null;;
+  }
   post.spaceId = postStruct.spaceId
   if (postStruct.spaceId != '' && store) {
     await updateCountersInSpace(store, BigInt(postStruct.spaceId))
   }
 
-  switch (postStruct.kind) {
-    case 'Comment': {
+  /*
+  switch (post.kind) {
+    case PostKind.Comment: {
       const extencionParentId = postStruct.extension.asComment.parentId
       const rootPostId =  postStruct.extension.asComment.rootPostId
       const parentId = extencionParentId.isNone ? undefined : extencionParentId.unwrap()
@@ -160,11 +171,12 @@ export const insertPost = async (id: bigint, store?: Store) => {
 
       break
     }
-    case 'SharedPost': {
+    case PostKind.SharedPost: {
       post.sharedPostId = postStruct.extension.asSharedPost.toString()
       break
     }
   }
+  */
 
   post.repliesCount = postStruct.repliesCount
   post.hiddenRepliesCount = postStruct.hiddenRepliesCount
@@ -177,9 +189,9 @@ export const insertPost = async (id: bigint, store?: Store) => {
   if (postContent) {
     post.title = postContent.title
     post.image = postContent.image
-    post.summary = postContent.summarize
-    post.slug = postContent.slug
-    post.tagsOriginal = postContent.tags.join(',')
+    post.summary = postContent.summary
+    post.slug = null
+    post.tagsOriginal = postContent.tags?.join(',')
 
     if(store) {
       // const tags = await insertTagInPostTags(store, postContent.tags, post.postId, post)

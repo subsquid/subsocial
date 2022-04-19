@@ -93,7 +93,7 @@ const upvoteOrDownvotePost = async (store: Store, id: bigint) => {
   const post = await store.get(Post, { where: { postId: id.toString()} })
   if (!post) return
 
-  const postStruct = await resolvePostStruct(new BN(id.toString()))
+  const postStruct = await resolvePostStruct(new BN(id.toString(), 10))
   if (!postStruct) return
 
   post.upvotesCount = postStruct.upvotesCount

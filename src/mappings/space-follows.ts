@@ -33,8 +33,8 @@ const spaceFollowedOrUnfollowed = async (store: Store, spaceId: bigint) => {
   const space = await store.get(Space, { where: `space_id = '${spaceId.toString()}'` })
   if (!space) return
 
-  const spaceStruct = await resolveSpaceStruct(new BN(spaceId.toString()))
-  if (!spaceStruct) return
+  const spaceStruct = await resolveSpaceStruct(new BN(spaceId.toString(), 10))
+  if (!spaceStruct) return;
 
   space.followersCount = spaceStruct.followersCount
 
