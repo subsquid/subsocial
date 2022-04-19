@@ -3,9 +3,9 @@ import { resolveSubsocialApi } from '../../connection/subsocial'
 import { createPostSlug } from '@subsocial/utils/slugify'
 import { formatTegs } from '../utils'
 import { summarizeMd } from '@subsocial/utils/summarize'
-import { PostExtension, PostId } from '@subsocial/types/substrate/interfaces/types'
-import { MetaItem } from '@subsocial/types'
-import { PostKind } from '../../generated/model/postKind'
+import { PostExtension } from '@subsocial/types/substrate/interfaces/types'
+import { AnyPostId, MetaItem } from '@subsocial/types'
+import { PostKind } from '../../model'
 
 export type PostCounters = {
 	createdByAccount: string
@@ -34,7 +34,7 @@ export type PostContent = {
 }
 
 export const resolvePostStruct = async (
-	id: PostId
+	id: AnyPostId
 ): Promise<PostCounters | undefined> => {
 	const subsocial = await resolveSubsocialApi()
 

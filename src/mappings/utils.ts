@@ -3,9 +3,10 @@ import localizedFormat from 'dayjs/plugin/localizedFormat'
 // import { MetaItem } from "@subsocial/types"
 // import { PostId } from "@subsocial/types/substrate/interfaces"
 // import { Network, TreasuryProposal } from "../generated/graphql-server/src/modules/treasury-proposal/treasury-proposal.model"
-import { Space } from '../generated/model/space.model';
-import { Post } from '../generated/model/post.model';
-import { DatabaseManager } from "@subsquid/hydra-common"
+import { Space } from '../model/generated/space.model';
+import { Post } from '../model/generated/post.model';
+import { Store } from "@subsquid/substrate-processor";
+
 
 dayjs.extend(localizedFormat)
 
@@ -14,7 +15,7 @@ export type ObjectType = Space | Post | undefined
 export type RelationFieldType = 'posts' | 'spaces'
 
 export type GetOrCreateTagType = {
-  db: DatabaseManager,
+  store: Store,
   tags: string[],
   entity: ObjectType,
   relationField: RelationFieldType,

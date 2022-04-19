@@ -3,32 +3,37 @@ import { getDateWithoutTime } from './utils';
 import { PostId, SpaceId } from '@subsocial/types/substrate/interfaces';
 import { isEmptyArray } from "@subsocial/utils"
 import { resolveSpaceStruct } from './resolvers/resolveSpaceData';
-import { DatabaseManager, EventContext, StoreContext } from '@subsquid/hydra-common'
-import { Posts } from '../types-V2'
-import { Post, Space } from '../generated/model'
+import { Post, Space } from '../model/generated'
+import { EventHandlerContext, Store } from '@subsquid/substrate-processor';
+import { PostsPostCreatedEvent, PostsPostSharedEvent, PostsPostUpdatedEvent } from '../types/events';
+import BN from 'bn.js';
 
-export async function postCreated({ event, store }: EventContext & StoreContext) {
-  const [, id ] = new Posts.PostCreatedEvent(event).params
+export async function postCreated(ctx: EventHandlerContext) {
+  const event = new PostsPostCreatedEvent(ctx);
 
-  if (event.extrinsic === undefined) {
+  if (ctx.event.extrinsic === undefined) {
     throw new Error(`No extrinsic has been provided`)
   }
 
-  const post = await insertPost(id, store)
+  const [_, id] = event.asV1;
+
+  const post = await insertPost(id, ctx.store)
 
   if(post) {
-    await store.save<Post>(post)
+    await ctx.store.save<Post>(post)
   }
 }
 
-export async function postUpdated({ event, store }: EventContext & StoreContext) {
-  const [, id ] = new Posts.PostUpdatedEvent(event).params
+export async function postUpdated(ctx: EventHandlerContext) {
+  const event = new PostsPostUpdatedEvent(ctx);
 
-  if (event.extrinsic === undefined) {
+  if (ctx.event.extrinsic === undefined) {
     throw new Error(`No extrinsic has been provided`)
   }
 
-  const post = await store.get(Post, { where: `post_id = '${id.toString()}'` })
+  const [_, id] = event.asV1;
+
+  const post = await ctx.store.get(Post, { where: `post_id = '${id.toString()}'` })
   if (!post) return
 
   const postStruct = await resolvePostStruct(id as unknown as PostId)
@@ -44,7 +49,7 @@ export async function postUpdated({ event, store }: EventContext & StoreContext)
   post.updatedAtTime = postStruct.updatedAtTime
 
   if (postStruct.spaceId != '') {
-    await updateCountersInSpace(store, postStruct.spaceId as unknown as SpaceId)
+    await updateCountersInSpace(ctx.store, BigInt(postStruct.spaceId))
   }
 
   const postContent = await resolveIpfsPostData(content, post.postId)
@@ -63,17 +68,19 @@ export async function postUpdated({ event, store }: EventContext & StoreContext)
     // }
   }
 
-  await store.save<Post>(post)
+  await ctx.store.save<Post>(post)
 }
 
-export async function postShared({ event, store }: EventContext & StoreContext) {
-  const [, id ] = new Posts.PostSharedEvent(event).params
+export async function postShared(ctx: EventHandlerContext) {
+  const event = new PostsPostSharedEvent(ctx);
 
-  if (event.extrinsic === undefined) {
+  if (ctx.event.extrinsic === undefined) {
     throw new Error(`No extrinsic has been provided`)
   }
 
-  const post = await store.get(Post, { where: `post_id = '${id.toString()}'` })
+  const [_, id] = event.asV1;
+
+  const post = await ctx.store.get(Post, { where: `post_id = '${id.toString()}'` })
   if (!post) return
 
   const postStruct = await resolvePostStruct(id as unknown as PostId)
@@ -81,14 +88,14 @@ export async function postShared({ event, store }: EventContext & StoreContext) 
 
   post.sharesCount = postStruct.sharesCount
 
-  await store.save<Post>(post)
+  await ctx.store.save<Post>(post)
 }
 
-const updateReplyCount = async (store: DatabaseManager, postId: PostId) => {
+const updateReplyCount = async (store: Store, postId: bigint) => {
   const post = await store.get(Post, { where: `post_id = '${postId.toString()}'` })
   if (!post) return
 
-  const postStruct = await resolvePostStruct(postId)
+  const postStruct = await resolvePostStruct(new BN(postId.toString()))
   if (!postStruct) return
 
   post.repliesCount = postStruct.repliesCount
@@ -98,11 +105,11 @@ const updateReplyCount = async (store: DatabaseManager, postId: PostId) => {
   await store.save<Post>(post)
 }
 
-const updateCountersInSpace = async (store: DatabaseManager, spaceId: SpaceId) => {
+const updateCountersInSpace = async (store: Store, spaceId: bigint) => {
   const space = await store.get(Space, { where: `space_id = '${spaceId.toString()}'` })
   if (!space) return
 
-  const spaceStruct = await resolveSpaceStruct(spaceId)
+  const spaceStruct = await resolveSpaceStruct(new BN(spaceId.toString()))
   if (!spaceStruct) return
 
   space.postsCount = spaceStruct.postsCount
@@ -112,8 +119,8 @@ const updateCountersInSpace = async (store: DatabaseManager, spaceId: SpaceId) =
   await store.save<Space>(space)
 }
 
-export const insertPost = async (id: PostId, store?: DatabaseManager) => {
-  const postStruct = await resolvePostStruct(id)
+export const insertPost = async (id: bigint, store?: Store) => {
+  const postStruct = await resolvePostStruct(new BN(id.toString()))
   if (!postStruct) return
 
   const post = new Post()
@@ -134,7 +141,7 @@ export const insertPost = async (id: PostId, store?: DatabaseManager) => {
   post.updatedAtTime = postStruct.updatedAtTime
   post.spaceId = postStruct.spaceId
   if (postStruct.spaceId != '' && store) {
-    await updateCountersInSpace(store, postStruct.spaceId as unknown as SpaceId)
+    await updateCountersInSpace(store, BigInt(postStruct.spaceId))
   }
 
   switch (postStruct.kind) {
@@ -147,9 +154,9 @@ export const insertPost = async (id: PostId, store?: DatabaseManager) => {
       post.parentId = parentId?.toString()
 
       if (rootPostId && rootPostId != null && store)
-        await updateReplyCount(store, rootPostId)
+        await updateReplyCount(store, BigInt(rootPostId.toString()))
       if (parentId && parentId != null && store)
-        await updateReplyCount(store, parentId)
+        await updateReplyCount(store, BigInt(parentId.toString()))
 
       break
     }

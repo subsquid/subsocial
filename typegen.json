@@ -1,0 +1,21 @@
+{
+    "outDir": "src/types",
+    "chainVersions": "subsocialVersions.json",
+    "typesBundle": "subsocial",
+    "events": [
+        "posts.PostCreated",
+        "posts.PostUpdated",
+        "posts.PostShared",
+        "spaces.SpaceCreated",
+        "spaces.SpaceUpdated",
+        "reactions.PostReactionCreated",
+        "reactions.PostReactionUpdated",
+        "reactions.PostReactionDeleted",
+        "reactions.PostReactionCreated",
+        "reactions.PostReactionUpdated",
+        "reactions.PostReactionDeleted",
+        "spaceFollows.SpaceFollowed",
+        "spaceFollows.SpaceUnfollowed"
+    ],
+    "calls": []
+  }

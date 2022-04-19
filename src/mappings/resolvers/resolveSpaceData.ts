@@ -1,8 +1,8 @@
 import { resolveSubsocialApi } from '../../connection/subsocial';
-import { SpaceId } from '@subsocial/types/substrate/interfaces';
 import BN from 'bn.js';
 import { formatTegs } from '../utils';
 import { summarizeMd } from '@subsocial/utils/summarize';
+import { AnySpaceId } from '@subsocial/types';
 
 export type SpaceStruct = {
   createdByAccount: string,
@@ -24,7 +24,7 @@ export type SpaceContent = {
   tags: string[]
 }
 
-export const resolveSpaceStruct = async (id: SpaceId): Promise<SpaceStruct | undefined> => {
+export const resolveSpaceStruct = async (id: AnySpaceId): Promise<SpaceStruct | undefined> => {
   const subsocial = await resolveSubsocialApi()
 
   const space = await subsocial.findSpace({ id })

@@ -4,39 +4,32 @@ import {
 } from './resolvers/resolveSpaceData'
 import { getDateWithoutTime } from './utils'
 import { SpaceId } from '@subsocial/types/substrate/interfaces'
-import {
-	DatabaseManager,
-	EventContext,
-	StoreContext,
-	SubstrateEvent,
-} from '@subsquid/hydra-common'
-import { Spaces } from '../types-V2'
-import { Space } from '../generated/model/space.model'
+import { EventContext } from '../types/support'
+import { Space } from '../model'
+import { EventHandlerContext, Store, SubstrateEvent } from '@subsquid/substrate-processor'
+import { SpacesSpaceCreatedEvent, SpacesSpaceUpdatedEvent } from '../types/events'
+import BN from 'bn.js';
 
-export async function spaceCreated({
-	event,
-	store,
-}: EventContext & StoreContext) {
-	await createSpace(store, event)
+export async function spaceCreated(ctx: EventHandlerContext) {
+	await createSpace(ctx)
 }
 
-export async function spaceUpdated({
-	event,
-	store,
-}: EventContext & StoreContext) {
-	const [, id] = new Spaces.SpaceUpdatedEvent(event).params
+export async function spaceUpdated(ctx: EventHandlerContext) {
+	const event = new SpacesSpaceUpdatedEvent(ctx);
 
-	if (event.extrinsic === undefined) {
+	if (ctx.event.extrinsic === undefined) {
 		throw new Error(`No extrinsic has been provided`)
 	}
 
-	let space = await store.get(Space, { where: `space_id = '${id.toString()}'` })
+	const [_, id] = event.asV1;
+
+	let space = await ctx.store.get(Space, { where: `space_id = '${id.toString()}'` })
 	if (!space) {
-		await createSpace(store, event)
+		await createSpace(ctx)
 		return
 	}
 
-	const spaceStruct = await resolveSpaceStruct(id)
+	const spaceStruct = await resolveSpaceStruct(new BN(id.toString()))
 	if (!spaceStruct) return
 
 	if (space.updatedAtTime === spaceStruct.updatedAtTime) return
@@ -67,24 +60,27 @@ export async function spaceUpdated({
 		// }
 	}
 
-	await store.save<Space>(space)
+	await ctx.store.save<Space>(space)
 }
 
-const createSpace = async (store: DatabaseManager, event: SubstrateEvent) => {
-	const [, id] = new Spaces.SpaceCreatedEvent(event).params
+const createSpace = async (ctx: EventHandlerContext) => {
+	const event = new SpacesSpaceCreatedEvent(ctx);
 
-	if (event.extrinsic === undefined) {
+	if (ctx.event.extrinsic === undefined) {
 		throw new Error(`No extrinsic has been provided`)
 	}
-	const space = await insertSpace(id, store)
+
+	const [_, id] = event.asV1;
+
+	const space = await insertSpace(id, ctx.store)
 
 	if (space) {
-		await store.save<Space>(space)
+		await ctx.store.save<Space>(space)
 	}
 }
 
-export const insertSpace = async (id: SpaceId, store?: DatabaseManager) => {
-	const spaceStruct = await resolveSpaceStruct(id)
+export const insertSpace = async (id: bigint, store?: Store) => {
+	const spaceStruct = await resolveSpaceStruct(new BN(id.toString()))
 	if (!spaceStruct) return
 
 	const space = new Space()

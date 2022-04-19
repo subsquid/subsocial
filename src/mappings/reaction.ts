@@ -1,77 +1,87 @@
 import { PostId } from "@subsocial/types/substrate/interfaces"
-import { DatabaseManager, EventContext, StoreContext } from "@subsquid/hydra-common"
-import { Reactions as ReactionsV1 } from "../types-V1"
-import { Reactions as ReactionsV2 } from "../types-V2"
+import { EventHandlerContext, Store } from "@subsquid/substrate-processor";
+import BN from "bn.js";
+import { Post } from "../model";
+import { ReactionsPostReactionCreatedEvent, ReactionsPostReactionDeletedEvent, ReactionsPostReactionUpdatedEvent } from "../types/events";
 import { resolvePostStruct } from './resolvers/resolvePostData';
-import { Post } from '../generated/model/post.model';
 
-export async function postReactionCreatedV1({ event, store }: EventContext & StoreContext) {
+export async function postReactionCreatedV1(ctx: EventHandlerContext) {
+  const event = new ReactionsPostReactionCreatedEvent(ctx);
 
-  const [, id] = new ReactionsV1.PostReactionCreatedEvent(event).params
-
-  if (event.extrinsic === undefined) {
+  if (ctx.event.extrinsic === undefined) {
     throw new Error(`No extrinsic has been provided`)
   }
 
-  await upvoteOrDownvotePost(store, id)
+  const [_, id] = event.asV1;
+
+  await upvoteOrDownvotePost(ctx.store, id)
 }
 
-export async function postReactionUpdatedV1({ event, store }: EventContext & StoreContext) {
-  const [, id] = new ReactionsV1.PostReactionUpdatedEvent(event).params
-
-  if (event.extrinsic === undefined) {
+export async function postReactionUpdatedV1(ctx: EventHandlerContext) {
+  const event = new ReactionsPostReactionUpdatedEvent(ctx);
+  
+  if (ctx.event.extrinsic === undefined) {
     throw new Error(`No extrinsic has been provided`)
   }
 
-  await upvoteOrDownvotePost(store, id)
+  const [_, id] = event.asV1;
+
+  await upvoteOrDownvotePost(ctx.store, id)
 }
 
-export async function postReactionDeletedV1({ event, store }: EventContext & StoreContext) {
-    const [, id] = new ReactionsV1.PostReactionDeletedEvent(event).params
-
-  if (event.extrinsic === undefined) {
+export async function postReactionDeletedV1(ctx: EventHandlerContext) {
+  const event = new ReactionsPostReactionDeletedEvent(ctx);
+  
+  if (ctx.event.extrinsic === undefined) {
     throw new Error(`No extrinsic has been provided`)
   }
 
-  await upvoteOrDownvotePost(store, id)
+  const [_, id] = event.asV1;
+
+  await upvoteOrDownvotePost(ctx.store, id)
 }
 
-export async function postReactionCreatedV2({ event, store }: EventContext & StoreContext) {
+export async function postReactionCreatedV2(ctx: EventHandlerContext) {
+  const event = new ReactionsPostReactionCreatedEvent(ctx);
 
-  const [, id] = new ReactionsV2.PostReactionCreatedEvent(event).params
-
-  if (event.extrinsic === undefined) {
+  if (ctx.event.extrinsic === undefined) {
     throw new Error(`No extrinsic has been provided`)
   }
 
-  await upvoteOrDownvotePost(store, id)
+  const [_, id] = event.asV15;
+
+  await upvoteOrDownvotePost(ctx.store, id)
 }
 
-export async function postReactionUpdatedV2({ event, store }: EventContext & StoreContext) {
-  const [, id] = new ReactionsV2.PostReactionUpdatedEvent(event).params
+export async function postReactionUpdatedV2(ctx: EventHandlerContext) {
+  const event = new ReactionsPostReactionUpdatedEvent(ctx);
 
-  if (event.extrinsic === undefined) {
+  if (ctx.event.extrinsic === undefined) {
     throw new Error(`No extrinsic has been provided`)
   }
 
-  await upvoteOrDownvotePost(store, id)
+  const [_, id] = event.asV15; 
+
+  await upvoteOrDownvotePost(ctx.store, id)
 }
 
-export async function postReactionDeletedV2({ event, store }: EventContext & StoreContext) {
-    const [, id] = new ReactionsV2.PostReactionDeletedEvent(event).params
+export async function postReactionDeletedV2(ctx: EventHandlerContext) {
+    const event = new ReactionsPostReactionDeletedEvent(ctx);
 
-  if (event.extrinsic === undefined) {
+  if (ctx.event.extrinsic === undefined) {
     throw new Error(`No extrinsic has been provided`)
   }
 
-  await upvoteOrDownvotePost(store, id)
+  const [_, id] = event.asV15; 
+
+  await upvoteOrDownvotePost(ctx.store, id)
 }
 
-const upvoteOrDownvotePost = async (store: DatabaseManager, id: PostId) => {
+const upvoteOrDownvotePost = async (store: Store, id: bigint) => {
   const post = await store.get(Post, { where: { postId: id.toString()} })
   if (!post) return
 
-  const postStruct = await resolvePostStruct(id)
+  const postStruct = await resolvePostStruct(new BN(id.toString()))
   if (!postStruct) return
 
   post.upvotesCount = postStruct.upvotesCount

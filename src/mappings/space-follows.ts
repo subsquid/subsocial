@@ -1,34 +1,39 @@
 import { SpaceId } from "@subsocial/types/substrate/interfaces"
-import { DatabaseManager, EventContext, StoreContext } from "@subsquid/hydra-common"
-import { SpaceFollows } from "../types-V2"
+import { EventHandlerContext, Store } from "@subsquid/substrate-processor";
+import BN from "bn.js";
+import { Space } from "../model";
+import { SpaceFollowsSpaceFollowedEvent, SpaceFollowsSpaceUnfollowedEvent } from "../types/events";
 import { resolveSpaceStruct } from './resolvers/resolveSpaceData';
-import { Space } from '../generated/model/space.model';
 
-export async function spaceFollowed({ event, store }: EventContext & StoreContext) {
-  const [, id ] = new SpaceFollows.SpaceFollowedEvent(event).params
+export async function spaceFollowed(ctx: EventHandlerContext) {
+  const event = new SpaceFollowsSpaceFollowedEvent(ctx);
 
-  if (event.extrinsic === undefined) {
+  if (ctx.event.extrinsic === undefined) {
     throw new Error(`No extrinsic has been provided`)
   }
 
-  await spaceFollowedOrUnfollowed(store, id)
+  const [_, id] = event.asV1;
+
+  await spaceFollowedOrUnfollowed(ctx.store, id)
 }
 
-export async function spaceUnfollowed({ event, store }: EventContext & StoreContext) {
-  const [, id ] = new SpaceFollows.SpaceUnfollowedEvent(event).params
+export async function spaceUnfollowed(ctx: EventHandlerContext) {
+  const event = new SpaceFollowsSpaceUnfollowedEvent(ctx);
 
-  if (event.extrinsic === undefined) {
+  if (ctx.event.extrinsic === undefined) {
     throw new Error(`No extrinsic has been provided`)
   }
 
-  await spaceFollowedOrUnfollowed(store, id)
+  const [_, id] = event.asV1;
+
+  await spaceFollowedOrUnfollowed(ctx.store, id)
 }
 
-const spaceFollowedOrUnfollowed = async (store: DatabaseManager, spaceId: SpaceId) => {
+const spaceFollowedOrUnfollowed = async (store: Store, spaceId: bigint) => {
   const space = await store.get(Space, { where: `space_id = '${spaceId.toString()}'` })
   if (!space) return
 
-  const spaceStruct = await resolveSpaceStruct(spaceId)
+  const spaceStruct = await resolveSpaceStruct(new BN(spaceId.toString()))
   if (!spaceStruct) return
 
   space.followersCount = spaceStruct.followersCount

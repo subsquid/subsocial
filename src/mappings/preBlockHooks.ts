@@ -57,7 +57,7 @@ const reindexSpaces: ReindexerFn = async (substrate) => {
   const spaceIds = Array.from({ length: lastSpaceId.toNumber() }, (_, i) => i + 1)
 
   for (const spaceId of spaceIds) {
-    const id = new BN(spaceId) as SpaceId
+    const id = BigInt(spaceId);
 
     log.info(`Index space # ${spaceId} out of ${lastSpaceIdStr}`)
 
@@ -94,7 +94,7 @@ const reindexPosts: ReindexerFn = async (substrate) => {
 
     log.info(`Index post # ${postId} out of ${lastPostIdStr}`)
 
-    const post = await insertPost(id)
+    const post = await insertPost(BigInt(id.toString()))
     if(post) {
       post.id = id.toString()
       // post.createdAt = new Date()

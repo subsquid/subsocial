@@ -9,3 +9,5 @@ export const dbUser = process.env.DB_USER
 export const dbPass = process.env.DB_PASS
 export const dbHost = process.env.DB_HOST
 export const dbPort = parseInt(process.env.DB_PORT || '') || 5432
+export const batchSize = process.env.BATCH_SIZE ? parseInt(process.env.BATCH_SIZE) : 500;
+export const chainNode = process.env.CHAIN_NODE;
