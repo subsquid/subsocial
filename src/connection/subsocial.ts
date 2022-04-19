@@ -9,7 +9,7 @@ let subsocial: FlatSubsocialApi;
 
 const ipfsConfig = {
   ipfsNodeUrl: ipfsReadOnlyNodeUrl,
-  offchainUrl: `https://app.subsocial/network/offchain`
+  offchainUrl,
 }
 
 export const resolveSubsocialApi = async (): Promise<FlatSubsocialApi> => {
