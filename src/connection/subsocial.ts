@@ -3,6 +3,7 @@ import { ApiPromise } from '@polkadot/api';
 import { getSubstrateApi, newFlatSubsocialApi } from '@subsocial/api'
 import { ipfsReadOnlyNodeUrl, port,  } from '../env'
 import { FlatSubsocialApi } from '@subsocial/api/flat-subsocial';
+import { chainNode } from "../env";
 
 let subsocial: FlatSubsocialApi;
 
@@ -15,16 +16,12 @@ export const resolveSubsocialApi = async (): Promise<FlatSubsocialApi> => {
   // Connect to Subsocial's Substrate node:
 
   if (!subsocial) {
-    const api = await getSubstrateApi(process.env.CHAIN_NODE);
+    const api = await getSubstrateApi(chainNode);
     const properties = await api.rpc.system.properties()
-
-    if(!process.env.CHAIN_NODE) {
-      throw new Error("CHAIN_NODE undefined");
-    }
 
     registry.setChainProperties(properties)
     subsocial = await newFlatSubsocialApi({
-      substrateNodeUrl: process.env.CHAIN_NODE,
+      substrateNodeUrl: chainNode,
       ...ipfsConfig
     });
   }
