@@ -25,7 +25,7 @@ export async function spaceUpdated(ctx: EventHandlerContext) {
 
 	let space = await ctx.store.get(Space, { where: `space_id = '${id.toString()}'` })
 	if (!space) {
-		await createSpace(ctx)
+		space = await insertSpace(id, ctx.store);
 		return
 	}
 

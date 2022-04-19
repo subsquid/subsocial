@@ -59,64 +59,31 @@ processor.addEventHandler(
 
 processor.addEventHandler(
     "reactions.PostReactionCreated",
-    {
-        range: {
-            from: 0,
-            to: 14,
-        }
-    },
     postReactionCreatedV1,
 );
 
 processor.addEventHandler(
     "reactions.PostReactionUpdated",
-    {
-        range: {
-            from: 0,
-            to: 14,
-        }
-    },
     postReactionUpdatedV1,
 );
 
 processor.addEventHandler(
     "reactions.PostReactionDeleted",
-    {
-        range: {
-            from: 0,
-            to: 14,
-        }
-    },
     postReactionDeletedV1,
 );
 
 processor.addEventHandler(
     "reactions.PostReactionCreated",
-    {
-        range: {
-            from: 15,
-        }
-    },
     postReactionCreatedV2,
 );
 
 processor.addEventHandler(
     "reactions.PostReactionUpdated",
-    {
-        range: {
-            from: 15,
-        }
-    },
     postReactionUpdatedV2,
 );
 
 processor.addEventHandler(
     "reactions.PostReactionDeleted",
-    {
-        range: {
-            from: 15,
-        }
-    },
     postReactionDeletedV2,
 );
 
@@ -129,3 +96,5 @@ processor.addEventHandler(
     "spaceFollows.SpaceUnfollowed",
     spaceUnfollowed,
 );
+
+processor.run();

@@ -12,9 +12,11 @@ export async function postReactionCreatedV1(ctx: EventHandlerContext) {
     throw new Error(`No extrinsic has been provided`)
   }
 
-  const [_, id] = event.asV1;
+  if (event.isV1) {
+    const [_, id] = event.asV1;
 
-  await upvoteOrDownvotePost(ctx.store, id)
+    await upvoteOrDownvotePost(ctx.store, id)
+  }
 }
 
 export async function postReactionUpdatedV1(ctx: EventHandlerContext) {
@@ -24,9 +26,11 @@ export async function postReactionUpdatedV1(ctx: EventHandlerContext) {
     throw new Error(`No extrinsic has been provided`)
   }
 
-  const [_, id] = event.asV1;
+  if (event.isV1) {
+    const [_, id] = event.asV1;
 
-  await upvoteOrDownvotePost(ctx.store, id)
+    await upvoteOrDownvotePost(ctx.store, id)
+  }
 }
 
 export async function postReactionDeletedV1(ctx: EventHandlerContext) {
@@ -36,9 +40,11 @@ export async function postReactionDeletedV1(ctx: EventHandlerContext) {
     throw new Error(`No extrinsic has been provided`)
   }
 
-  const [_, id] = event.asV1;
+  if (event.isV1) {
+    const [_, id] = event.asV1;
 
-  await upvoteOrDownvotePost(ctx.store, id)
+    await upvoteOrDownvotePost(ctx.store, id)
+  }
 }
 
 export async function postReactionCreatedV2(ctx: EventHandlerContext) {
@@ -48,9 +54,11 @@ export async function postReactionCreatedV2(ctx: EventHandlerContext) {
     throw new Error(`No extrinsic has been provided`)
   }
 
-  const [_, id] = event.asV15;
+  if (event.isV15) {
+    const [_, id] = event.asV15;
 
-  await upvoteOrDownvotePost(ctx.store, id)
+    await upvoteOrDownvotePost(ctx.store, id)
+  }
 }
 
 export async function postReactionUpdatedV2(ctx: EventHandlerContext) {
@@ -60,9 +68,11 @@ export async function postReactionUpdatedV2(ctx: EventHandlerContext) {
     throw new Error(`No extrinsic has been provided`)
   }
 
-  const [_, id] = event.asV15; 
+  if (event.isV15) {
+    const [_, id] = event.asV15; 
 
-  await upvoteOrDownvotePost(ctx.store, id)
+    await upvoteOrDownvotePost(ctx.store, id)
+  }
 }
 
 export async function postReactionDeletedV2(ctx: EventHandlerContext) {
@@ -72,9 +82,11 @@ export async function postReactionDeletedV2(ctx: EventHandlerContext) {
     throw new Error(`No extrinsic has been provided`)
   }
 
-  const [_, id] = event.asV15; 
+  if (event.isV15) {
+    const [_, id] = event.asV15; 
 
-  await upvoteOrDownvotePost(ctx.store, id)
+    await upvoteOrDownvotePost(ctx.store, id)
+  }
 }
 
 const upvoteOrDownvotePost = async (store: Store, id: bigint) => {
