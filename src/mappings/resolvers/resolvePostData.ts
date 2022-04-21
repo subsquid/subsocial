@@ -1,11 +1,11 @@
-import BN from 'bn.js'
+// import BN from 'bn.js'
 import { resolveSubsocialApi } from '../../connection/subsocial'
-import { createPostSlug } from '@subsocial/utils/slugify'
-import { formatTegs } from '../utils'
-import { summarizeMd } from '@subsocial/utils/summarize'
-import { AnyPostId, MetaItem } from '@subsocial/types'
-import { PostKind } from '../../model'
-import { PostExtension } from '@subsocial/types/substrate/interfaces'
+// import { createPostSlug } from '@subsocial/utils/slugify'
+// import { formatTegs } from '../utils'
+// import { summarizeMd } from '@subsocial/utils/summarize'
+import { AnyPostId/* , MetaItem */ } from '@subsocial/types'
+// import { PostKind } from '../../model'
+// import { PostExtension } from '@subsocial/types/substrate/interfaces'
 import { PostStruct, PostWithSomeDetails } from '@subsocial/types/dto'
 
 export const resolvePost = async (
@@ -13,7 +13,7 @@ export const resolvePost = async (
 ): Promise<PostWithSomeDetails | undefined> => {
 	const subsocial = await resolveSubsocialApi()
 
-	return await subsocial.findPostWithSomeDetails({ id: id.toString() });
+	return await subsocial.findPostWithSomeDetails({ id });
 }
 
 export const resolvePostStruct = async (
