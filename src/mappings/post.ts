@@ -7,6 +7,7 @@ import { Post, PostKind, Space } from '../model/generated'
 import { EventHandlerContext, Store } from '@subsquid/substrate-processor';
 import { PostsPostCreatedEvent, PostsPostSharedEvent, PostsPostUpdatedEvent } from '../types/events';
 import BN from 'bn.js';
+import { asCommentStruct, asSharedPostStruct } from '@subsocial/api/flat-subsocial/flatteners'
 
 export async function postCreated(ctx: EventHandlerContext) {
   const event = new PostsPostCreatedEvent(ctx);
@@ -154,12 +155,9 @@ export const insertPost = async (id: bigint, store?: Store): Promise<Post | null
     await updateCountersInSpace(store, BigInt(postStruct.spaceId))
   }
 
-  /*
   switch (post.kind) {
     case PostKind.Comment: {
-      const extencionParentId = postStruct.extension.asComment.parentId
-      const rootPostId =  postStruct.extension.asComment.rootPostId
-      const parentId = extencionParentId.isNone ? undefined : extencionParentId.unwrap()
+      const { rootPostId, parentId } = asCommentStruct(postStruct)
 
       post.rootPostId = rootPostId.toString()
       post.parentId = parentId?.toString()
@@ -172,11 +170,12 @@ export const insertPost = async (id: bigint, store?: Store): Promise<Post | null
       break
     }
     case PostKind.SharedPost: {
-      post.sharedPostId = postStruct.extension.asSharedPost.toString()
+      const { sharedPostId } = asSharedPostStruct(postStruct)
+      post.sharedPostId = sharedPostId
       break
     }
   }
-  */
+
 
   post.repliesCount = postStruct.repliesCount
   post.hiddenRepliesCount = postStruct.hiddenRepliesCount
